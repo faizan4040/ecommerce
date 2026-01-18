@@ -1,4 +1,3 @@
-
 import connectDB from "@/lib/databaseConnection";
 import { zSchema } from "@/lib/zodSchema";
 import UserModel from "@/models/User.model";
@@ -52,7 +51,7 @@ export async function POST(request) {
          .sign(secret);
 
             await sendMail(
-            "Email verification request from Developer's Goswami",
+            "Email verification request from BrandName",
             email, emailVerificationLink(`${process.env.SPORT_SHOES_WEBSITE_URL}/auth/verify-email/${token}`));
 
 

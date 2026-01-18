@@ -4,40 +4,40 @@ import UserModel from "@/models/User.model";
 import { jwtVerify } from "jose";
 import { isValidObjectId } from "mongoose";
 
-export async function PORT(request){
+export async function POST(request) {
+  try {
+    await connectDB();
 
-    try {
-         await connectDB()
-         const {token} = await request.json();
-      
-         if(!token){
-            return new Response(JSON.stringify({
-                success: false,
-                message: 'Invalid or missing token.'
-            }), {status: 400})
-         }
+    const { token } = await request.json();
 
-         const secret = new TextEncoder().encode(process.env.SECRET_KEY);
-         const decoded = await jwtVerify(token, secret);
-         const userId = decoded.payload.userId;
-
-         if(!isValidObjectId(userId)){
-            return response(false, 400, 'Invalid user id')
-         }
-
-        //  get user and update verified status
-         const user = await UserModel.findById(userId)
-         if(!user){
-            return response(false, 404, 'User not found.');
-         }
-
-            user.isEmailVerified = true;
-            await user.save();
-
-            return response(true, 200, 'Email verified successfully.');
-
-    } catch (error) {
-        return catchError(error, 'Email verification failed.');
+    if (!token) {
+      return response(false, 400, "Invalid or missing token.");
     }
 
+    const secret = new TextEncoder().encode(process.env.SECRET_KEY);
+
+    const { payload } = await jwtVerify(token, secret);
+    const userId = payload.userId;
+
+    if (!isValidObjectId(userId)) {
+      return response(false, 400, "Invalid user id.");
+    }
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return response(false, 404, "User not found.");
+    }
+
+    if (user.isEmailVerified) {
+      return response(true, 200, "Email already verified.");
+    }
+
+    user.isEmailVerified = true;
+    await user.save();
+
+    return response(true, 200, "Email verified successfully.");
+  } catch (error) {
+    return catchError(error, "Email verification failed.");
+  }
 }

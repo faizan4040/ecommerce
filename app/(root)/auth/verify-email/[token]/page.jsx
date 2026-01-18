@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { use, useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 
@@ -12,23 +11,18 @@ import { WEBSITE_HOME } from "@/routes/WebsiteRoute";
 import { Verified } from "lucide-react";
 import { FaFileDownload } from "react-icons/fa";
 
-const EmailVerification = () => {
-  const { token } = useParams(); // ✅ correct way
-  const [isVerified, setIsVerified] = useState(null);
+const EmailVerification = ({ params }) => {
+  const { token } = use(params); 
+  const [isVerified, setIsVerified] = useState(false);
 
   useEffect(() => {
-    if (!token) return;
-
-    const verifyEmail = async () => {
-      try {
-        const { data } = await axios.post("/api/auth/verify-email", { token });
-        setIsVerified(data.success);
-      } catch (error) {
-        setIsVerified(false);
-      }
-    };
-
-    verifyEmail();
+       const verify = async () =>{
+        const {data: verificationResponse} = await axios.post('/api/auth/verify-email',{token})
+        if(!verificationResponse.success){
+           setIsVerified(true)
+        }
+    }
+    verify();
   }, [token]);
 
   return (
