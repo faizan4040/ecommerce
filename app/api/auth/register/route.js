@@ -2,7 +2,7 @@ import connectDB from "@/lib/databaseConnection";
 import { zSchema } from "@/lib/zodSchema";
 import UserModel from "@/models/User.model";
 import { SignJWT } from "jose";
-import { emailVerificationLink } from "@/email/emailVerification";
+import { emailVerificationLink } from "@/email/emailVerificationLink";
 import { catchError, response } from "@/lib/helperfunction";
 import { sendMail } from "@/lib/sendMail";
 

@@ -26,6 +26,7 @@ import { zSchema } from "@/lib/zodSchema";
 import ButtonLoading from "@/components/Application/ButtonLoading";
 import { IMAGES } from "@/lib/images";
 import { WEBSITE_REGISTER } from "@/routes/WebsiteRoute";
+import axios from "axios";
 
 const Loginpage = () => {
   const router = useRouter();
@@ -48,13 +49,22 @@ const Loginpage = () => {
   });
 
   const handleLoginSubmit = async (values) => {
-    setLoading(true);
-    console.log("Login Data:", values);
-
-    setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-  };
+   try {
+         setLoading(true);
+         const { data: registerResponse } = await axios.post("/api/auth/login", values);
+         if (!registerResponse.success) {
+           throw new Error(registerResponse.message);
+         }
+   
+         form.reset();
+         alert(registerResponse.message);
+         
+       } catch (error) {
+         alert(error.message || "Registration failed. Please try again.");
+       } finally {
+         setLoading(false);
+       }
+     };
 
   return (
     <>
