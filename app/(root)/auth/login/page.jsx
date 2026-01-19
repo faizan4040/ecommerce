@@ -27,6 +27,7 @@ import ButtonLoading from "@/components/Application/ButtonLoading";
 import { IMAGES } from "@/lib/images";
 import { WEBSITE_REGISTER } from "@/routes/WebsiteRoute";
 import axios from "axios";
+import { showToast } from "@/lib/showToast";
 
 const Loginpage = () => {
   const router = useRouter();
@@ -53,14 +54,14 @@ const Loginpage = () => {
          setLoading(true);
          const { data: registerResponse } = await axios.post("/api/auth/login", values);
          if (!registerResponse.success) {
-           throw new Error(registerResponse.message);
+          throw new Error(registerResponse.message);
          }
    
          form.reset();
-         alert(registerResponse.message);
+         showToast('success',registerResponse.message);
          
        } catch (error) {
-         alert(error.message || "Registration failed. Please try again.");
+          showToast('error', error.message || "Registration failed. Please try again.");
        } finally {
          setLoading(false);
        }

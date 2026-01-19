@@ -31,8 +31,8 @@ const EmailVerification = ({ params }) => {
         <CardContent className="text-center py-8 space-y-4">
           {isVerified === true && (
             <>
-              <Verified size={100} className="mx-auto text-green-500" />
-              <h1 className="text-2xl font-bold text-green-500">
+              <Verified size={100} className="mx-auto text-green-500" alt='Verifaication success'/>
+              <h1 className="text-2xl font-bold text-green-500" >
                 Email verification successful!
               </h1>
             </>
@@ -40,7 +40,7 @@ const EmailVerification = ({ params }) => {
 
           {isVerified === false && (
             <>
-              <FaFileDownload size={100} className="mx-auto text-red-500" />
+              <FaFileDownload size={100} className="mx-auto text-red-500" alt='Verifaication error'/>
               <h1 className="text-2xl font-bold text-red-500">
                 Email verification failed!
               </h1>

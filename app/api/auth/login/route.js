@@ -9,7 +9,7 @@ import UserModel from "@/models/User.model"
 import { SignJWT } from "jose"
 import {z} from "zod"
 
-export async function PORT(request){
+export async function POST(request){
  try{
     await connectDB()
     const payload = await request.json()
@@ -29,13 +29,13 @@ export async function PORT(request){
     const {email, password} = validatedData.data
     
     //get user data
-    const getUser = await UserModel.findOne({ email })
+    const getUser = await UserModel.findOne({ deleteAt: null, email }).select("+password isEmailVerified email name role")
     if(!getUser){
         return response(false, 404, 'Invalid login credentials.')        
     } 
 
     // resend email verification link
-        if(getUser.isEmailVerified){
+        if(!getUser.isEmailVerified){
             const secret = new TextEncoder().encode(process.env.SECRET_KEY);
         const token = await new SignJWT({ userId: getUser._id.toString() })
         .setIssuedAt()
@@ -53,7 +53,6 @@ export async function PORT(request){
 
         // password verification
     const isPasswordVerified = await getUser.comparePassword(password)
-
     if(!isPasswordVerified) {
         return response(false, 400, 'Invalid login credentials.')
     }
@@ -67,7 +66,7 @@ export async function PORT(request){
 
     const newOtpData = new OTPModel({
         email, otp
-    })
+    }) 
 
     await newOtpData.save()
     

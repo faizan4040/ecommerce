@@ -27,6 +27,7 @@ import { zSchema } from "@/lib/zodSchema";
 import ButtonLoading from "@/components/Application/ButtonLoading";
 import { IMAGES } from "@/lib/images";
 import { WEBSITE_LOGIN } from "@/routes/WebsiteRoute";
+import { showToast } from "@/lib/showToast";
 
 
 /* --------------------
@@ -70,10 +71,10 @@ const formSchema = zSchema.pick({
       }
 
       form.reset();
-      alert(registerResponse.message);
+      showToast('success', registerResponse.message);
       
     } catch (error) {
-      alert(error.message || "Registration failed. Please try again.");
+      showToast('error', error.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }

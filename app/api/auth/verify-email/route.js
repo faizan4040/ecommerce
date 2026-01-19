@@ -15,16 +15,15 @@ export async function POST(request) {
     }
 
     const secret = new TextEncoder().encode(process.env.SECRET_KEY);
-
-    const { payload } = await jwtVerify(token, secret);
-    const userId = payload.userId;
+    const decoded = await jwtVerify(token, secret)
+    const userId = decoded.payload.userId
 
     if (!isValidObjectId(userId)) {
-      return response(false, 400, "Invalid user id.");
+      return response(false, 400, "Invalid user id.", userId);
     }
 
+    // get user
     const user = await UserModel.findById(userId);
-
     if (!user) {
       return response(false, 404, "User not found.");
     }
@@ -37,6 +36,7 @@ export async function POST(request) {
     await user.save();
 
     return response(true, 200, "Email verified successfully.");
+    
   } catch (error) {
     return catchError(error, "Email verification failed.");
   }
