@@ -14,18 +14,24 @@ const layout = ({ children }) => {
             disableTransitionOnChange
     >
         <SidebarProvider>
-          <AppSidebar/>
-          <main className='border-2 md:w-[calc(100vw-16rem)] bg-stone-100 dark:bg-stone-900'>
-            <div className='pt-17.5 px-8 min-h-[calc(100vh-40px)] pb-10 '>
-              <Topbar/>
-              {children}
-            </div>
+  <div className="flex min-h-screen w-full">
 
-            <div className='border-t h-10 flex justify-center items-center dark:bg-black text-sm bg-stone-100'>
-              © 2026 Brand Name. All Rights Reserved.
-            </div>
-          </main>
-        </SidebarProvider>
+    <AppSidebar />
+
+    <main className="flex-1 bg-stone-100 dark:bg-stone-900">
+      <div className="pt-17.5 px-4 md:px-8 min-h-[calc(100vh-40px)] pb-10">
+        <Topbar />
+        {children}
+      </div>
+
+      <div className="border-t h-10 flex justify-center items-center text-sm bg-stone-100 dark:bg-black">
+        © 2026 Brand Name. All Rights Reserved.
+      </div>
+    </main>
+
+  </div>
+</SidebarProvider>
+
     </ThemeProvider>
   )
 }
