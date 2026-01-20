@@ -28,12 +28,15 @@ import { IMAGES } from "@/lib/images";
 import { WEBSITE_REGISTER } from "@/routes/WebsiteRoute";
 import axios from "axios";
 import { showToast } from "@/lib/showToast";
+import OTPVerification from "@/components/Application/OTPVerification";
 
 const Loginpage = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [isTypePassword, setIsTypePassword] = useState(true);
+  const [otpVerificationLoading, setotpVerificationLoading] = useState(false);
 
+  const [isTypePassword, setIsTypePassword] = useState(true);
+  const [otpEmail, setOtpEmail] = useState()
     const formSchema = zSchema.pick({
       email: true
     }).extend({
@@ -57,9 +60,27 @@ const Loginpage = () => {
           throw new Error(registerResponse.message);
          }
    
+         setOtpEmail(values.email)
          form.reset();
          showToast('success',registerResponse.message);
-         
+       } catch (error) {
+          showToast('error', error.message || "Registration failed. Please try again.");
+       } finally {
+         setLoading(false);
+       }
+     };
+
+     //otp verification
+     const handleOtpVerification = async (values) =>{
+      try {
+         setotpVerificationLoading(true);
+         const { data: registerResponse } = await axios.post("/api/auth/verify-otp", values);
+         if (!registerResponse.success) {
+          throw new Error(registerResponse.message);
+         }
+   
+         setOtpEmail('')
+         showToast('success',registerResponse.message);
        } catch (error) {
           showToast('error', error.message || "Registration failed. Please try again.");
        } finally {
@@ -92,15 +113,18 @@ const Loginpage = () => {
               <img src={IMAGES.logo} alt="logo" width={50} height={50} />
             </div>
 
-            {/* Heading */}
+            {!otpEmail
+                ?
+                <>
+                   {/* Heading */}
             <div className="text-center space-y-1">
               <h1 className="text-3xl font-bold">Login Into Account</h1>
               <p className="text-sm text-muted-foreground">
                 Login into your account by filling out the form below.
               </p>
             </div>
-
             {/* Form */}
+            <div className="mt-5">
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(handleLoginSubmit)}
@@ -189,6 +213,16 @@ const Loginpage = () => {
                 </div>
               </form>
             </Form>
+            </div>
+                </>
+                :
+                
+                <OTPVerification email={otpEmail} onSubmit={handleOtpVerification} loading={otpVerificationLoading}/>
+                
+            
+            }
+
+         
           </CardContent>
         </Card>
       </div>

@@ -59,17 +59,18 @@ const UserSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 
-UserSchema.pre("save", async function () {
-  if (!this.isModified("password")) return;
+UserSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
+  next();
 });
 
 
-UserSchema.method = {
-    comparePassword: async function (enteredPassword) {
-        return await bcrypt.compare(enteredPassword, this.password);
-    }
-}
+
+UserSchema.methods.comparePassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
 
 
 const UserModel = mongoose.models.User || mongoose.model('User', UserSchema, 'users');

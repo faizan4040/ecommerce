@@ -1,7 +1,7 @@
 import { emailVerificationLink } from "@/email/emailVerificationLink"
 import { otpEmail } from "@/email/otpEmail"
 import connectDB from "@/lib/databaseConnection"
-import { catchError, response } from "@/lib/helperfunction"
+import { catchError, generateOTP, response } from "@/lib/helperfunction"
 import { sendMail } from "@/lib/sendMail"
 import { zSchema } from "@/lib/zodSchema"
 import OTPModel from "@/models/Otp.model"
@@ -36,7 +36,7 @@ export async function POST(request){
 
     // resend email verification link
         if(!getUser.isEmailVerified){
-            const secret = new TextEncoder().encode(process.env.SECRET_KEY);
+        const secret = new TextEncoder().encode(process.env.SECRET_KEY);
         const token = await new SignJWT({ userId: getUser._id.toString() })
         .setIssuedAt()
         .setExpirationTime("1h")
@@ -47,12 +47,13 @@ export async function POST(request){
         "Email verification request from Developer's Goswami",
         email, emailVerificationLink(`${process.env.SPORT_SHOES_WEBSITE_URL}/auth/verify-email/${token}`));
 
-           return response(false, 400, 'Your email is not verified. We have send a verifation link to your registered email address.')
+        return response(false, 400, 'Your email is not verified. We have send a verifation link to your registered email address.')
         }
 
 
-        // password verification
+    // password verification
     const isPasswordVerified = await getUser.comparePassword(password)
+
     if(!isPasswordVerified) {
         return response(false, 400, 'Invalid login credentials.')
     }
@@ -63,7 +64,6 @@ export async function POST(request){
     const otp = generateOTP()
 
     //storing otp into database
-
     const newOtpData = new OTPModel({
         email, otp
     }) 
