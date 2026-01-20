@@ -32,7 +32,7 @@ export async function POST(request){
     const getUser = await UserModel.findOne({ deleteAt: null, email }).select("+password isEmailVerified email name role")
     if(!getUser){
         return response(false, 404, 'Invalid login credentials.')        
-    } 
+    }
 
     // resend email verification link
         if(!getUser.isEmailVerified){

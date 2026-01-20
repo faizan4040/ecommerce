@@ -11,6 +11,7 @@ import { WEBSITE_HOME } from "@/routes/WebsiteRoute";
 import { Verified } from "lucide-react";
 import { FaFileDownload } from "react-icons/fa";
 
+
 const EmailVerification = ({ params }) => {
   const { token } = use(params); 
   const [isVerified, setIsVerified] = useState(false);
