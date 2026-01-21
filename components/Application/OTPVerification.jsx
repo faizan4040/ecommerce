@@ -1,3 +1,5 @@
+'use client'
+
 import { zSchema } from '@/lib/zodSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import React, { useState } from 'react'
@@ -18,6 +20,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp"
 import axios from 'axios';
+import { showToast } from "@/lib/showToast";
 
 const OTPVerification = ({email, onSubmit, loading}) => {
     const [isResendingOtp, setIsResendingOtp] = useState(false)
@@ -41,14 +44,14 @@ const OTPVerification = ({email, onSubmit, loading}) => {
     const resendOTP = async () =>{
      try {
               setIsResendingOtp(true);
-              const { data: registerResponse } = await axios.post("/api/auth/resend-otp", 
+              const { data: resendOtpResponse } = await axios.post("/api/auth/resend-otp", 
                 {email}
             );
-              if (!registerResponse.success) {
-               throw new Error(registerResponse.message);
+              if (!resendOtpResponse.success) {
+               throw new Error(resendOtpResponse.message);
               }
         
-              showToast('success',registerResponse.message);
+              showToast('success', resendOtpResponse.message);
             } catch (error) {
                showToast('error', error.message || "Registration failed. Please try again.");
             } finally {
@@ -70,7 +73,7 @@ const OTPVerification = ({email, onSubmit, loading}) => {
             email address. The OTP is valid for 10 minutes  only.</p>
         </div>
 
-<div className="mb-5 mt-5 flex justify-center">
+       <div className="mb-5 mt-5 flex justify-center">
         <FormField
             control={form.control}
             name="otp"
@@ -78,7 +81,7 @@ const OTPVerification = ({email, onSubmit, loading}) => {
             <FormItem>
                 <FormLabel className='font-semibold'>One-time Password (OTP)</FormLabel>
                 <FormControl>
-                <InputOTP maxLength={6}>
+                <InputOTP maxLength={6} {...field}>
                 <InputOTPGroup>
                     <InputOTPSlot className='text-xl size-10' index={0} />
                     <InputOTPSlot className='text-xl size-10' index={1} />

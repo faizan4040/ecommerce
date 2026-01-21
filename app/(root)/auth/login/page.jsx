@@ -25,12 +25,15 @@ import { IoClose } from "react-icons/io5";
 import { zSchema } from "@/lib/zodSchema";
 import ButtonLoading from "@/components/Application/ButtonLoading";
 import { IMAGES } from "@/lib/images";
-import { WEBSITE_REGISTER } from "@/routes/WebsiteRoute";
+import { WEBSITE_REGISTER, WEBSITE_RESETPASSWORD } from "@/routes/WebsiteRoute";
 import axios from "axios";
 import { showToast } from "@/lib/showToast";
 import OTPVerification from "@/components/Application/OTPVerification";
+import { useDispatch } from "react-redux";
+import { login } from "@/store/reducer/authReducer";
 
 const Loginpage = () => {
+  const dispatch = useDispatch()
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [otpVerificationLoading, setotpVerificationLoading] = useState(false);
@@ -43,7 +46,7 @@ const Loginpage = () => {
       password: z.string().min('3', 'password field is required.')
     })
 
-
+ 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,15 +57,15 @@ const Loginpage = () => {
 
   const handleLoginSubmit = async (values) => {
    try {
-         setLoading(true);
-         const { data: registerResponse } = await axios.post("/api/auth/login", values);
-         if (!registerResponse.success) {
-          throw new Error(registerResponse.message);
+         setLoading(true)
+         const { data: loginResponse } = await axios.post("/api/auth/login", values);
+         if (!loginResponse.success) {
+          throw new Error(loginResponse.message);
          }
    
          setOtpEmail(values.email)
          form.reset();
-         showToast('success',registerResponse.message);
+         showToast('success',loginResponse.message);
        } catch (error) {
           showToast('error', error.message || "Registration failed. Please try again.");
        } finally {
@@ -74,17 +77,26 @@ const Loginpage = () => {
      const handleOtpVerification = async (values) =>{
       try {
          setotpVerificationLoading(true);
-         const { data: registerResponse } = await axios.post("/api/auth/verify-otp", values);
-         if (!registerResponse.success) {
-          throw new Error(registerResponse.message);
+         const { data: otpResponse } = await axios.post("/api/auth/verify-otp", values);
+         if (!otpResponse.success) {
+          throw new Error(otpResponse.message);
          }
    
          setOtpEmail('')
-         showToast('success',registerResponse.message);
+         showToast('success', otpResponse.message);
+
+         dispatch(login(otpResponse.data))
+
+         if(searchParams.has('callback')){
+          router.push(searchParams.get('callback'))
+         }else{
+          otpResponse.data.role === 'admin' ? router.push('') : router.push('')
+         }
+
        } catch (error) {
           showToast('error', error.message || "Registration failed. Please try again.");
        } finally {
-         setLoading(false);
+          setotpVerificationLoading(false);
        }
      };
 
@@ -205,7 +217,7 @@ const Loginpage = () => {
                   </p>
 
                   <Link
-                    href="/auth/forget-password"
+                    href={WEBSITE_RESETPASSWORD}
                     className="text-blue-500 hover:underline"
                   >
                     Forget Password?
@@ -216,13 +228,8 @@ const Loginpage = () => {
             </div>
                 </>
                 :
-                
                 <OTPVerification email={otpEmail} onSubmit={handleOtpVerification} loading={otpVerificationLoading}/>
-                
-            
             }
-
-         
           </CardContent>
         </Card>
       </div>
