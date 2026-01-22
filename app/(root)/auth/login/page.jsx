@@ -24,7 +24,7 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { zSchema } from "@/lib/zodSchema";
 import ButtonLoading from "@/components/Application/ButtonLoading";
-import { IMAGES } from "@/lib/images";
+import { IMAGES } from "@/routes/Images";
 import { WEBSITE_REGISTER, WEBSITE_RESETPASSWORD } from "@/routes/WebsiteRoute";
 import axios from "axios";
 import { showToast } from "@/lib/showToast";

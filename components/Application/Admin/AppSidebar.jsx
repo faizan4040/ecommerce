@@ -28,7 +28,7 @@ import { LucideChevronRight } from "lucide-react"
 import { TbLayoutSidebarLeftExpandFilled } from "react-icons/tb";
 
 
-import { IMAGES } from "@/lib/images"
+import { IMAGES } from "@/routes/Images";
 import { adminAppSidebarMenu } from "@/lib/adminSidebarMenu"
 
 const AppSidebar = () => {

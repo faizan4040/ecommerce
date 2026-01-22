@@ -25,9 +25,9 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { zSchema } from "@/lib/zodSchema";
 import ButtonLoading from "@/components/Application/ButtonLoading";
-import { IMAGES } from "@/lib/images";
 import { WEBSITE_LOGIN } from "@/routes/WebsiteRoute";
 import { showToast } from "@/lib/showToast";
+import { IMAGES } from "@/routes/Images";
 
 
 /* --------------------
@@ -85,11 +85,10 @@ const formSchema = zSchema.pick({
       {/* 🔹 Background Blur */}
       <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm" />
 
-      {/* 🔹 Center Modal */}
+
       <div className="fixed inset-0 z-50 flex items-center justify-center">
         <Card className="relative w-120 shadow-2xl">
 
-          {/* ❌ Close Button */}
           <button
             type="button"
             onClick={() => router.back()}

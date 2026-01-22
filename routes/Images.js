@@ -1,0 +1,53 @@
+export const IMAGES = {
+  coupon: "/assets/images/coupon.PNG",
+  logo: "/images/shopping-bag.png",
+
+   
+  // New in Footwear
+  shoes_1: "/assets/images/shoes_1.avif",
+  shoes_2: "/assets/images/shoes_2.avif",
+  shoes_3: "/assets/images/shoes_3.avif",
+  shoes_4: "/assets/images/shoes_4.avif",
+  shoes_5: "/assets/images/shoes_5.avif",
+  shoes_6: "/assets/images/shoes_6.avif",
+  shoes_7: "/assets/images/shoes_7.avif",
+  shoes_8: "/assets/images/shoes_8.avif",
+  shoes_9: "/assets/images/shoes_9.avif",
+  shoes_10: "/assets/images/shoes_10.avif",
+
+  
+
+  // Shopby section image
+  runnin: "/assets/images/running.avif",
+  hike: "/assets/images/hike.avif",
+  hyrox: "/assets/images/hyrox.avif",
+  gym: "/assets/images/gym.avif",
+  marathon: "/assets/images/marathon.avif",
+  trail: "/assets/images/trail.avif",
+  triathlon: "/assets/images/triathlon.avif",
+
+
+
+  // JustDrop section image
+  adidas: "/assets/images/adidas.avif",
+  nike: "/assets/images/nike.avif",
+  brooks: "/assets/images/brooks.avif",
+
+ 
+
+  // Shop section image
+  men: "/assets/images/men.avif",
+  womens: "/assets/images/womens.avif",
+  kids: "/assets/images/kids.avif",
+
+
+  // Trending section image
+  trending_1: "/assets/images/trending_1.avif",
+  trending_2: "/assets/images/trending_2.avif",
+  trending_3: "/assets/images/trending_3.avif",
+
+  
+
+}
+
+
