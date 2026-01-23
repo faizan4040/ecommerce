@@ -28,8 +28,8 @@ import { LucideChevronRight } from "lucide-react"
 import { TbLayoutSidebarLeftExpandFilled } from "react-icons/tb";
 
 
-import { IMAGES } from "@/routes/Images";
 import { adminAppSidebarMenu } from "@/lib/adminSidebarMenu"
+import { IMAGES } from "@/routes/Images"
 
 const AppSidebar = () => {
   const {toggleSidebar} = useSidebar()
@@ -45,7 +45,7 @@ const AppSidebar = () => {
           />
 
           <img
-            src={IMAGES.logoWhite}
+            src={IMAGES.dashboardlogo}
             alt="Logo Dark"
             className="hidden dark:block w-auto h-10"
           />

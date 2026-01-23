@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,15 +25,17 @@ import { IoClose } from "react-icons/io5";
 import { zSchema } from "@/lib/zodSchema";
 import ButtonLoading from "@/components/Application/ButtonLoading";
 import { IMAGES } from "@/routes/Images";
-import { WEBSITE_REGISTER, WEBSITE_RESETPASSWORD } from "@/routes/WebsiteRoute";
+import { USER_DASHBOARD, WEBSITE_REGISTER, WEBSITE_RESETPASSWORD } from "@/routes/WebsiteRoute";
 import axios from "axios";
 import { showToast } from "@/lib/showToast";
 import OTPVerification from "@/components/Application/OTPVerification";
 import { useDispatch } from "react-redux";
 import { login } from "@/store/reducer/authReducer";
+import { ADMIN_DASHBOARD } from "@/routes/AdminPanelRoute";
 
 const Loginpage = () => {
   const dispatch = useDispatch()
+  const searchParams = useSearchParams()
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [otpVerificationLoading, setotpVerificationLoading] = useState(false);
@@ -90,7 +92,7 @@ const Loginpage = () => {
          if(searchParams.has('callback')){
           router.push(searchParams.get('callback'))
          }else{
-          otpResponse.data.role === 'admin' ? router.push('') : router.push('')
+          otpResponse.data.role === 'admin' ? router.push(ADMIN_DASHBOARD) : router.push(USER_DASHBOARD)
          }
 
        } catch (error) {
