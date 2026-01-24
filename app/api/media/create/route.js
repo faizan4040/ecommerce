@@ -9,7 +9,7 @@ export async function POST(request) {
     try{
         const auth = await isAuthenticated('admin')
         if (!auth.isAuth) {
-            return response(false, 401, 'Unauthorized.')
+            return response(false, 403, 'Unauthorized.')
         }
 
         await connectDB()
@@ -17,6 +17,7 @@ export async function POST(request) {
         return response(true, 200, 'Media upload successFully.', newMedia)
 
     } catch (error) {
+
         if(payload && payload.length > 0) {
             const publicIds = payload.map(data => data.public_id)
 

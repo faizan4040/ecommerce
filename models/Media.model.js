@@ -21,7 +21,11 @@ const mediaSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-
+    secure_url:{
+        type: String,
+        required: true,
+        trim: true
+    },
     alt: {
         type: String,
         trim: true
@@ -31,14 +35,14 @@ const mediaSchema = new mongoose.Schema({
         trim: true
     },
     deletedAt:{
-        type: String,
+        type: Date,
         default: null,
         index: true
     },
     
 }, {timestamps: true})
 
-otpSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 })
+
 
 const MediaModel = mongoose.models.Media || mongoose.model('Media', mediaSchema, 'media')
 
