@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { WEBSITE_LOGIN } from '@/routes/WebsiteRoute';
+import { logout } from '@/store/reducer/authReducer';
 
 
 
@@ -31,7 +32,7 @@ const LogoutButton = () => {
 
   return (
     <DropdownMenuItem onClick={handleLogout} className='cursor-pointer'>
-      <RiLogoutCircleRLine/>
+      <RiLogoutCircleRLine color='red'/>
        Logout
     </DropdownMenuItem>
   )
