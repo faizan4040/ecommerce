@@ -1,6 +1,7 @@
+import { isAuthenticated } from "@/lib/authentication";
 import cloudinary from "@/lib/cloudinary";
 import connectDB from "@/lib/databaseConnection";
-import { catchError, isAuthenticated, response } from "@/lib/helperfunction";
+import { catchError, response } from "@/lib/helperfunction";
 import MediaModel from "@/models/Media.model";
 import mongoose from "mongoose";
 
@@ -98,7 +99,7 @@ export async function DELETE(request) {
             await session.commitTransaction()
             session.endSession()
 
-            return response(true, 200, 'Data deleted permently')
+            return response(true, 200, 'Data deleted permanently')
 
     } catch (error) {
           await session.abortTransaction()

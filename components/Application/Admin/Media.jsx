@@ -85,7 +85,7 @@ const Media = ({
                    </DropdownMenuItem>
                </>
              }
-                  <DropdownMenuItem className='cursor-pointer'>
+                  <DropdownMenuItem className='cursor-pointer' onClick={() => handleDelete([media._id], deleteType)}>
                           <MdDelete />
                           {deleteType === 'SD' ? 'Move Info Trash' : 'Delete Permenently'}
                    </DropdownMenuItem>

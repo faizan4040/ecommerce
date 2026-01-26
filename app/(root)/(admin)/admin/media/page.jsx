@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import useDeleteMutation from '@/hooks/useDeleteMutation'
 import { ADMIN_DASHBOARD, ADMIN_MEDIA_SHOW } from '@/routes/AdminPanelRoute'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
@@ -21,7 +21,7 @@ const breadcrumbData = [
 ]
 
 const MediaPage = () => {
-
+  const queryClient = useQueryClient()
   const [deleteType, setDeleteType] = useState('SD')
   const [selectedMedia, setSelectedMedia] = useState([])
   const [selectAll, setSelectAll] = useState(false)
@@ -45,7 +45,6 @@ const fetchMedia = async (page, deleteType) => {
   const { data: response } = await axios.get(
     `/api/media?page=${page}&&limit=10&&deleteType=${deleteType}`
   )
-  console.log(response)
   return response
 }
 
@@ -71,13 +70,13 @@ const fetchMedia = async (page, deleteType) => {
   
   const deleteMutation = useDeleteMutation('media-data', '/api/media/delete')
 
-  const handleDelete = (selectedMedia, deleteType) => {
+  const handleDelete = (ids, deleteType) => {
     let c = true
     if (deleteType === 'PD') {
       c = confirm('Are you sure you want to delete the data permanently?')
     } 
      if(c){
-      deleteMutation.mutate({ selectedMedia, deleteType })
+      deleteMutation.mutate({ ids, deleteType })
      }
      setSelectAll(false)
      setSelectedMedia([])
@@ -102,6 +101,7 @@ const fetchMedia = async (page, deleteType) => {
   return (
     <div>
      <BreadCrumb breadcrumbData={breadcrumbData}/>
+     <div className='py-4'>
      <Card className="py-0 rounded shadow-sm ">
      <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
     <div className="flex flex-wrap items-center justify-between gap-3">
@@ -111,8 +111,10 @@ const fetchMedia = async (page, deleteType) => {
 
       </h1>
 
+
+   {/* multiple image selection uploade */}
       <div className="flex items-center gap-5">
-        {deleteType === 'SD' && <UploadMedia />}
+        {deleteType === 'SD' && <UploadMedia isMultiple={true} queryClient={queryClient}/>}
         <div className='flex gap-3'>
           {deleteType === 'SD' ? 
             <Button type='button' variant='destructive'>
@@ -179,28 +181,38 @@ const fetchMedia = async (page, deleteType) => {
         {error.message}
       </div>
       :
-      <div className='grid lg:grid-cols-5 sm:grid-cols-3 grid-cols-2 gap-2 mb-5'>
-          {
-            data?.pages?.map((page, index) => (
-              <React.Fragment key={index}>
-                {page?.mediaData?.map((media) => (
-                  <Media
-                    key={media._id}
-                    media={media}
-                    handleDelete={handleDelete}
-                    deleteType={deleteType}
-                    selectedMedia={selectedMedia}
-                    setSelectedMedia={setSelectedMedia}
-                  />
-                ))}
-              </React.Fragment>
-            ))
-          }
-      </div>
+      <>
+          {data.pages.flatMap(page => page.mediaData.map(media => media._id)).length === 0 && 
+          <div>Data not fount</div>}
+          
+          <div className='grid lg:grid-cols-5 sm:grid-cols-3 grid-cols-2 gap-2 mb-5'>
+              {
+                data?.pages?.map((page, index) => (
+                  <React.Fragment key={index}>
+                    {page?.mediaData?.map((media) => (
+                      <Media
+                        key={media._id}
+                        media={media}
+                        handleDelete={handleDelete}
+                        deleteType={deleteType}
+                        selectedMedia={selectedMedia}
+                        setSelectedMedia={setSelectedMedia}
+                      />
+                    ))}
+                  </React.Fragment>
+                ))
+              }
+          </div>
+      </>
+    }
+
+    {hasNextPage && 
+    <Button type="button" className='cursor-pointer' loading={isFetching} onClick={() => fetchNextPage()} text="Load More"/>
     }
 
   </CardContent>
-</Card>
+     </Card>
+     </div>
 
     </div>
   )

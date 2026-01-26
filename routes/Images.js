@@ -2,6 +2,7 @@ export const IMAGES = {
   coupon: "/assets/images/coupon.PNG",
   logo: "/assets/images/shopping-bag.png",
   dashboardlogo:"/assets/images/dashboardlogo.png", 
+  image_placeholder: "/assets/images/image_placeholder.webp",
 
    
   // New in Footwear

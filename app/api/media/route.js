@@ -1,5 +1,6 @@
+import { isAuthenticated } from "@/lib/authentication";
 import connectDB from "@/lib/databaseConnection";
-import { isAuthenticated, response } from "@/lib/helperfunction";
+import { catchError, response } from "@/lib/helperfunction";
 import MediaModel from "@/models/Media.model";
 import { NextResponse } from "next/server";
 
@@ -41,7 +42,8 @@ export async function GET(request){
        })
 
     } catch(error){
-       console.error("MEDIA GET ERROR:", error)
+      //  console.error("MEDIA GET ERROR:", error)
+       return catchError(error)
        return response(false, 500, "Internal Server Error")
     }
 }
