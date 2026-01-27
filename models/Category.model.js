@@ -1,6 +1,11 @@
 import mongoose from "mongoose"
 
 const categorySchema = new mongoose.Schema({
+    image: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Media',
+        required: true, 
+    },
     name:{
         type: String,
         required: true,

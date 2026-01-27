@@ -8,8 +8,10 @@ import { Input } from '@/components/ui/input'
 import { showToast } from '@/lib/showToast'
 import { zSchema } from '@/lib/zodSchema'
 import { ADMIN_CATEGORY_SHOW, ADMIN_DASHBOARD } from '@/routes/AdminPanelRoute'
+import { IMAGES } from '@/routes/Images'
 import { zodResolver } from '@hookform/resolvers/zod'
 import axios from 'axios'
+import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import slugify from 'slugify'
@@ -77,6 +79,15 @@ const breadcrumbData = [
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-6"
                 >
+                  <div className='mb-5'>
+                    <Image
+                      src={ IMAGES.image_placeholder}
+                      width={200}
+                      height={200}
+                      alt={'Image'}
+                    />
+                  </div>
+
                 <div className='mb-5'>
                 <FormField
                     control={form.control}
