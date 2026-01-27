@@ -133,4 +133,4 @@ const breadcrumbData = [
   )
 }
 
-export default AddCategory
+export default AddCategory  

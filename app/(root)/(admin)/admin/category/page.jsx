@@ -38,7 +38,7 @@ const breadcrumbData = [
         <BreadCrumb breadcrumbData={breadcrumbData}/>
 
         <div className='py-4'>
-        <Card className="py-0 rounded shadow-sm ">
+        <Card className="py-0 rounded shadow-sm gap-0">
         <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
         <div className='flex justify-between items-center'>
           <h4 className='text-xl font-semibold'>Show Category</h4>
@@ -50,7 +50,7 @@ const breadcrumbData = [
 
         </div>
         </CardHeader>
-        <CardContent className='pb-5'>
+        <CardContent className='pb-5 px-0'>
            <DatatableWrapper
             querykey="category-data"
             fetchUrl="/api/category"

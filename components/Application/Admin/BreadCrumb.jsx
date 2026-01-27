@@ -25,7 +25,7 @@ const BreadCrumb = ({ breadcrumbData }) => {
             :
             <div key={index} className='flex items-center'>
                  <BreadcrumbItem>
-                   <BreadcrumbLink href={data.href}>{data.label}</BreadcrumbLink>
+                   <BreadcrumbLink className="font-semibold" href={data.href}>{data.label}</BreadcrumbLink>
                 </BreadcrumbItem>
             </div>
         )

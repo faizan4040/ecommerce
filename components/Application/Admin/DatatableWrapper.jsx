@@ -29,15 +29,15 @@ const DatatableWrapper = ({
   return (
      <ThemeProvider theme={resolvedTheme === 'dark' ? darkTheme : lightTheme}>
         <Datatable
-        querykey={querykey}
-        fetchUrl={fetchUrl}
-        columnsConfig={columnsConfig}
-        initialPageSize={initialPageSize}
-        exportEndpoint={exportEndpoint}
-        deleteEndpoint={deleteEndpoint}
-        deleteType={deleteType}
-        trashView={trashView}
-        createAction={createAction}
+          querykey={querykey}
+          fetchUrl={fetchUrl}
+          columnsConfig={columnsConfig}
+          initialPageSize={initialPageSize}
+          exportEndpoint={exportEndpoint}
+          deleteEndpoint={deleteEndpoint}
+          deleteType={deleteType}
+          trashView={trashView}
+          createAction={createAction}
         />
      </ThemeProvider>
 

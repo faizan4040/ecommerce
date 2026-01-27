@@ -1,20 +1,19 @@
 import mongoose from "mongoose"
-import { lowercase } from "zod"
 
 const categorySchema = new mongoose.Schema({
     name:{
         type: String,
         required: true,
-        unique: true
+        unique: true,
     },
     slug: {
         type: String,
         required: true,
         unique: true,
         lowercase: true,
-        trime: true,
+        trim: true,
     },
-    deleteAt: {
+    deletedAt: {
         type: Date,
         default: null,
         index: true

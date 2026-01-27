@@ -64,7 +64,6 @@ const Datatable = ({
       c = confirm('Are you sure you want to delete the data permanently?')
     } else{
       c = confirm('Are you sure you want to move data into trash?')
-
     }
      if(c){
       deleteMutation.mutate({ ids, deleteType })
@@ -91,7 +90,7 @@ const Datatable = ({
             csv = generateCsv(csvConfig)(rowData)
         }else{
             //export all data
-            const {data: response} = await axios.get(exportEndpoint)
+            const { data: response } = await axios.get(exportEndpoint)
             if(!response.success){
                 throw new Error(response.message)
             }
@@ -122,18 +121,17 @@ const Datatable = ({
     } = useQuery({
         queryKey: [querykey, { columnFilters, globalFilter, pagination, sorting }],
         queryFn: async () => {
-            const url = new URL(fetchUrl, process.env.SPORT_SHOES_WEBSITE_URL)
+            const url = new URL(fetchUrl, process.env.NEXT_PUBLIC_BASE_URL)
             url.searchParams.set(
-        'start',
-        `${pagination.pageIndex * pagination.pageSize}`,
+            'start',
+            `${pagination.pageIndex * pagination.pageSize}`,
       );
       url.searchParams.set('size', `${pagination.pageSize}`);
       url.searchParams.set('filters', JSON.stringify(columnFilters ?? []));
       url.searchParams.set('globalFilter', globalFilter ?? '');
       url.searchParams.set('sorting', JSON.stringify(sorting ?? []));
-      if (deleteType && deleteType !== 'ALL') {
-        url.searchParams.set('deleteType', deleteType);
-        }
+      url.searchParams.set('deleteType', deleteType);
+
           
           const { data: response } = await axios.get(url.href)
           return response
@@ -170,14 +168,14 @@ const Datatable = ({
         rowCount: meta?.totalRowCount ?? 0,
         onRowSelectionChange: setRowSelection,
         state: {
-        columnFilters,
-        globalFilter,
-        isLoading,
-        pagination,
-        showAlertBanner: isError,
-        showProgressBars: isRefetching,
-        sorting,
-        rowSelection
+            columnFilters,
+            globalFilter,
+            isLoading,
+            pagination,
+            showAlertBanner: isError,
+            showProgressBars: isRefetching,
+            sorting,
+            rowSelection
         },
 
         getRowId: (originalRow) => originalRow._id,
@@ -236,17 +234,18 @@ const Datatable = ({
             </>
         ),
 
-        enableRowSelections: true,
-        positionActionColumn: 'last',
+        enableRowActions: true,
+        positionActionsColumn: 'last',
         renderRowActionMenuItems: ({row}) => createAction(row, deleteType, handleDelete),
 
         renderTopToolbarCustomActions: ({table}) => (
             <Tooltip>
                 <ButtonLoading 
                  type='button'
-                 text={<><SaveAltIcon/>Export</>}
+                 text={<><SaveAltIcon fontSize='25'/>Export</>}
                  loading={exportLoading}
                  onClick={() => handleExport(table.getSelectedRowModel().rows)}
+                 className='cursor-pointer'
                 />
             </Tooltip>
         )
