@@ -16,13 +16,13 @@ const layout = ({ children }) => {
         <SidebarProvider>
         <div className="flex min-h-screen w-full">
           <AppSidebar />
-          <main className="flex-1 bg-stone-100 dark:bg-stone-900">
+          <main className="flex-1 bg-[#f9f7f7] dark:bg-stone-900">
             <div className="pt-17.5 px-4 md:px-8 min-h-[calc(100vh-40px)] pb-10">
               <Topbar />
               {children}
             </div>
 
-            <div className="border-t h-10 flex justify-center items-center text-sm bg-stone-100 dark:bg-black">
+            <div className="border-t h-10 flex justify-center items-center text-sm bg-[#f9f7f7] dark:bg-black">
               © 2026 Brand Name. All Rights Reserved.
             </div>
           </main>

@@ -68,7 +68,7 @@ const breadcrumbData = [
     <div>
         <BreadCrumb breadcrumbData={breadcrumbData}/>
         <div className='py-4'>
-        <Card className="py-0 rounded shadow-sm ">
+        <Card className="py-0 rounded-3xl shadow-sm ">
         <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
         <h4 className='text-xl font-semibold'>Add Category</h4>
         </CardHeader>
@@ -131,8 +131,8 @@ const breadcrumbData = [
                 <ButtonLoading
                     loading={loading}
                     type="submit"
-                    text="Add Category"
-                    className=" bg-black cursor-pointer text-white"
+                    text="+ Add Category"
+                    className=" bg-[#fff0ea] cursor-pointer text-orange-400 font-mono hover:bg-orange-500 hover:text-white"
                 />
                 </form>
             </Form>

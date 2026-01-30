@@ -4,7 +4,7 @@ import BreadCrumb from '@/components/Application/Admin/BreadCrumb'
 import DatatableWrapper from '@/components/Application/Admin/DatatableWrapper'
 import DeleteAction from '@/components/Application/Admin/DeleteAction'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { DT_CATEGORY_COLUMN } from '@/lib/column'
+import { DT_CATEGORY_COLUMN, DT_PRODUCT_COLUMN } from '@/lib/column'
 import { columnConfig } from '@/lib/helperfunction'
 import {  ADMIN_DASHBOARD, ADMIN_TRASH } from '@/routes/AdminPanelRoute'
 import { useSearchParams } from 'next/navigation'
@@ -22,6 +22,14 @@ const TRASH_CONFIG = {
     fetchUrl: '/api/category',
     exportUrl: 'api/category/export',
     deleteUrl: 'api/category/delete',
+  },
+
+    product:  {
+    title: 'Product Trash',
+    columns: DT_PRODUCT_COLUMN,
+    fetchUrl: '/api/product',
+    exportUrl: 'api/product/export',
+    deleteUrl: 'api/product/delete',
   }
 }
 
@@ -48,7 +56,7 @@ const TRASH_CONFIG = {
         <BreadCrumb breadcrumbData={breadcrumbData}/>
 
         <div className='py-4'>
-        <Card className="py-0 rounded shadow-sm gap-0">
+        <Card className="py-0 rounded-3xl max-w-302.5 shadow-sm gap-0">
         <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
         <div className='flex justify-between items-center'>
          <h4 className='text-xl font-semibold'>{config.title}</h4>

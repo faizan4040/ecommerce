@@ -102,7 +102,7 @@ const fetchMedia = async (page, deleteType) => {
     <div>
      <BreadCrumb breadcrumbData={breadcrumbData}/>
      <div className='py-4'>
-     <Card className="py-0 rounded shadow-sm ">
+     <Card className="py-0 rounded-3xl shadow-sm ">
      <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
     <div className="flex flex-wrap items-center justify-between gap-3">
       <h1 className="font-semibold text-xl uppercase">
@@ -117,7 +117,7 @@ const fetchMedia = async (page, deleteType) => {
         {deleteType === 'SD' && <UploadMedia isMultiple={true} queryClient={queryClient}/>}
         <div className='flex gap-3'>
           {deleteType === 'SD' ? 
-            <Button type='button' variant='destructive'>
+            <Button type='button' variant='destructive' className='bg-orange-500 cursor-pointer text-white font-mono hover:text-white'>
                <Link href={`${ADMIN_MEDIA_SHOW}?trashof=media`}>
                 Trans
                </Link>
@@ -139,12 +139,12 @@ const fetchMedia = async (page, deleteType) => {
 
     {selectedMedia.length > 0 
     && (
-      <div className="py-2 px-3 bg-violet-200 mb-2 rounded flex justify-between items-center">
+      <div className="py-2 px-3 bg-orange-100 mb-2 rounded flex justify-between items-center">
         <Label className="flex items-center gap-2">
           <Checkbox
             checked={selectAll}
             onCheckedChange={handleSelectAll}
-            className='border-primary'
+            className='border-primary '
           />
           Select All
         </Label>
@@ -152,7 +152,7 @@ const fetchMedia = async (page, deleteType) => {
         <div className='flex gap-2'>
           {deleteType === 'SD'
           ? 
-          <Button variant='destructive' onClick={()=> handleDelete(selectedMedia, deleteType)}>
+          <Button variant='destructive' onClick={()=> handleDelete(selectedMedia, deleteType)} className='bg-orange-500 cursor-pointer text-white font-mono hover:text-white'>
             Move Into Trash
           </Button>
           :

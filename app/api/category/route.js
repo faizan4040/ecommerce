@@ -4,6 +4,7 @@ import { catchError, response } from "@/lib/helperfunction";
 import CategoryModel from "@/models/Category.model";
 import { NextResponse } from "next/server";
 
+
 export async function GET(request) {
   try {
     const auth = await isAuthenticated("admin");
@@ -13,7 +14,7 @@ export async function GET(request) {
 
     await connectDB();
 
-    // ✅ FIXED searchParams
+    // FIXED searchParams
     const { searchParams } = new URL(request.url);
 
     const start = parseInt(searchParams.get("start") || "0", 10);
@@ -76,6 +77,7 @@ export async function GET(request) {
     const totalRowCount = await CategoryModel.countDocuments(matchQuery);
 
     return NextResponse.json({
+      success: true,
       data,
       meta: { totalRowCount },
     });

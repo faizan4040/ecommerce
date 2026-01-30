@@ -88,7 +88,7 @@ const breadCrumbData = [
     <div>
       <BreadCrumb breadcrumbData={breadCrumbData}/>
       <div className='py-4'>
-         <Card className="py-0 rounded shadow-sm ">
+         <Card className="py-0 rounded-3xl shadow-sm ">
            <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
            <h4 className='text-xl font-semibold'>Edit Media</h4>
         </CardHeader>
@@ -105,6 +105,7 @@ const breadCrumbData = [
                    width={200}
                    height={200}
                    alt={mediaData?.alt || 'Image'}
+                   className='rounded-3xl'
                   />
                 </div>
 
@@ -153,7 +154,7 @@ const breadCrumbData = [
                   loading={loading}
                   type="submit"
                   text="Update Media"
-                  className=" bg-black cursor-pointer text-white"
+                  className="bg-[#fff0ea] cursor-pointer text-orange-400 font-mono hover:bg-orange-500 hover:text-white"
                 />
 
                 

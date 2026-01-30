@@ -17,7 +17,7 @@ const Topbar = () => {
       className="
         fixed top-0 left-0 z-30 h-14 w-full
         flex items-center justify-between
-        border bg-stone-100 dark:bg-card
+        border bg-[#f9f7f7] dark:bg-card
         px-5 md:ps-72 md:pe-8
       "
     >

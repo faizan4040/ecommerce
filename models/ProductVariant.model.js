@@ -1,24 +1,21 @@
 import mongoose from "mongoose"
 
-const productSchema = new mongoose.Schema({
-    name:{
+const ProductVariantSchema = new mongoose.Schema({
+    product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+        required: true,
+    },
+    color:{
         type: String,
         required: true,
         trim: true,
     },
 
-    slug: {
+    size: {
         type: String,
         required: true,
-        unique: true,
-        lowercase: true,
         trim: true,
-    },
-
-    category:{
-       type: mongoose.Schema.Types.ObjectId,
-       ref: 'Category',
-       required: true
     },
 
     mrp: {
@@ -36,6 +33,12 @@ const productSchema = new mongoose.Schema({
         required: true,
     },
 
+    sku: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+
     media: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -43,11 +46,6 @@ const productSchema = new mongoose.Schema({
             required: true
         },
     ],
-
-    description: {
-        type: String,
-        required: true
-    },
 
     deletedAt: {
         type: Date,
@@ -58,8 +56,9 @@ const productSchema = new mongoose.Schema({
 }, {timestamps: true})
 
 
-productSchema.index({ category: 1 })
-const ProductModel = mongoose.models.Product || mongoose.model('Product', 
-productSchema, 'products')
-export default ProductModel
+
+const ProductVariantModel = mongoose.models.ProductVariant || mongoose.model
+('ProductVariant', ProductVariantSchema, 'Productvariant');
+
+export default ProductVariantModel;
 

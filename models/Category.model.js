@@ -1,11 +1,7 @@
 import mongoose from "mongoose"
 
 const categorySchema = new mongoose.Schema({
-    image: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Media',
-        required: true, 
-    },
+ 
     name:{
         type: String,
         required: true,
@@ -23,6 +19,13 @@ const categorySchema = new mongoose.Schema({
         default: null,
         index: true
     },
+    // media: [
+    //     {
+    //         type: mongoose.Schema.Types.ObjectId,
+    //         ref: "Media",
+    //         required: true
+    //     },
+    // ],
 
 }, {timestamps: true})
 
