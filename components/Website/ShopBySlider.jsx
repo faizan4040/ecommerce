@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 import { IMAGES } from "@/routes/Images"
 
 const categories = [
-  { id: 1, title: "Running", image: IMAGES. runnin },
+  { id: 1, title: "Running", image: IMAGES.runnin },
   { id: 2, title: "Hike", image: IMAGES.hike },
   { id: 3, title: "Trail", image: IMAGES.trail },
   { id: 4, title: "hike", image: IMAGES.hyrox },

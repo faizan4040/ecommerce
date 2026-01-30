@@ -1,7 +1,6 @@
 'use client'
 
 import BreadCrumb from '@/components/Application/Admin/BreadCrumb'
-import Editor from '@/components/Application/Admin/Editor'
 import MediaModal from '@/components/Application/Admin/MediaModal'
 import ButtonLoading from '@/components/Application/ButtonLoading'
 import Select from '@/components/Application/Select'
@@ -18,7 +17,7 @@ import axios from 'axios'
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import slugify from 'slugify'
+
 
 const breadcrumbData = [
   {href: ADMIN_DASHBOARD, label: 'Home'},
@@ -356,45 +355,53 @@ const breadcrumbData = [
 
           {/* Remove button */}
           <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation()
-              setSelectedMedia(prev =>
-                prev.filter(item => item._id !== media._id)
-              )
-            }}
-            className="
-              absolute top-2 right-2
-              rounded-full
-              bg-black/60
-              p-1
-              text-white
-              opacity-0
-              transition
-              group-hover:opacity-100
-            "
-          >
-            ✕
-          </button>
-        </div>
-      ))}
-    </div>
-  )}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                setSelectedMedia(prev =>
+                  prev.filter(item => item._id !== media._id)
+                )
+              }}
+              className="
+                absolute top-2 right-2
+                flex h-7 w-7 items-center justify-center
+                rounded-full
+                bg-black/60
+                text-white
+                text-sm
+                font-bold
+                leading-none
+                opacity-0
+                backdrop-blur
+                transition-all
+                group-hover:opacity-100
+                hover:bg-red-500
+                hover:scale-105
+                cursor-pointer
+              "
+            >
+              ×
+            </button>
 
-</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+            </div>
 
 
-</div>
+          </div>
 
-{/* ===== Submit ===== */}
-<ButtonLoading
-  loading={loading}
-  type="submit"
-  text="+ Add Product Variant"
-  className="bg-[#fff0ea] text-orange-400 hover:bg-orange-500 hover:text-white"
-/>
+          {/* ===== Submit ===== */}
+          <ButtonLoading
+            loading={loading}
+            type="submit"
+            text="+ Add Product Variant"
+            className="bg-[#fff0ea] text-orange-400 hover:bg-orange-500 hover:text-white"
+          />
 
-</form>
+          </form>
 
                 </Form>
             </div>

@@ -298,12 +298,125 @@ const breadcrumbData = [
               </div>
             )}
 
-            <div
+            {/* <div
               onClick={() => setOpen(true)}
               className="bg-gray-50 dark:bg-card border w-fit mx-auto px-6 py-3 cursor-pointer rounded"
             >
               <span className="font-semibold">Selected Media</span>
+            </div> */}
+
+
+
+            <div className="
+            mt-6
+            w-full
+            rounded-2xl
+            border border-gray-200 dark:border-gray-700
+            bg-white dark:bg-background
+            p-4
+            shadow-sm
+          ">
+
+            {/* Upload Area */}
+            <div
+              onClick={() => setOpen(true)}
+              className="
+                cursor-pointer
+                rounded-xl
+                border-2 border-dashed border-gray-300
+                bg-gray-50 dark:bg-card
+                p-6
+                text-center
+                transition
+                hover:border-orange-400
+                hover:bg-orange-50
+              "
+            >
+              <div className="flex flex-col items-center gap-2">
+                <div className="rounded-full bg-orange-100 p-3">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6 text-orange-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 12v9m0-9l-3 3m3-3l3 3m0-12a4 4 0 00-8 0"
+                    />
+                  </svg>
+                </div>
+
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Click to upload or select media
+                </p>
+                <p className="text-xs text-gray-500">
+                  JPG, PNG, WEBP • Max 5 images
+                </p>
+              </div>
             </div>
+
+            {/* Selected Images Preview */}
+            {selectedMedia.length > 0 && (
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {selectedMedia.map((media) => (
+                  <div
+                    key={media._id}
+                    className="
+                      group
+                      relative
+                      aspect-square
+                      overflow-hidden
+                      rounded-xl
+                      border
+                      bg-white
+                      shadow-sm
+                    "
+                  >
+                    <Image
+                      src={media.url}
+                      alt=""
+                      fill
+                      className="object-cover transition-transform group-hover:scale-105"
+                    />
+
+                    {/* Remove button */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setSelectedMedia(prev =>
+                            prev.filter(item => item._id !== media._id)
+                          )
+                        }}
+                        className="
+                          absolute top-2 right-2
+                          flex h-7 w-7 items-center justify-center
+                          rounded-full
+                          bg-black/60
+                          text-sm
+                          font-bold
+                          leading-none
+                          text-white
+                          opacity-0
+                          transition
+                          group-hover:opacity-100
+                          cursor-pointer
+                        "
+                      >
+                        ×
+                      </button>
+
+                  </div>
+                ))}
+              </div>
+            )}
+
+          </div>
+
           </div>
 
 

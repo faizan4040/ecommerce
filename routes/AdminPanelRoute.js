@@ -18,11 +18,21 @@ export const ADMIN_PRODUCT_SHOW = '/admin/product'
 export const ADMIN_PRODUCT_EDIT = (id) => id ? `/admin/product/edit/${id}` : ''
 
 
-// Product routes
+// Product Variant routes
 export const ADMIN_PRODUCT_VARIANT_ADD = '/admin/product-variant/add'
 export const ADMIN_PRODUCT_VARIANT_SHOW = '/admin/product-variant'
 export const ADMIN_PRODUCT_VARIANT_EDIT = (id) => id ? `/admin/product-variant/edit/${id}` : ''
 
+
+// Coupon routes
+export const ADMIN_COUPON_ADD = '/admin/coupon/add'
+export const ADMIN_COUPON_SHOW = '/admin/coupon'
+export const ADMIN_COUPON_EDIT = (id) => id ? `/admin/coupon/edit/${id}` : ''
+
+
+
+// Customers route
+export const ADMIN_CUSTOMERS_SHOW = '/admin/customers'
 
 // Trash route
 export const ADMIN_TRASH = '/admin/trash'

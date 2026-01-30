@@ -4,7 +4,7 @@ import BreadCrumb from '@/components/Application/Admin/BreadCrumb'
 import DatatableWrapper from '@/components/Application/Admin/DatatableWrapper'
 import DeleteAction from '@/components/Application/Admin/DeleteAction'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { DT_CATEGORY_COLUMN, DT_PRODUCT_COLUMN } from '@/lib/column'
+import { DT_CATEGORY_COLUMN, DT_COUPON_COLUMN, DT_PRODUCT_COLUMN } from '@/lib/column'
 import { columnConfig } from '@/lib/helperfunction'
 import {  ADMIN_DASHBOARD, ADMIN_TRASH } from '@/routes/AdminPanelRoute'
 import { useSearchParams } from 'next/navigation'
@@ -20,16 +20,32 @@ const TRASH_CONFIG = {
     title: 'Category Trash',
     columns: DT_CATEGORY_COLUMN,
     fetchUrl: '/api/category',
-    exportUrl: 'api/category/export',
-    deleteUrl: 'api/category/delete',
+    exportUrl: '/api/category/export',
+    deleteUrl: '/api/category/delete',
   },
 
-    product:  {
+  product:  {
     title: 'Product Trash',
     columns: DT_PRODUCT_COLUMN,
     fetchUrl: '/api/product',
-    exportUrl: 'api/product/export',
-    deleteUrl: 'api/product/delete',
+    exportUrl: '/api/product/export',
+    deleteUrl: '/api/product/delete',
+  },
+
+  coupon:  {
+    title: 'Coupon Trash',
+    columns: DT_COUPON_COLUMN,
+    fetchUrl: '/api/coupon',
+    exportUrl: '/api/coupon/export',
+    deleteUrl: '/api/coupon/delete',
+  },
+  
+  customers:  {
+    title: 'Customers Trash',
+    columns: DT_COUPON_COLUMN,
+    fetchUrl: '/api/customers',
+    exportUrl: '/api/customers/export',
+    deleteUrl: '/api/customers/delete',
   }
 }
 
