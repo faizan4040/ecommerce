@@ -1,8 +1,7 @@
 import { isAuthenticated } from "@/lib/authentication";
 import connectDB from "@/lib/databaseConnection";
 import { catchError, response } from "@/lib/helperfunction";
-import ProductVariantModel from "@/models/ProductVariant.model";
-
+import ReviewModel from "@/models/Review.model";
 
 
 export async function GET(request) {
@@ -14,17 +13,18 @@ export async function GET(request) {
 
         await connectDB()
 
+    
         const filter = {
               deletedAt: null
         }
 
-        const getProductVariant = await ProductVariantModel.find(filter).select('-media -description').sort({ createdAt: -1 }).lean()
+        const getReview = await ReviewModel.find(filter).select('-media -description').sort({ createdAt: -1 }).lean()
         
-        if(!getProductVariant) {
+        if(!getReview) {
             return response(false, 404, "Collection empty.")
         }
 
-        return response(true, 200, "Unauthorized.", getProductVariant)
+        return response(true, 200, "Unauthorized.", getReview)
         
     } catch(error){
         return catchError(error)

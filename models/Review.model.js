@@ -1,27 +1,31 @@
 import mongoose from "mongoose";
 
-const reviewSchema = new mongoose.Schema(
-  {
-    code: {
+const reviewSchema = new mongoose.Schema({
+    
+    product: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product',
+      required: true,
+    },
+
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+
+    rating: {
+      type: Number,
+      required: true,
+    },
+
+    title: {
       type: String,
       required: true,
-      unique: true,
-      trim: true,
-      uppercase: true,
     },
 
-    discountPercentage: {
-      type: Number,
-      required: true,
-    },
-
-    minShoppingAmount: {
-      type: Number,
-      required: true,
-    },
-
-    validity: {
-      type: Date,
+    review: {
+      type: String,
       required: true,
     },
 
@@ -31,6 +35,7 @@ const reviewSchema = new mongoose.Schema(
       index: true,
     },
   },
+  
   { timestamps: true }
 );
 

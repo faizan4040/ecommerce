@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { useSidebar } from '@/components/ui/sidebar'
 import { BsBlockquoteLeft } from "react-icons/bs"
 import { Search } from "lucide-react"
+import AdminSearch from './AdminSearch'
 
 const Topbar = () => {
   const { toggleSidebar } = useSidebar()
@@ -23,31 +24,7 @@ const Topbar = () => {
     >
       {/* 🔍 Search Bar */}
       <div className="relative flex-1 max-w-md">
-        <div
-          className={`
-            flex items-center gap-2 rounded-md border
-            bg-white dark:bg-background
-            px-3 py-1.5
-            transition-all duration-300
-            ${showSearch ? "w-full" : "w-10 md:w-full"}
-          `}
-        >
-          <Search
-            size={18}
-            className="cursor-pointer text-muted-foreground"
-            onClick={() => setShowSearch(true)}
-          />
-          <input
-            type="text"
-            placeholder="Search orders, users, products..."
-            className={`
-              w-full bg-transparent text-sm outline-none
-              placeholder:text-muted-foreground
-              ${showSearch ? "block" : "hidden md:block"}
-            `}
-            onBlur={() => setShowSearch(false)}
-          />
-        </div>
+      <AdminSearch/>
       </div>
 
       {/* Right actions */}

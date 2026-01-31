@@ -19,7 +19,7 @@ export async function GET(request) {
               deletedAt: null
         }
 
-        const getCoupon = await UserModel.find().select('-media -description').sort({ createdAt: -1 }).lean()
+        const getCoupon = await UserModel.find(filter).select('-media -description').sort({ createdAt: -1 }).lean()
         
         if(!getCoupon) {
             return response(false, 404, "Collection empty.")

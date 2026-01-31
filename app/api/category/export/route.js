@@ -21,7 +21,7 @@ export async function GET(request) {
               deletedAt: null
         }
 
-        const getCategory = await CategoryModel.find().sort({ createdAt: -1 }).lean()
+        const getCategory = await CategoryModel.find(filter).sort({ createdAt: -1 }).lean()
         
         if(!getCategory) {
             return response(false, 404, "Collection empty.")
