@@ -1,6 +1,6 @@
 export const IMAGES = {
   coupon: "/assets/images/coupon.PNG",
-  logo: "/assets/images/shopping-bag.png",
+  logo: "/assets/images/logo.webp",
   dashboardlogo:"/assets/images/dashboardlogo.png", 
   image_placeholder: "/assets/images/image_placeholder.webp",
   profile: "/assets/images/profile.jpg",

@@ -21,7 +21,7 @@ const LatestOrder = () => {
       {/* CARD HEADER */}
       <CardHeader className="px-6 py-4 border-b">
         <CardTitle className="text-lg font-semibold">
-          Latest Orders
+          Recent Orders
         </CardTitle>
       </CardHeader>
 

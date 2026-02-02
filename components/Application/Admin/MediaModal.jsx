@@ -3,9 +3,9 @@ import axios from 'axios'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
-import loading from '@/public/assets/images/logo.png'
 import ModalMediaBlock from './ModalMediaBlock'
 import { showToast } from '@/lib/showToast'
+import { IMAGES } from '@/routes/Images'
 
 
 const MediaModal = ({open, setOpen, selectedMedia, setSelectedMedia, isMultiple }) => {
@@ -69,7 +69,7 @@ const handleSelect = () => {
                     <div className="h-[calc(100%-80px)] overflow-auto py-2">
                     {isPending ? (
                         <div className="h-full flex justify-center items-center">
-                        <Image src={loading} alt="loading" height={80} width={80} />
+                        <img src={IMAGES.logo} alt="loading" height={80} width={80} />
                         </div>
                     ) : isError ? (
                         <div className="h-full flex justify-center items-center">

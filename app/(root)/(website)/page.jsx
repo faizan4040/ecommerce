@@ -1,4 +1,5 @@
 import CuponBanner from '@/components/Website/CuponBanner'
+import FeatureProduct from '@/components/Website/FeatureProduct'
 import JustDropped from '@/components/Website/JustDropped'
 import ProductInfo from '@/components/Website/ProductInfo'
 import ProductSlider from '@/components/Website/ProductSlider'
@@ -20,6 +21,11 @@ const Home = () => {
      <section className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] py-10">
        <ProductSlider />
     </section>
+
+     <section className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] py-10">
+       <FeatureProduct/>
+    </section>
+
 
      <section className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] py-1">
        <ShopBySlider/>

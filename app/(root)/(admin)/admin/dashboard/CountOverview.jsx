@@ -32,7 +32,7 @@ const MiniCard = ({ title, value, percent, period, icon, isPositive = true, link
         </div>
 
         <span className="text-sm font-light text-primary group-hover:underline text-center sm:text-right">
-          View More
+          More
         </span>
       </div>
     </div>
