@@ -19,6 +19,7 @@ const ProductSlider = () => {
       const { data } = await axios.get(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/get-feature-product?limit=10`
       )
+      
       setProducts(data.data || [])
     } catch (err) {
       console.error("Failed to fetch latest products:", err)

@@ -6,13 +6,13 @@ import {
   Twitter,
   Facebook,
   MessageCircle,
-  Phone,
   Settings,
   Headphones,
   Info,
   Globe,
   ArrowRight,
 } from "lucide-react"
+import { BsWhatsapp } from "react-icons/bs"
 
 const Footer = () => {
   return (
@@ -80,16 +80,24 @@ const Footer = () => {
       </div>
 
       {/* ================= LINKS ================= */}
-      <div className="max-w-screen-2xl mx-auto px-6 lg:px-12 py-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-10 text-sm">
+      <div className="max-w-screen-2xl mx-auto px-6 lg:px-12 py-18 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-10 text-sm">
 
         {/* SUPPORT */}
         <ul className="space-y-4">
           <li className="flex items-center gap-2 hover:text-white cursor-pointer">
             <MessageCircle size={16} /> Chat
           </li>
-          <li className="flex items-center gap-2 hover:text-white cursor-pointer">
-            <Phone size={16} /> WhatsApp
-          </li>
+         <li className="flex items-center gap-2 hover:text-green-500 cursor-pointer">
+          <a
+            href="https://wa.me/911234567890" // replace with your WhatsApp number
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2"
+          >
+            <BsWhatsapp size={18} /> WhatsApp
+          </a>
+        </li>
+
           <li className="flex items-center gap-2 hover:text-white cursor-pointer">
             <Headphones size={16} /> Contact Us
           </li>
@@ -103,24 +111,78 @@ const Footer = () => {
 
         {/* SOCIAL TEXT LINKS */}
         <ul className="space-y-4">
-          <li className="flex items-center gap-2 hover:text-white cursor-pointer">
-            <Youtube size={16} /> Youtube
+          <li className="flex items-center gap-2 hover:text-red-500 cursor-pointer">
+          <a
+            href="https://www.youtube.com/channel/YourChannelID" // replace with your YouTube channel link
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2"
+          >
+            <Youtube size={16} /> YouTube
+          </a>
+        </li>
+          <ul className="flex flex-col gap-2">
+          {/* Instagram */}
+          <li className="flex items-center gap-2 hover:text-pink-500 cursor-pointer">
+            <a
+              href="https://www.instagram.com/YourInstagramProfile" // replace with your link
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2"
+            >
+              <Instagram size={16} /> Instagram
+            </a>
           </li>
-          <li className="flex items-center gap-2 hover:text-white cursor-pointer">
-            <Instagram size={16} /> Instagram
+
+          {/* X / Twitter */}
+          <li className="flex items-center gap-2 hover:text-blue-500 cursor-pointer">
+            <a
+              href="https://twitter.com/YourTwitterProfile" // replace with your link
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2"
+            >
+              <Twitter size={16} /> X
+            </a>
           </li>
-          <li className="flex items-center gap-2 hover:text-white cursor-pointer">
-            <Twitter size={16} /> X
+
+          {/* Strava */}
+          <li className="flex items-center gap-2 hover:text-orange-500 cursor-pointer">
+            <a
+              href="https://www.strava.com/athletes/YourStravaID" // replace with your link
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2"
+            >
+              <ArrowRight size={16} /> Strava
+            </a>
           </li>
-          <li className="flex items-center gap-2 hover:text-white cursor-pointer">
-            <ArrowRight size={16} /> Strava
+
+          {/* Facebook */}
+          <li className="flex items-center gap-2 hover:text-blue-700 cursor-pointer">
+            <a
+              href="https://www.facebook.com/YourFacebookProfile" // replace with your link
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2"
+            >
+              <Facebook size={16} /> Facebook
+            </a>
           </li>
-          <li className="flex items-center gap-2 hover:text-white cursor-pointer">
-            <Facebook size={16} /> Facebook
+
+          {/* Komoot */}
+          <li className="flex items-center gap-2 hover:text-green-500 cursor-pointer">
+            <a
+              href="https://www.komoot.com/user/YourKomootID" // replace with your link
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2"
+            >
+              <ArrowRight size={16} /> Komoot
+            </a>
           </li>
-          <li className="flex items-center gap-2 hover:text-white cursor-pointer">
-            <ArrowRight size={16} /> Komoot
-          </li>
+        </ul>
+
         </ul>
 
         {/* ORDER INFO */}

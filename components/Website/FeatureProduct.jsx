@@ -2,29 +2,28 @@
 
 import axios from "axios"
 import Link from "next/link"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import ProductBox from "./ProductBox"
 
+const PRODUCTS_PER_PAGE = 12
+
 const FeatureProduct = () => {
+  const sectionRef = useRef(null)
+
   const [products, setProducts] = useState([])
-  const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
-  const [hasMore, setHasMore] = useState(true)
-  const limit = 8 // 4 cards per row × 2 rows initially = 8 products
+  const [currentPage, setCurrentPage] = useState(1)
 
   const fetchProducts = async () => {
-    if (!hasMore) return
     setLoading(true)
     try {
       const { data } = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/get-feature-product?page=${page}&limit=${limit}`
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/get-feature-product`
       )
-      if (!data.data || data.data.length < limit) setHasMore(false)
-      setProducts(prev => [...prev, ...data.data])
-      setPage(prev => prev + 1)
+      setProducts(data?.data || [])
     } catch (err) {
       console.error("Failed to fetch products:", err)
-      setHasMore(false)
+      setProducts([])
     } finally {
       setLoading(false)
     }
@@ -34,11 +33,40 @@ const FeatureProduct = () => {
     fetchProducts()
   }, [])
 
+  const totalPages = Math.ceil(products.length / PRODUCTS_PER_PAGE)
+
+  const visibleProducts = products.slice(
+    0,
+    currentPage * PRODUCTS_PER_PAGE
+  )
+
+  const scrollToSection = () => {
+    sectionRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    })
+  }
+
+  const handlePageClick = (page) => {
+    setCurrentPage(page)
+    scrollToSection()
+  }
+
+  const handleLoadMore = () => {
+    setCurrentPage((prev) => prev + 1)
+    scrollToSection()
+  }
+
   return (
-    <section className="w-full px-4 sm:px-8 lg:px-16 py-8">
+    <section
+      ref={sectionRef}
+      className="w-full px-4 sm:px-8 lg:px-16 py-8"
+    >
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl sm:text-3xl font-bold">Feature Products</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold">
+          Feature Products
+        </h2>
         <Link
           href="/products"
           className="text-sm sm:text-base underline underline-offset-4 hover:text-primary"
@@ -47,31 +75,60 @@ const FeatureProduct = () => {
         </Link>
       </div>
 
-      {/* Product Grid: 4 cards per row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {products.length === 0 && !loading && (
-          <div className="col-span-full text-center text-gray-500 py-10">
-            No products found.
-          </div>
-        )}
+      {/* Product Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 min-h-225">
+        {loading &&
+          Array.from({ length: 12 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-72 rounded-xl bg-gray-200 animate-pulse shadow"
+            />
+          ))}
 
-        {products.map((product, index) => (
-          <ProductBox key={`${product._id}-${index}`} product={product} />
-        ))}
+        {!loading &&
+          visibleProducts.map((product) => (
+            <ProductBox key={product._id} product={product} />
+          ))}
+
+        {!loading && visibleProducts.length === 0 && (
+          <p className="col-span-full text-center text-gray-500 py-10">
+            No products found.
+          </p>
+        )}
       </div>
 
-      {/* Loading */}
-      {loading && <p className="text-center mt-6 text-gray-500">Loading...</p>}
+      {/* Pagination Controls */}
+      {!loading && totalPages > 1 && (
+        <div className="flex justify-between items-center mt-10">
+          {/* Load More */}
+          {currentPage < totalPages && (
+            <button
+              onClick={handleLoadMore}
+              className="px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition"
+            >
+              Load More
+            </button>
+          )}
 
-      {/* Load More Button */}
-      {hasMore && !loading && (
-        <div className="flex justify-center mt-6">
-          <button
-            onClick={fetchProducts}
-            className="bg-black text-white px-6 py-2 rounded-lg hover:bg-orange-500 cursor-pointer transition"
-          >
-            Load More
-          </button>
+          {/* Page Numbers (Right Side) */}
+          <div className="flex gap-2">
+            {Array.from({ length: totalPages }).map((_, index) => {
+              const page = index + 1
+              return (
+                <button
+                  key={page}
+                  onClick={() => handlePageClick(page)}
+                  className={`px-3 py-2 rounded-md border transition ${
+                    currentPage === page
+                      ? "bg-black text-white"
+                      : "bg-white hover:bg-gray-100"
+                  }`}
+                >
+                  {page}
+                </button>
+              )
+            })}
+          </div>
         </div>
       )}
     </section>

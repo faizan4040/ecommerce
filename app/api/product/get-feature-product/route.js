@@ -2,14 +2,12 @@ import connectDB from "@/lib/databaseConnection";
 import { catchError, response } from "@/lib/helperfunction";
 import ProductModel from "@/models/Product.model";
 
-
 export async function GET() {
   try {
     await connectDB();
 
-    const products = await ProductModel.find({ deleteType: null })
+    const products = await ProductModel.find({ deletedAt: null })
       .populate("media", "_id secure_url")
-      .limit(8)
       .lean();
 
     if (!products || products.length === 0) {
