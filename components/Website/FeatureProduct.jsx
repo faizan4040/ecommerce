@@ -60,7 +60,7 @@ const FeatureProduct = () => {
   return (
     <section
       ref={sectionRef}
-      className="w-full px-4 sm:px-8 lg:px-16 py-8"
+      className="w-full px-4 sm:px-8 lg:px-16 -py-4"
     >
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
@@ -104,7 +104,7 @@ const FeatureProduct = () => {
           {currentPage < totalPages && (
             <button
               onClick={handleLoadMore}
-              className="px-6 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition"
+              className="px-6 py-2 rounded-lg  border-orange-500 hover:bg-orange-500 border-2 hover:text-white transition-all duration-300 cursor-pointer font-semibold"
             >
               Load More
             </button>

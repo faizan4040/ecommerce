@@ -12,7 +12,9 @@ import { Checkbox } from '../ui/checkbox'
 import { Slider } from '../ui/slider'
 import ButtonLoading from '../Application/ButtonLoading'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { WEBSITE_SHOP } from '@/routes/WebsiteRoute'
+import { WEBSITE_HOME, WEBSITE_SHOP } from '@/routes/WebsiteRoute'
+import { Button } from '../ui/button'
+import Link from 'next/link'
 
 const Filter = () => {
     const  searchParams = useSearchParams()
@@ -92,6 +94,14 @@ const Filter = () => {
     }
 
   return (
+    <div>
+      {searchParams.size > 0 && 
+        <Button type="button" variant='destructive' className="w-full" asChild>
+            <Link href={WEBSITE_HOME}>
+              Clear Filter
+            </Link>
+        </Button>
+      }
     <Accordion type="multiple" defaultValue={['1', '2', '3', '4']} className="cursor-pointer">
     <AccordionItem value="item-1">
         <AccordionTrigger className="uppercase font-semibold cursor-pointer">Category</AccordionTrigger>
@@ -181,6 +191,7 @@ const Filter = () => {
 
 
     </Accordion>
+    </div>
   )
 }
 

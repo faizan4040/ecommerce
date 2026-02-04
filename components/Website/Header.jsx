@@ -1,5 +1,4 @@
 'use client'
-
 import { useEffect, useRef, useState } from "react"
 import {
   Menu,
@@ -87,7 +86,7 @@ export default function Header() {
   }, [mobileMenuOpen])
 
   return (
-    <>
+    <div className="sticky top-0 z-50">
       <header className="relative z-50">
         {/* MINI TOP BAR */}
         <div ref={miniBarRef} className="bg-white text-black text-xs border-b">
@@ -361,6 +360,6 @@ export default function Header() {
           ))}
         </ul>
       </nav>
-    </>
+    </div>
   )
 }

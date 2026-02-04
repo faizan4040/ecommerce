@@ -1,5 +1,6 @@
 "use client"
 
+import { WEBSITE_DELIVERY_RETURNS, WEBSITE_GIFT_VOUCHERS, WEBSITE_KLARNA, WEBSITE_ORDER_TRACKING, WEBSITE_RUNNING_CLUB, WEBSITE_STUDENT_DISCOUNT } from "@/routes/WebsiteRoute"
 import {
   Youtube,
   Instagram,
@@ -12,6 +13,7 @@ import {
   Globe,
   ArrowRight,
 } from "lucide-react"
+import Link from "next/link"
 import { BsWhatsapp } from "react-icons/bs"
 
 const Footer = () => {
@@ -82,103 +84,103 @@ const Footer = () => {
       {/* ================= LINKS ================= */}
       <div className="max-w-screen-2xl mx-auto px-6 lg:px-12 py-18 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-10 text-sm">
 
-        {/* SUPPORT */}
-        <ul className="space-y-4">
-          <li className="flex items-center gap-2 hover:text-white cursor-pointer">
-            <MessageCircle size={16} /> Chat
+     
+        <ul className="space-y-8">
+          <li className="flex text-lg items-center gap-2 hover:text-white cursor-pointer">
+            <MessageCircle size={20} /> Chat
           </li>
-         <li className="flex items-center gap-2 hover:text-green-500 cursor-pointer">
+         <li className="flex items-center gap-2 text-lg hover:text-green-500 cursor-pointer">
           <a
-            href="https://wa.me/911234567890" // replace with your WhatsApp number
+            href="https://wa.me/911234567890" 
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2"
           >
-            <BsWhatsapp size={18} /> WhatsApp
+            <BsWhatsapp size={20} /> WhatsApp
           </a>
         </li>
 
-          <li className="flex items-center gap-2 hover:text-white cursor-pointer">
-            <Headphones size={16} /> Contact Us
+          <li className="flex items-center gap-2  text-lg hover:text-white cursor-pointer">
+            <Headphones size={20} /> Contact Us
           </li>
-          <li className="flex items-center gap-2 hover:text-white cursor-pointer">
-            <Settings size={16} /> Manage Cookies Settings
+          <li className="flex  text-lg items-center gap-2 hover:text-white cursor-pointer">
+            <Settings size={20} /> Manage Cookies Settings
           </li>
-          <li className="flex items-center gap-2 font-medium">
-            <Info size={16} /> Help Code: 743163
+          <li className="flex text-lg items-center gap-2">
+            <Info size={20} /> Help Code: 743163
           </li>
         </ul>
 
-        {/* SOCIAL TEXT LINKS */}
-        <ul className="space-y-4">
-          <li className="flex items-center gap-2 hover:text-red-500 cursor-pointer">
+ 
+        <ul className="space-y-4 ">
+          <li className="flex items-center text-lg gap-2 hover:text-red-500 cursor-pointer">
           <a
-            href="https://www.youtube.com/channel/YourChannelID" // replace with your YouTube channel link
+            href="https://www.youtube.com/channel/YourChannelID" 
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2"
           >
-            <Youtube size={16} /> YouTube
+            <Youtube size={20} className=""/> YouTube
           </a>
         </li>
           <ul className="flex flex-col gap-2">
-          {/* Instagram */}
-          <li className="flex items-center gap-2 hover:text-pink-500 cursor-pointer">
+       
+          <li className="flex items-center gap-2 text-lg hover:text-pink-500 cursor-pointer">
             <a
-              href="https://www.instagram.com/YourInstagramProfile" // replace with your link
+              href="https://www.instagram.com/YourInstagramProfile" 
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2"
             >
-              <Instagram size={16} /> Instagram
+              <Instagram size={20} /> Instagram
             </a>
           </li>
 
-          {/* X / Twitter */}
-          <li className="flex items-center gap-2 hover:text-blue-500 cursor-pointer">
+     
+          <li className="flex items-center text-lg gap-2 hover:text-blue-500 cursor-pointer">
             <a
-              href="https://twitter.com/YourTwitterProfile" // replace with your link
+              href="https://twitter.com/YourTwitterProfile" 
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2"
             >
-              <Twitter size={16} /> X
+              <Twitter size={20} /> X
             </a>
           </li>
 
-          {/* Strava */}
-          <li className="flex items-center gap-2 hover:text-orange-500 cursor-pointer">
+
+          <li className="flex items-center text-lg gap-2 hover:text-orange-500 cursor-pointer">
             <a
-              href="https://www.strava.com/athletes/YourStravaID" // replace with your link
+              href="https://www.strava.com/athletes/YourStravaID" 
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2"
             >
-              <ArrowRight size={16} /> Strava
+              <ArrowRight size={20} /> Strava
             </a>
           </li>
 
-          {/* Facebook */}
-          <li className="flex items-center gap-2 hover:text-blue-700 cursor-pointer">
+     
+          <li className="flex text-lg items-center gap-2 hover:text-blue-700 cursor-pointer">
             <a
-              href="https://www.facebook.com/YourFacebookProfile" // replace with your link
+              href="https://www.facebook.com/YourFacebookProfile" 
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2"
             >
-              <Facebook size={16} /> Facebook
+              <Facebook size={20} /> Facebook
             </a>
           </li>
 
-          {/* Komoot */}
-          <li className="flex items-center gap-2 hover:text-green-500 cursor-pointer">
+    
+          <li className="flex text-lg items-center gap-2 hover:text-green-500 cursor-pointer">
             <a
-              href="https://www.komoot.com/user/YourKomootID" // replace with your link
+              href="https://www.komoot.com/user/YourKomootID"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2"
             >
-              <ArrowRight size={16} /> Komoot
+              <ArrowRight size={20} /> Komoot
             </a>
           </li>
         </ul>
@@ -186,35 +188,91 @@ const Footer = () => {
         </ul>
 
         {/* ORDER INFO */}
-        <div>
-          <h4 className="text-xl font-semibold mb-4 text-white">Order Info</h4>
-          <ul className="space-y-2">
-            <li>Order Tracking</li>
-            <li>Delivery & Returns</li>
-            <li>Gift Vouchers</li>
-            <li>Student Discount</li>
-          </ul>
-        </div>
+      <div>
+        <h4 className="text-2xl font-bold mb-4 text-white">Order Info</h4>
+
+        <ul className="space-y-4">
+          <li>
+            <Link
+              href={WEBSITE_ORDER_TRACKING}
+              className="text-lg text-white hover:underline transition-all duration-300"
+            >
+              Order Tracking
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              href={WEBSITE_DELIVERY_RETURNS}
+              className="text-lg text-white hover:underline transition-all duration-300"
+            >
+              Delivery & Returns
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              href={WEBSITE_GIFT_VOUCHERS}
+              className="text-lg text-white hover:underline transition-all duration-300"
+            >
+              Gift Vouchers
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              href={WEBSITE_RUNNING_CLUB}
+              className="text-lg text-white hover:underline transition-all duration-300"
+            >
+              SportShoes Running Club
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              href={WEBSITE_STUDENT_DISCOUNT}
+              className="text-lg text-white hover:underline transition-all duration-300"
+            >
+              Student Discount
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              href={WEBSITE_KLARNA}
+              className="text-lg text-white hover:underline transition-all duration-300"
+            >
+              KLARNA
+            </Link>
+          </li>
+        </ul>
+      </div>
 
         {/* CUSTOMER CARE */}
         <div>
-          <h4 className="text-xl font-semibold mb-4 text-white">Customer Care</h4>
-          <ul className="space-y-2">
-            <li>Help Centre</li>
-            <li>My Account</li>
-            <li>ULTRA Membership</li>
-            <li>Price Beat Promise</li>
+          <h4 className="text-2xl font-bold mb-4 text-white">Customer Care</h4>
+          <ul className="space-y-4">
+            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Help Centre</li>
+            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Contus Us</li>
+            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">My Account</li>
+            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">ULTRA Membership Info</li>
+            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Price Beat Promise</li>
           </ul>
         </div>
 
         {/* COMPANY */}
         <div>
-          <h4 className="text-xl font-semibold mb-4 text-white">Company</h4>
-          <ul className="space-y-2">
-            <li>About Us</li>
-            <li>Careers</li>
-            <li>Privacy Policy</li>
-            <li>Terms & Conditions</li>
+          <h4 className="text-2xl font-bold mb-4 text-white">Company</h4>
+          <ul className="space-y-4">
+            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">About Us</li>
+            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Careers</li>
+            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Privacy Policy</li>
+            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Terms & Conditions</li>
+            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Cookie Policy</li>
+            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Modern Slavery Statement</li>
+            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Sustainability</li>
+            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Newsroom</li>
+            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Discount Codes</li>
           </ul>
         </div>
       </div>

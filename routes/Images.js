@@ -49,6 +49,14 @@ export const IMAGES = {
   trending_2: "/assets/images/trending_2.avif",
   trending_3: "/assets/images/trending_3.avif",
 
+
+
+
+
+  // Websitepages all
+
+  ordertrackingposter: "/assets/images/order-tracking-poster.jpg"
+
   
 
 }
