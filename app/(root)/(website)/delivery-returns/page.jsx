@@ -7,6 +7,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { Truck, CornerUpLeft } from "lucide-react";
+
+
 
 const DeliveryReturns = () => {
   const [activeTab, setActiveTab] = useState('delivery')
@@ -56,27 +59,30 @@ const DeliveryReturns = () => {
 
         {/* Buttons */}
         <div className="flex justify-center gap-4 mb-12">
-          <button
-            onClick={() => setActiveTab('delivery')}
-            className={`px-6 py-2 rounded-lg font-semibold transition ${
-              activeTab === 'delivery'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white border border-gray-300 text-gray-800 hover:bg-gray-100'
-            }`}
-          >
-            Delivery
-          </button>
-          <button
-            onClick={() => setActiveTab('returns')}
-            className={`px-6 py-2 rounded-lg font-semibold transition ${
-              activeTab === 'returns'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white border border-gray-300 text-gray-800 hover:bg-gray-100'
-            }`}
-          >
-            Returns
-          </button>
-        </div>
+        <button
+          onClick={() => setActiveTab('delivery')}
+          className={`px-6 py-2 rounded-lg font-semibold transition flex items-center gap-2 ${
+            activeTab === 'delivery'
+              ? 'bg-orange-500 text-white'
+              : 'bg-white border border-gray-300 text-gray-800 hover:bg-gray-100 cursor-pointer'
+          }`}
+        >
+          <Truck size={16} /> {/* Delivery icon */}
+          Delivery
+        </button>
+
+        <button
+          onClick={() => setActiveTab('returns')}
+          className={`px-6 py-2 rounded-lg font-semibold transition flex items-center gap-2 ${
+            activeTab === 'returns'
+              ? 'bg-black text-white'
+              : 'bg-white border border-gray-300 text-gray-800 hover:bg-gray-100 cursor-pointer'
+          }`}
+        >
+          <CornerUpLeft size={16} /> {/* Returns icon */}
+          Returns
+        </button>
+      </div>
 
         {/* Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

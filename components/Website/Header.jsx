@@ -135,7 +135,7 @@ export default function Header() {
              <Link href={WEBSITE_HOME} className="font-bold tracking-wide">
               <img
                src={IMAGES.logo}
-               className="h-8 w-32"
+               className="h-9 w-38"
               />
             </Link>
           </div>

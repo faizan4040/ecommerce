@@ -122,7 +122,7 @@ export async function GET(request) {
             }
         }
     ])
- console.log("RAW PRODUCT 👉", products)
+
 
 
 

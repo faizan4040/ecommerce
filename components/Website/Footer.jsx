@@ -1,6 +1,6 @@
 "use client"
 
-import { WEBSITE_DELIVERY_RETURNS, WEBSITE_GIFT_VOUCHERS, WEBSITE_KLARNA, WEBSITE_ORDER_TRACKING, WEBSITE_RUNNING_CLUB, WEBSITE_STUDENT_DISCOUNT } from "@/routes/WebsiteRoute"
+import { WEBSITE_ABOUT, WEBSITE_CAREERS, WEBSITE_CONTACT_US, WEBSITE_COOKIE_POLICY, WEBSITE_DELIVERY_RETURNS, WEBSITE_DISCOUNT_CODES, WEBSITE_GIFT_VOUCHERS, WEBSITE_ORDER_TRACKING, WEBSITE_PRICE_BEAT_PROMISE, WEBSITE_PRIVACY_POLICY, WEBSITE_RUNNING_CLUB, WEBSITE_STUDENT_DISCOUNT, WEBSITE_TERMS_CONDITIONS, WEBSITE_ULTRA_MEMBERSHIP } from "@/routes/WebsiteRoute"
 import {
   Youtube,
   Instagram,
@@ -61,8 +61,8 @@ const Footer = () => {
                 className="
                   px-6 py-3
                   bg-white text-gray-900
-                  rounded-full font-semibold
-                  hover:bg-gray-200 transition
+                  rounded-xl font-semibold
+                  hover:bg-orange-500 transition cursor-pointer hover:text-white
                 "
               >
                 Subscribe
@@ -100,12 +100,24 @@ const Footer = () => {
           </a>
         </li>
 
-          <li className="flex items-center gap-2  text-lg hover:text-white cursor-pointer">
-            <Headphones size={20} /> Contact Us
+          <li>
+          <Link
+            href={WEBSITE_CONTACT_US}
+            className="flex items-center gap-2 text-lg hover:text-white cursor-pointer"
+          >
+            <Headphones size={20} />
+            Contact Us
+          </Link>
+        </li>
+
+          <li
+            onClick={() => window.Osano?.cm?.showDrawer()}
+            className="flex items-center gap-2 text-lg hover:text-white cursor-pointer"
+          >
+            <Settings size={20} />
+            Manage Cookie Settings
           </li>
-          <li className="flex  text-lg items-center gap-2 hover:text-white cursor-pointer">
-            <Settings size={20} /> Manage Cookies Settings
-          </li>
+
           <li className="flex text-lg items-center gap-2">
             <Info size={20} /> Help Code: 743163
           </li>
@@ -237,44 +249,99 @@ const Footer = () => {
             </Link>
           </li>
 
+        </ul>
+      </div>
+
+
+        {/* CUSTOMER CARE */}
+        <div>
+          <h4 className="text-2xl font-bold mb-4 text-white">Customer Care</h4>
+
+          <ul className="space-y-4">
+            
+            <li>
+              <Link
+                href={WEBSITE_CONTACT_US}
+                className="text-lg text-white hover:underline transition-all duration-300"
+              >
+                Contact Us
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href={WEBSITE_PRICE_BEAT_PROMISE}
+                className="text-lg text-white hover:underline transition-all duration-300"
+              >
+                Price Beat Promise
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+
+
+        {/* COMPANY */}
+        <div>
+        <h4 className="text-2xl font-bold mb-4 text-white">Company</h4>
+
+        <ul className="space-y-4">
           <li>
             <Link
-              href={WEBSITE_KLARNA}
+              href={WEBSITE_ABOUT}
               className="text-lg text-white hover:underline transition-all duration-300"
             >
-              KLARNA
+              About Us
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              href={WEBSITE_CAREERS}
+              className="text-lg text-white hover:underline transition-all duration-300"
+            >
+              Careers
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              href={WEBSITE_PRIVACY_POLICY}
+              className="text-lg text-white hover:underline transition-all duration-300"
+            >
+              Privacy Policy
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              href={WEBSITE_TERMS_CONDITIONS}
+              className="text-lg text-white hover:underline transition-all duration-300"
+            >
+              Terms & Conditions
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              href={WEBSITE_COOKIE_POLICY}
+              className="text-lg text-white hover:underline transition-all duration-300"
+            >
+              Cookie Policy
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              href={WEBSITE_DISCOUNT_CODES}
+              className="text-lg text-white hover:underline transition-all duration-300"
+            >
+              Discount Codes
             </Link>
           </li>
         </ul>
       </div>
 
-        {/* CUSTOMER CARE */}
-        <div>
-          <h4 className="text-2xl font-bold mb-4 text-white">Customer Care</h4>
-          <ul className="space-y-4">
-            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Help Centre</li>
-            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Contus Us</li>
-            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">My Account</li>
-            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">ULTRA Membership Info</li>
-            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Price Beat Promise</li>
-          </ul>
-        </div>
-
-        {/* COMPANY */}
-        <div>
-          <h4 className="text-2xl font-bold mb-4 text-white">Company</h4>
-          <ul className="space-y-4">
-            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">About Us</li>
-            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Careers</li>
-            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Privacy Policy</li>
-            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Terms & Conditions</li>
-            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Cookie Policy</li>
-            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Modern Slavery Statement</li>
-            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Sustainability</li>
-            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Newsroom</li>
-            <li className="text-lg hover:underline transition-all duration-300 cursor-pointer">Discount Codes</li>
-          </ul>
-        </div>
       </div>
 
       {/* ================= BOTTOM ================= */}
@@ -290,15 +357,43 @@ const Footer = () => {
 
           {/* ICONS */}
           <div className="flex gap-5">
+          <a
+            href="https://www.youtube.com/@allspikes"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <Youtube className="hover:opacity-70 cursor-pointer" />
+          </a>
+
+          <a
+            href="https://www.instagram.com/allspikes"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <Instagram className="hover:opacity-70 cursor-pointer" />
+          </a>
+
+          <a
+            href="https://twitter.com/allspikes"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <Twitter className="hover:opacity-70 cursor-pointer" />
+          </a>
+
+          <a
+            href="https://www.facebook.com/allspikes"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <Facebook className="hover:opacity-70 cursor-pointer" />
-          </div>
+          </a>
         </div>
 
-        <div className="bg-gray-900 text-center py-4 text-xs text-gray-400">
-          © 2026 B-sporting Limited | All Rights Reserved.
+        </div>
+
+        <div className="bg-gray-900 text-center py-4 text-lg text-gray-400">
+          © 2026 All Spikes Limited | All Rights Reserved.
         </div>
       </div>
     </footer>

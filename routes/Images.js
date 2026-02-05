@@ -1,6 +1,7 @@
 export const IMAGES = {
   coupon: "/assets/images/coupon.PNG",
   logo: "/assets/images/logo.webp",
+  logo: "/assets/images/logo.png",
   dashboardlogo:"/assets/images/dashboardlogo.png", 
   image_placeholder: "/assets/images/image_placeholder.webp",
   profile: "/assets/images/profile.jpg",
@@ -55,8 +56,20 @@ export const IMAGES = {
 
   // Websitepages all
 
-  ordertrackingposter: "/assets/images/order-tracking-poster.jpg"
-
+  ordertrackingposter: "/assets/images/order-tracking-poster.jpg",
+  gift_card_banner: "/assets/images/gift_card_banner.png",
+  giftcard: "/assets/images/giftcard.png",
+  runningclub: "/assets/images/runningclub.png",
+  student_discount: "/assets/images/student_discount.png",
+  aboutus: "/assets/images/aboutus.jpg",
+  Who_are_we: "/assets/images/Who_are_we.jpg",
+  Our_history: "/assets/images/Our_history.jpg",
+  expert: "/assets/images/expert.jpg",
+  product: "/assets/images/product.jpg",
+  winning: "/assets/images/winning.jpg",
+  footprints: "/assets/images/footprints.jpg",
+  discount_code: "/assets/images/discount_code.jpg",
+  
   
 
 }
