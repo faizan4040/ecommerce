@@ -16,6 +16,7 @@ import axios from 'axios'
 import { useSearchParams } from 'next/navigation'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import ProductBox from '@/components/Website/ProductBox'
+import ButtonLoading from '@/components/Application/ButtonLoading'
 
 
 const breadCrumb = {
@@ -35,7 +36,7 @@ const Shop = () => {
       const { data } = await axios.get(
         `/api/shop?page=${pageParam}&limit=${limit}&sort=${sorting}&${searchParams}`
       )
-
+       console.log(data)
       if (!data.success) {
         throw new Error(data.message || "Failed to fetch products")
       }
@@ -103,8 +104,20 @@ const Shop = () => {
           ))
         )}
        </div>
-        </div>
 
+       {/* Load more button */}
+       <div className='flex justify-center mt-10'>
+           {hasNextPage ? 
+              <ButtonLoading type="button" loading={isFetching} text="Load More" onClick={fetchNextPage}/>
+            :
+            <>
+             {!isFetching && <span>No More data to load.</span>}
+            </>
+
+           }    
+       </div>
+
+        </div>
       </section>
     </div>
   )

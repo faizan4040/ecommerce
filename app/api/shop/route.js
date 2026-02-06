@@ -4,7 +4,6 @@ import CategoryModel from "@/models/Category.model";
 import ProductModel from "@/models/Product.model";
 
 
-
 export async function GET(request) {
 
     try{
@@ -16,8 +15,9 @@ export async function GET(request) {
      //get filter from query params
      const size = searchParams.get('size')
      const color = searchParams.get('color')
+     const gender = searchParams.get('gender')
      const minPrice = parseInt(searchParams.get('minPrice')) || 0
-     const maxPrice = parseInt(searchParams.get('maxPrice')) || 0
+     const maxPrice = parseInt(searchParams.get('maxPrice')) || 100000
      const categorySlug = searchParams.get('category')
      const search = searchParams.get('q')
 
@@ -39,20 +39,24 @@ export async function GET(request) {
 
 
      // find category by size
-    let categoryId = null
+    let categoryId = []
     if(categorySlug){
-        const categoryData = await CategoryModel.findOne({deletedAt: null,
-            slug: categorySlug}).select('_id').lean()
-            if (categoryData) categoryId = categoryData._id
+        const slugs = categorySlug.split(',')
+        const categoryData = await CategoryModel.find({deletedAt: null, slug: { $in: slugs } }).select('_id').lean()
+        categoryId = categoryData.map(category => category._id)
     }
  
 
     // match stage
     let matchStage = {}
-    if(categoryId) matchStage.category = categoryId // filter by category
+    if(categoryId.length > 0) matchStage.category = { $in: categoryId } // filter by category
+
+    if (gender) {
+        matchStage.gender = gender   // men | women | kids
+    }
 
     if(search){
-        matchStage.name = {$regex: search, $options: 'i'}
+        matchStage.name = { $regex: search, $options: 'i' }
     }
 
 
@@ -69,7 +73,6 @@ export async function GET(request) {
             localField: '_id',
             foreignField: 'product',
             as: 'variants'
-
           }
         },
         {
@@ -79,24 +82,29 @@ export async function GET(request) {
                     input: "$variants",
                     as: "variant", 
                     cond: {
-                    $and: [
-                        size ? { $eq: ["$$variant.size", size] } : { $literal: true },
-                        color ? { $eq: ["$$variant.color", color] } : { $literal: true },
-                        { $gte: ["$$variant.sellingPrice", minPrice] },
-                        { $lte: ["$$variant.sellingPrice", maxPrice] },
-                    ],
+                        $and: [
+                            size ? { $in: ["$$variant.size", size.split(',')] } : { $literal: true },
+                            color ? { $in: ["$$variant.color", color.split(',')] } : { $literal: true },
+                            gender ? { $in: ["$$variant.gender", gender.split(',')] } : { $literal: true },
+                            { $gte: ["$$variant.sellingPrice", minPrice] },
+                            { $lte: ["$$variant.sellingPrice", maxPrice] },
+                        ],
                     },
+                  },
                 },
-                },
+              },
             },
+            {
+               $match:{
+                variants: { $ne: []}
+               }
             },
         {
           $lookup:{
-            from: 'medias',
+            from: 'media',
             localField: 'media',
             foreignField: '_id',
             as: 'media'
-
           }
         },
         {
@@ -115,6 +123,7 @@ export async function GET(request) {
                 variants: {
                     color: 1,
                     size: 1,
+                    gender: 1,
                     mrp: 1,
                     sellingPrice: 1,
                     discountPercentage: 1,
@@ -134,7 +143,6 @@ export async function GET(request) {
     }
 
     return response(true, 200, 'Product data fount', { products, nextPage })
-
 
 
     } catch(error){

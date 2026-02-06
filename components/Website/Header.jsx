@@ -7,7 +7,7 @@ import {
   ChevronDown,
   Globe,
 } from "lucide-react"
-import { WEBSITE_HOME, WEBSITE_LOGIN, WEBSITE_REGISTER } from "@/routes/WebsiteRoute"
+import { WEBSITE_HOME, WEBSITE_LOGIN, WEBSITE_REGISTER, WEBSITE_SHOP } from "@/routes/WebsiteRoute"
 import Card from '@/components/Website/Card'
 import Link from "next/link"
 import { useSelector } from "react-redux"
@@ -18,6 +18,8 @@ import {
   ChevronRight,
   User,
 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { IoSearchOutline } from "react-icons/io5"
 
 
 
@@ -43,6 +45,9 @@ const categories = [
 ]
 
 export default function Header() {
+    const [showSearch, setShowSearch] = useState(false);
+  const [query, setQuery] = useState("");
+  const router = useRouter();
   const [open, setOpen] = useState(false)
   const [adIndex, setAdIndex] = useState(0)
   const [langOpen, setLangOpen] = useState(false)
@@ -84,6 +89,15 @@ export default function Header() {
     document.addEventListener("pointerdown", handler)
     return () => document.removeEventListener("pointerdown", handler)
   }, [mobileMenuOpen])
+
+
+
+
+    const handleSearch = () => {
+    if (query.trim() !== "") {
+      router.push(`${WEBSITE_SHOP}?q=${encodeURIComponent(query.trim())}`);
+    }
+  };
 
   return (
     <div className="sticky top-0 z-50">
@@ -143,13 +157,43 @@ export default function Header() {
           {/* DESKTOP NAV */}
           <div className="hidden md:flex items-center gap-8 relative">
             {/* SEARCH */}
-            <div className="relative w-64 md:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                className="w-full pl-10 pr-4 py-2 rounded-xl text-black text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black"
-                placeholder="Search products"
-              />
-            </div>
+          <div className="relative flex items-center">
+                {/* Toggle Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowSearch(!showSearch)}
+                  className="px-4 py-2 bg-black text-white rounded-l-full flex items-center gap-2 z-10 cursor-pointer"
+                >
+                  <IoSearchOutline size={16} />
+                  Search
+                </button>
+
+                {/* Animated search input */}
+                <div
+                  className={`
+                    overflow-hidden transition-all duration-500 ease-in-out
+                    ${showSearch ? 'w-60 sm:w-[320px] md:w-100 lg:w-125 ml-2' : 'w-0'}
+                  `}
+                >
+                  <div className="relative">
+                    {/* Search icon inside input */}
+                    <IoSearchOutline
+                      size={16} 
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" 
+                    />
+                    <input
+                      type="text"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                      className="w-full pl-10 pr-4 py-2 rounded-r-full text-black text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black"
+                      placeholder="Search products, categories, pages..."
+                    />
+                  </div>
+                </div>
+              </div>
+
+
 
             {/* LANGUAGE */}
             <button

@@ -11,12 +11,21 @@ import useFetch from '@/hooks/useFetch'
 import { showToast } from '@/lib/showToast'
 import { sizes } from '@/lib/utils'
 import { zSchema } from '@/lib/zodSchema'
-import { ADMIN_DASHBOARD, ADMIN_PRODUCT_SHOW, ADMIN_PRODUCT_VARIANT_SHOW } from '@/routes/AdminPanelRoute'
+import { ADMIN_DASHBOARD, ADMIN_PRODUCT_VARIANT_SHOW } from '@/routes/AdminPanelRoute'
 import { zodResolver } from '@hookform/resolvers/zod'
 import axios from 'axios'
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+
+
+
+
+const genderOptions = [
+  { label: "Men", value: "men" },
+  { label: "Women", value: "women" },
+  { label: "Kids", value: "kids" },
+]
 
 
 const breadcrumbData = [
@@ -49,7 +58,8 @@ const breadcrumbData = [
       product: true,        
       sku: true,            
       color: true,          
-      size: true,     
+      size: true,   
+      gender: true,  
       mrp: true,
       sellingPrice: true,
       discountPercentage: true,
@@ -62,7 +72,8 @@ const breadcrumbData = [
       product: "",        
       sku: "",            
       color: "",          
-      size: "",           
+      size: "",   
+      gender: "",        
       stock: 0,           
       mrp: 0,
       sellingPrice: 0,
@@ -248,7 +259,29 @@ const breadcrumbData = [
       </FormItem>
     )}
   />
+
+
+   <FormField
+    control={form.control}
+    name="gender"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Gender *</FormLabel>
+        <FormControl>
+          <Select
+            options={genderOptions}
+            selected={field.value}
+            setSelected={field.onChange}
+            isMulti={false}
+          />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
 </div>
+
+
 
 {/* ===== Media ===== */}
 <div className="border-dashed rounded p-5 text-center">

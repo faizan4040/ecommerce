@@ -1,9 +1,11 @@
 import { IMAGES } from '@/routes/Images'
+import { PRODUCT_DETAILS } from '@/routes/WebsiteRoute'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
 const ProductBox = ({ product }) => {
+
   const mrp = product?.mrp || 0
   const sellingPrice = product?.sellingPrice || 0
   const discount = mrp > sellingPrice ? Math.round(((mrp - sellingPrice) / mrp) * 100) : 0
@@ -13,11 +15,9 @@ const ProductBox = ({ product }) => {
       bg-white rounded-lg shadow-md overflow-hidden
       transform transition-all duration-300
       hover:scale-105 hover:shadow-xl hover:-translate-y-1
-    ">
-      
+    "> 
     
-    <Link href="">
-      {/* Image Container */}
+    <Link href={PRODUCT_DETAILS(product.slug)}>
       <div className="relative w-full aspect-square bg-gray-100 cursor-pointer">
         <Image
           src={product?.media?.[0]?.secure_url || IMAGES.image_placeholder}

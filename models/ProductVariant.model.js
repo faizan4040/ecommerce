@@ -18,6 +18,13 @@ const ProductVariantSchema = new mongoose.Schema({
         trim: true,
     },
 
+    gender: {
+        type: String,
+        enum: ['men', 'women', 'kids'],
+        required: true,
+        index: true
+    },
+
     mrp: {
         type: Number,
         required: true,
@@ -58,7 +65,7 @@ const ProductVariantSchema = new mongoose.Schema({
 
 
 const ProductVariantModel = mongoose.models.ProductVariant || mongoose.model
-('ProductVariant', ProductVariantSchema, 'Productvariant');
+('ProductVariant', ProductVariantSchema, 'productvariants');
 
 export default ProductVariantModel;
 

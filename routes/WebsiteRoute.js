@@ -12,6 +12,9 @@ export const USER_DASHBOARD = "/my-account"
 export const WEBSITE_SHOP = "/shop"
 
 
+export const PRODUCT_DETAILS = (slug) => slug ? `/product/${slug}` : '/product'
+
+
 
 
 

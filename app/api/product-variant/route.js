@@ -45,6 +45,11 @@ export async function GET(request) {
       matchQuery = { deletedAt: null }; // Default active products
     }
 
+    const genderFilter = searchParams.get("gender"); // men | women | kids
+    if (genderFilter) {
+      matchQuery.gender = genderFilter;
+    }
+
     // Global search
     if (globalFilter) {
       matchQuery.$or = [
@@ -149,6 +154,7 @@ filters.forEach((filter) => {
           product: "$productData.name",
           color: 1,
           size: 1,
+          gender: 1,
           sku: 1,
           mrp: 1,
           sellingPrice: 1,

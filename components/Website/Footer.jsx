@@ -7,7 +7,6 @@ import {
   Twitter,
   Facebook,
   MessageCircle,
-  Settings,
   Headphones,
   Info,
   Globe,
@@ -74,8 +73,8 @@ const Footer = () => {
              about our latest new releases and our best special 
              offers. We will never share your personal information 
              with third parties for their marketing purposes and you
-              can unsubscribe at any time. For more information
-               please see our privacy statement.
+             can unsubscribe at any time. For more information
+             please see our privacy statement.
             </p>
           </div>
         </div>
@@ -110,13 +109,6 @@ const Footer = () => {
           </Link>
         </li>
 
-          <li
-            onClick={() => window.Osano?.cm?.showDrawer()}
-            className="flex items-center gap-2 text-lg hover:text-white cursor-pointer"
-          >
-            <Settings size={20} />
-            Manage Cookie Settings
-          </li>
 
           <li className="flex text-lg items-center gap-2">
             <Info size={20} /> Help Code: 743163

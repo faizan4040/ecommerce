@@ -41,57 +41,92 @@ const Filter = () => {
      setPriceFilter({ minPrice: value[0], maxPrice: value[1] })
     }
 
-    const handleCategoryFilter = (categorySlug) =>{
+    const handleCategoryFilter = (categorySlug) => {
+      const params = new URLSearchParams(searchParams.toString())
+
       let newSelectedCategory = [...selectedCategory]
-      if(newSelectedCategory.includes(categorySlug)) {
+      if (newSelectedCategory.includes(categorySlug)) {
         newSelectedCategory = newSelectedCategory.filter(cat => cat !== categorySlug)
-      } else{
+      } else {
         newSelectedCategory.push(categorySlug)
       }
-        setSelectedCategory(newSelectedCategory)
 
-        newSelectedCategory.length > 0 ? urlSearchParams.set('category', 
-        newSelectedCategory.join(',')): urlSearchParams.delete('category') 
+      setSelectedCategory(newSelectedCategory)
 
-        router.push(`${WEBSITE_SHOP}?${urlSearchParams}`)
+      newSelectedCategory.length > 0
+        ? params.set('category', newSelectedCategory.join(','))
+        : params.delete('category')
+
+      router.push(`${WEBSITE_SHOP}?${params.toString()}`)
     }
 
 
-    const handleColorFilter = (color) =>{
+
+    const handleColorFilter = (color) => {
+      const params = new URLSearchParams(searchParams.toString())
+
       let newSelectedColor = [...selectedColor]
-      if(newSelectedColor.includes(color)) {
-        newSelectedColor = newSelectedColor.filter(cat => cat !== color)
-      } else{
+      if (newSelectedColor.includes(color)) {
+        newSelectedColor = newSelectedColor.filter(c => c !== color)
+      } else {
         newSelectedColor.push(color)
       }
-        setSelectedColor(newSelectedColor)
 
-        newSelectedColor.length > 0 ? urlSearchParams.set('color', 
-        newSelectedColor.join(',')): urlSearchParams.delete('color') 
+      setSelectedColor(newSelectedColor)
 
-        router.push(`${WEBSITE_SHOP}?${urlSearchParams}`)
+      newSelectedColor.length > 0
+        ? params.set('color', newSelectedColor.join(','))
+        : params.delete('color')
+
+      router.push(`${WEBSITE_SHOP}?${params.toString()}`)
     }
 
-    const handleSizeFilter = (size) =>{
+
+    const handleSizeFilter = (size) => {
+      const params = new URLSearchParams(searchParams.toString())
+
       let newSelectedSize = [...selectedSize]
-      if(newSelectedSize.includes(size)) {
-        newSelectedSize = newSelectedSize.filter(cat => cat !== size)
-      } else{
+      if (newSelectedSize.includes(size)) {
+        newSelectedSize = newSelectedSize.filter(s => s !== size)
+      } else {
         newSelectedSize.push(size)
       }
-        setSelectedSize(newSelectedSize)
 
-        newSelectedSize.length > 0 ? urlSearchParams.set('size', 
-        newSelectedSize.join(',')): urlSearchParams.delete('size') 
+      setSelectedSize(newSelectedSize)
 
-        router.push(`${WEBSITE_SHOP}?${urlSearchParams}`)
+      newSelectedSize.length > 0
+        ? params.set('size', newSelectedSize.join(','))
+        : params.delete('size')
+
+      router.push(`${WEBSITE_SHOP}?${params.toString()}`)
     }
-    
+
+
+    const handleGenderFilter = (gender) => {
+    const params = new URLSearchParams(searchParams.toString())
+
+    // same gender dobara click → remove
+    if (searchParams.get('gender') === gender) {
+      params.delete('gender')
+    } else {
+      params.set('gender', gender) // men | women | kids
+    }
+
+    params.delete('page') // pagination reset (important)
+
+    router.push(`${WEBSITE_SHOP}?${params.toString()}`)
+  }
+
+
+
     const handlePriceFilter = () => {
-        urlSearchParams.set('minPrice',priceFilter.minPrice)
-        urlSearchParams.set('maxPrice',priceFilter.maxPrice)
-        router.push(`${WEBSITE_SHOP}?${urlSearchParams}`)
-    }
+    const params = new URLSearchParams(searchParams.toString())
+
+    params.set('minPrice', priceFilter.minPrice)
+    params.set('maxPrice', priceFilter.maxPrice)
+
+    router.push(`${WEBSITE_SHOP}?${params.toString()}`)
+  }
 
   return (
     <div>
@@ -170,6 +205,31 @@ const Filter = () => {
     </AccordionContent>
     </AccordionItem>
 
+
+        <AccordionItem value="item-gender">
+      <AccordionTrigger className="uppercase font-semibold cursor-pointer">
+        Gender
+      </AccordionTrigger>
+
+      <AccordionContent>
+        <div className="max-h-48 overflow-auto">
+          <ul>
+            {['men', 'women', 'kids'].map((gender) => (
+              <li key={gender}>
+                <label className="flex items-center space-x-3">
+                  <Checkbox
+                    className="cursor-pointer"
+                    onCheckedChange={() => handleGenderFilter(gender)}
+                    checked={searchParams.get('gender') === gender}
+                  />
+                  <span className="capitalize">{gender}</span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </AccordionContent>
+    </AccordionItem>
 
 
     <AccordionItem value="item-4">

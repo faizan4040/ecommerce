@@ -19,6 +19,7 @@ export async function PUT(request){
             product: true, 
             color: true,
             size: true,
+            gender: true,
             sku: true,
             mrp: true,
             sellingPrice: true,
@@ -41,6 +42,7 @@ export async function PUT(request){
       getProductVariant.product = validatedData.product
       getProductVariant.color = validatedData.color
       getProductVariant.size = validatedData.size
+      getProductVariant.gender = validatedData.gender
       getProductVariant.sku = validatedData.sku
       getProductVariant.mrp = validatedData.mrp
       getProductVariant.sellingPrice = validatedData.sellingPrice
