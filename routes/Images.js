@@ -2,7 +2,7 @@ export const IMAGES = {
   coupon: "/assets/images/coupon.PNG",
   logo: "/assets/images/logo.webp",
   logo: "/assets/images/logo.png",
-  dashboardlogo:"/assets/images/dashboardlogo.png", 
+  dashboardlogo:"/assets/images/logo.png", 
   image_placeholder: "/assets/images/image_placeholder.webp",
   profile: "/assets/images/profile.jpg",
   shopbanner: "/assets/images/shopbanner.png",

@@ -40,7 +40,7 @@ const AppSidebar = () => {
           <img
             src={IMAGES.dashboardlogo}
             alt="Logo"
-            className="block dark:hidden w-30 h-6"
+            className="block dark:hidden w-33 h-9"
           />
 
           <img
