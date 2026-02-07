@@ -6,6 +6,7 @@ export const IMAGES = {
   image_placeholder: "/assets/images/image_placeholder.webp",
   profile: "/assets/images/profile.jpg",
   shopbanner: "/assets/images/shopbanner.png",
+  loading: '/assets/images/loading.gif',
    
   // New in Footwear
   shoes_1: "/assets/images/shoes_1.avif",

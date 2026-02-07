@@ -1,5 +1,5 @@
 import { IMAGES } from '@/routes/Images'
-import { PRODUCT_DETAILS } from '@/routes/WebsiteRoute'
+import { WEBSITE_PRODUCT_DETAILS } from '@/routes/WebsiteRoute'
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
@@ -17,7 +17,7 @@ const ProductBox = ({ product }) => {
       hover:scale-105 hover:shadow-xl hover:-translate-y-1
     "> 
     
-    <Link href={PRODUCT_DETAILS(product.slug)}>
+    <Link href={WEBSITE_PRODUCT_DETAILS(product.slug)}>
       <div className="relative w-full aspect-square bg-gray-100 cursor-pointer">
         <Image
           src={product?.media?.[0]?.secure_url || IMAGES.image_placeholder}

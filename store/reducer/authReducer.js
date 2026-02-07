@@ -11,7 +11,7 @@ export const authReducer = createSlice({
     login: (state, action) => {
       state.auth = action.payload;
     },
-    logout: (state) => {   // ✅ CORRECT
+    logout: (state) => {   
       state.auth = null;
     },
   },

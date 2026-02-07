@@ -8,11 +8,17 @@ export const WEBSITE_RESETPASSWORD = "/auth/reset-password"
 // User routes
 export const USER_DASHBOARD = "/my-account"
 
+
 // Shop
 export const WEBSITE_SHOP = "/shop"
 
 
-export const PRODUCT_DETAILS = (slug) => slug ? `/product/${slug}` : '/product'
+// Product details
+export const WEBSITE_PRODUCT_DETAILS = (slug) => slug ? `/product/${slug}` : '/product'
+
+
+// Cart
+export const WEBSITE_CART = "/cart"
 
 
 
