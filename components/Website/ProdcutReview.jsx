@@ -22,19 +22,39 @@ import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import { WEBSITE_LOGIN } from "@/routes/WebsiteRoute"
 import { showToast } from "@/lib/showToast"
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query"
+import Reviewlist from "./Reviewlist"
+import useFetch from "@/hooks/useFetch"
 
 /* ------------------------------------------------ */
 const ProdcutReview = ({
   productId,
-  average = 0,
-  totalReviews = 0,
-  ratingBreakdown = {},
-}) => {
-  const auth = useSelector(store => store.authStore.auth)
 
+
+}) => {
+  const queryClient = useQueryClient()
+  const auth = useSelector(store => store.authStore.auth)
   const [currentUrl, setCurrentUrl] = useState("")
   const [loading, setLoading] = useState(false)
   const [showForm, setShowForm] = useState(false)
+  const [reviewCount, setReviewCount] = useState({
+    totalReviews: 0,
+    averageRating: 0,
+    rating: {},
+  })
+
+  const {data: reviewDetails} = useFetch(`/api/review/details?productId=${productId}`)
+
+  useEffect(() => {
+     if(reviewDetails && reviewDetails.success) {
+      const reviewCountData = reviewDetails.data
+      setReviewCount(reviewCountData)
+     }
+  },[reviewDetails])
+
+const average = reviewCount?.averageRating || 0
+const totalReviews = reviewCount?.totalReviews || 0
+const ratingBreakdown = reviewCount?.rating || {}
 
   /* Current URL for login redirect */
   useEffect(() => {
@@ -55,9 +75,9 @@ const ProdcutReview = ({
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      productId,
-      userId: auth?._id || "",
-      rating: 1,
+      product: productId,
+      userId: auth?._id,
+      rating: 0,
       title: "",
       review: "",
     },
@@ -98,14 +118,40 @@ const ProdcutReview = ({
         title: "",
         review: "",
       })
-
       setShowForm(false)
+      queryClient.invalidateQueries(['product-review'])
     } catch (error) {
       showToast("error", error.message)
     } finally {
       setLoading(false)
     }
   }
+
+
+  const fetchReview = async ({ pageParam = 1 }) => {
+    const { data } = await axios.get(
+      `/api/review/get?productId=${productId}&page=${pageParam}`
+    )
+
+    if (!data.success) {
+      throw new Error(data.message)
+    }
+
+    return data.data
+  }
+
+
+  const {
+    data,
+    isFetching,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['product-review', productId],
+    queryFn: fetchReview,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage?.nextPage ?? false,
+  })
 
   /* ------------------------------------------------ */
   return (
@@ -140,14 +186,14 @@ const ProdcutReview = ({
             Based on {totalReviews} reviews
           </p>
 
-          {auth && (
-            <button
-              onClick={() => setShowForm(!showForm)}
-              className="mt-5 px-6 py-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-white transition"
-            >
-              Write a review
-            </button>
-          )}
+
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="mt-5 px-6 py-2 rounded-full border border-primary text-primary hover:bg-primary hover:text-white transition"
+          >
+            Write a review
+          </button>
+
         </div>
 
         {/* Breakdown */}
@@ -180,7 +226,7 @@ const ProdcutReview = ({
         {!auth ? (
           <div className="flex items-center gap-4">
             <p>Please login to submit a review</p>
-            <Button asChild>
+            <Button type='button' asChild>
               <Link href={`${WEBSITE_LOGIN}?callback=${currentUrl}`}>
                 Login
               </Link>
@@ -220,11 +266,10 @@ const ProdcutReview = ({
                         {[1, 2, 3, 4, 5].map((star) => (
                           <FaStar
                             key={star}
-                            className={`cursor-pointer text-2xl ${
-                              star <= field.value
+                            className={`cursor-pointer text-2xl ${star <= field.value
                                 ? "text-yellow-400"
                                 : "text-gray-300"
-                            }`}
+                              }`}
                             onClick={() => field.onChange(star)}
                           />
                         ))}
@@ -264,7 +309,51 @@ const ProdcutReview = ({
             </Form>
           )
         )}
+
+        <div className="mt-12 border-t pt-6">
+          <h5 className="text-xl font-semibold text-gray-900">
+            {data?.pages?.[0]?.totalReviews || 0} Reviews
+          </h5>
+
+          {data?.pages?.[0]?.totalReviews === 0 && (
+            <p className="mt-2 text-gray-500 text-sm">
+              No reviews yet. Be the first to write one!
+            </p>
+          )}
+        </div>
+
+       <div className="mt-6 space-y-4">
+        {data?.pages?.map((page) =>
+          page.reviews.map((review) => (
+            <Reviewlist key={review._id} review={review} />
+          ))
+        )}
       </div>
+
+      {/* Loader */}
+      {isFetching && (
+        <p className="text-center text-sm text-gray-500 mt-4">
+          Loading reviews...
+        </p>
+      )}
+
+      {/* Load more */}
+      {hasNextPage && !isFetching && (
+        <div className="flex justify-center mt-6">
+          <Button
+            onClick={() => fetchNextPage()}
+            className="px-6 py-2 rounded-full"
+          >
+            Load more reviews
+          </Button>
+        </div>
+      )}
+
+      </div>
+
+
+
+
     </div>
   )
 }

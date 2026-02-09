@@ -68,7 +68,7 @@ const ProductDetails = ({ product, variant, colors = [], sizes = [], reviewCount
     })
   }
 
-  const handleAddToCard = () => {
+  const handleAddToCart = () => {
     const cartProduct = {
       productId: product._id,
       variantId: variant._id,
@@ -274,9 +274,9 @@ const ProductDetails = ({ product, variant, colors = [], sizes = [], reviewCount
 
       {/* CTA */}
       <div className="flex flex-col sm:flex-row gap-4">
-        {isAddedIntoCart ? (
+        {!isAddedIntoCart ? (
           <ButtonLoading
-            onClick={handleAddToCard}
+            onClick={handleAddToCart}
             className="flex-1 bg-primary text-white py-3 rounded-full font-semibold hover:opacity-90 transition"
           >
             Add to Cart
@@ -286,10 +286,13 @@ const ProductDetails = ({ product, variant, colors = [], sizes = [], reviewCount
             asChild
             className="flex-1 bg-primary text-white py-3 rounded-full font-semibold hover:opacity-90 transition"
           >
-            <Link href={WEBSITE_CART}>Go to Cart</Link>
+            <Link href={WEBSITE_CART}>
+              Go to Cart
+            </Link>
           </Button>
         )}
       </div>
+
     </div>
   </div>
  

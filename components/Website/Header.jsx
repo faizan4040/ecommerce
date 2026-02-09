@@ -8,7 +8,7 @@ import {
   Globe,
 } from "lucide-react"
 import { WEBSITE_HOME, WEBSITE_LOGIN, WEBSITE_REGISTER, WEBSITE_SHOP } from "@/routes/WebsiteRoute"
-import Card from '@/components/Website/Card'
+import Card from '@/components/Website/Cart'
 import Link from "next/link"
 import { useSelector } from "react-redux"
 import { Avatar, AvatarImage } from "../ui/avatar"
