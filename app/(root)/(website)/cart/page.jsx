@@ -1,237 +1,362 @@
 'use client'
-import React, { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import Image from 'next/image'
+import Link from 'next/link'
+
+import { ChevronDown } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
 import WebsiteBreadcrumb from '@/components/Website/WebsiteBreadcrumb'
 import { IMAGES } from '@/routes/Images'
-import { removeFromCart, increaseQuantity, decreaseQuantity } from '@/store/reducer/cartReducer'
-import { WEBSITE_PRODUCT_DETAILS, WEBSITE_SHOP } from '@/routes/WebsiteRoute'
-import Link from 'next/link'
-import { BiMinus, BiPlus } from 'react-icons/bi'
-import { MdDeleteOutline } from "react-icons/md";
+import {
+  WEBSITE_CHECKOUT,
+  WEBSITE_PRODUCT_DETAILS,
+  WEBSITE_SHOP,
+} from '@/routes/WebsiteRoute'
+import {
+  decreaseQuantity,
+  increaseQuantity,
+  removeFromCart,
+} from '@/store/reducer/cartReducer'
 
+import { Plus } from 'lucide-react'
+import { BiMinus } from 'react-icons/bi'
+import { IoCloseCircleOutline } from 'react-icons/io5'
+
+/* ================= BREADCRUMB ================= */
 const breadCrumb = {
   title: 'Cart',
   links: [{ label: 'Cart' }],
 }
 
+/* ================= HELPERS ================= */
+const formatPrice = (value) => {
+  return Number(value || 0).toLocaleString('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+  })
+}
+
+/**
+ * Handles:
+ * - [{ url }]
+ * - [{ path }]
+ * - ['string']
+ * - empty / undefined
+ */
+const getImageSrc = (media) => {
+  if (!media) return IMAGES.image_placeholder
+
+  // string
+  if (typeof media === 'string') return media
+
+  // array
+  if (Array.isArray(media) && media.length > 0) {
+    const img = media[0]
+    if (typeof img === 'string') return img
+    if (img?.path) return img.path
+    if (img?.url) return img.url
+  }
+
+  return IMAGES.image_placeholder
+}
+
+
 const CartPage = () => {
-  const cart = useSelector((store) => store.cartStore)
   const dispatch = useDispatch()
+  const cart = useSelector((state) => state.cartStore)
+  const [showCoupon, setShowCoupon] = useState(false)
+  const [coupon, setCoupon] = useState('')
 
-  const [discount, setDiscount] = useState(0)
   const [subtotal, setSubtotal] = useState(0)
-  const [promoCode, setPromoCode] = useState('')
-  const [promoDiscount, setPromoDiscount] = useState(0)
-  const [total, setTotal] = useState(0)
-  const [promoOpen, setPromoOpen] = useState(false)
+  const [discount, setDiscount] = useState(0)
 
-  // Recalculate subtotal, discount, total whenever cart or promo changes
+  /* ================= CALCULATIONS ================= */
   useEffect(() => {
-    const subtotalCalc = cart.products.reduce(
-      (sum, item) => sum + item.sellingPrice * item.qty,
-      0
-    )
+    const products = cart.products || []
 
-    const discountCalc = cart.products.reduce(
-      (sum, item) => sum + ((item.mrp - item.sellingPrice) * item.qty),
-      0
-    )
+    let sub = 0
+    let disc = 0
 
-    setSubtotal(subtotalCalc)
+    products.forEach((p) => {
+      sub += p.sellingPrice * p.qty
+      disc += (p.mrp - p.sellingPrice) * p.qty
+    })
 
-    // Ensure discount does not exceed subtotal
-    const validDiscount = Math.min(discountCalc, subtotalCalc)
-    setDiscount(validDiscount)
+    setSubtotal(sub)
+    setDiscount(disc)
+  }, [cart.products])
 
-    // Total = subtotal - discount - promoDiscount, never negative
-    setTotal(Math.max(0, subtotalCalc - validDiscount - promoDiscount))
-  }, [cart, promoDiscount])
-
-  const handleQty = (type, product) => {
-    if (type === 'inc') {
-      dispatch(increaseQuantity({ productId: product.productId, variantId: product.variantId }))
-    } else if (type === 'dec' && product.qty > 1) {
-      dispatch(decreaseQuantity({ productId: product.productId, variantId: product.variantId }))
-    }
-  }
-
-  const applyPromo = () => {
-    if (!promoCode) return alert('Please enter a promo code')
-    // Example: Flat ₹100 discount
-    setPromoDiscount(100)
-    alert(`Promo code "${promoCode}" applied! ₹100 off`)
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <WebsiteBreadcrumb props={breadCrumb} />
-
-      {cart.count === 0 ? (
-        <div className="w-full h-screen flex justify-center items-center py-32">
+  /* ================= EMPTY CART ================= */
+  if (!cart.products || cart.products.length === 0) {
+    return (
+      <>
+        <WebsiteBreadcrumb props={breadCrumb} />
+        <div className="min-h-[70vh] flex items-center justify-center">
           <div className="text-center">
-            <h4 className="text-2xl font-semibold mb-4">Your cart is empty</h4>
+            <h2 className="text-3xl font-semibold mb-4">
+              Your cart is empty
+            </h2>
             <Button asChild>
               <Link href={WEBSITE_SHOP}>Continue Shopping</Link>
             </Button>
           </div>
         </div>
-      ) : (
-        <div className="max-w-8xl mx-auto px-4 py-8">
-          <h2 className="text-3xl font-bold mb-6">
-            In your bag ({cart.count} Item{cart.count > 1 ? 's' : ''})
-          </h2>
+      </>
+    )
+  }
 
-          <div className="grid grid-cols-12 gap-6">
-            {/* Items List */}
-            <div className="col-span-12 lg:col-span-8 space-y-6">
-              {cart.products.map((product) => (
-                <div key={product.variantId} className="bg-white p-4 rounded-xl shadow-sm flex gap-4 items-start">
-                  <Image
-                    src={product.media || IMAGES.image_placeholder}
-                    width={120}
-                    height={120}
-                    alt={product.name}
-                    className="rounded-lg object-cover border"
-                  />
+  return (
+    <>
+      <WebsiteBreadcrumb props={breadCrumb} />
 
-                  <div className="flex-1">
-                    <Link
-                      href={WEBSITE_PRODUCT_DETAILS(product.slug)}
-                      className="text-lg font-medium line-clamp-1"
-                    >
-                      <h4 className="font-semibold">{product.name}</h4>
-                    </Link>
+      <div className="max-w-8xl mx-auto px-4 lg:px-8 my-14 flex flex-col lg:flex-row gap-10">
+        {/* ================= CART ITEMS ================= */}
+        <div className="lg:w-2/3 w-full">
+          <div className="border rounded-lg overflow-hidden">
+            <table className="w-full">
+              <thead className="hidden md:table-header-group bg-gray-100">
+                <tr>
+                  <th className="p-4 text-left">Product</th>
+                  <th className="p-4 text-left">Price</th>
+                  <th className="p-4 text-left">Qty</th>
+                  <th className="p-4 text-left">Total</th>
+                  <th className="p-4"></th>
+                </tr>
+              </thead>
 
-                    <p className="text-sm text-gray-500 mt-1">Size: {product.size}</p>
-                    <p className="text-sm text-gray-500 mt-1">Color: {product.color}</p>
-
-                    {/* Quantity Selector */}
-                    <div className="flex items-center gap-2 mt-3 w-32 border rounded-full overflow-hidden">
-                      <button
-                        onClick={() => handleQty('dec', product)}
-                        className="w-10 h-10 flex items-center justify-center hover:bg-gray-100"
-                      >
-                        <BiMinus />
-                      </button>
-                      <input
-                        value={product.qty}
-                        readOnly
-                        className="w-12 text-center border-none focus:outline-none text-sm"
-                      />
-                      <button
-                        onClick={() => handleQty('inc', product)}
-                        className="w-10 h-10 flex items-center justify-center hover:bg-gray-100"
-                      >
-                        <BiPlus />
-                      </button>
-                    </div>
-
-                    <p className="mt-2 font-semibold text-lg">
-                      {product.sellingPrice.toLocaleString('en-IN', { style: 'currency', currency: "INR" })}
-                    </p>
-
-                    <div className="flex items-center justify-between mt-3 text-sm text-gray-600">
-                      <span>Total: {(product.sellingPrice * product.qty).toLocaleString('en-IN', { style: 'currency', currency: "INR" })}</span>
-                      <Button
-                        variant="ghost"
-                        className="text-red-500 hover:text-red-600 p-1 cursor-pointer"
-                        onClick={() =>
-                          dispatch(removeFromCart({ productId: product.productId, variantId: product.variantId }))
-                        }
-                      >
-                        <MdDeleteOutline/>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Summary */}
-            <div className="col-span-12 lg:col-span-4 space-y-4">
-              <div className="bg-white p-6 rounded-xl shadow-sm space-y-4">
-                <h3 className="text-xl font-bold mb-2">Summary</h3>
-
-                {/* Subtotal / Discount / Promo / Total */}
-                <div className="space-y-2">
-                  <div className="flex justify-between font-semibold">
-                    <span>Subtotal</span>
-                    <span>{subtotal.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</span>
-                  </div>
-
-                  <div className="flex justify-between text-gray-600">
-                    <span>Discount</span>
-                    <span>-{discount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</span>
-                  </div>
-
-                  {promoDiscount > 0 && (
-                    <div className="flex justify-between text-gray-600">
-                      <span>Promo Discount</span>
-                      <span>-{promoDiscount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</span>
-                    </div>
-                  )}
-
-                  <div className="flex justify-between font-bold text-lg border-t pt-2">
-                    <span>Total</span>
-                    <span>{total.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</span>
-                  </div>
-
-                  {/* Promo Code Input */}
-                  <div className="mt-2">
-                    <button
-                      className="w-full text-left text-primary font-semibold hover:underline transition mb-2"
-                      onClick={() => setPromoOpen(!promoOpen)}
-                    >
-                      {promoOpen ? 'Hide Promo Code' : 'Have a promo code?'}
-                    </button>
-                    {promoOpen && (
-                      <div className="flex gap-2">
-                        <input
-                          type="text"
-                          placeholder="Add promo code"
-                          value={promoCode}
-                          onChange={(e) => setPromoCode(e.target.value)}
-                          className="flex-1 border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              <tbody>
+                {cart.products.map((product) => (
+                  <tr
+                    key={`${product.productId}-${product.variantId}`}
+                    className="border-b block md:table-row"
+                  >
+                    {/* PRODUCT */}
+                    <td className="p-4">
+                      <div className="flex gap-4">
+                        <Image
+                          src={getImageSrc(product?.media)}
+                          width={80}
+                          height={80}
+                          className="rounded object-cover"
+                          alt={product.name}
                         />
+                        <div>
+                          <Link
+                            href={WEBSITE_PRODUCT_DETAILS(product.url)}
+                            className="font-medium hover:underline"
+                          >
+                            {product.name}
+                          </Link>
+                          <p className="text-sm text-gray-500">
+                            Color: {product.color || '-'} | Size:{' '}
+                            {product.size || '-'}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* PRICE */}
+                    <td className="p-4 text-sm">
+                      {formatPrice(product.sellingPrice)}
+                    </td>
+
+                    {/* QUANTITY */}
+                    <td className="p-4">
+                      <div className="flex items-center border rounded-full w-fit">
                         <button
-                          onClick={() => {
-                            if (!promoCode) return alert('Please enter a promo code')
-                            setPromoDiscount(100)
-                            alert(`Promo code "${promoCode}" applied! ₹100 off`)
-                          }}
-                          className="bg-primary text-white px-4 py-2 rounded-xl hover:opacity-90 transition"
+                          onClick={() =>
+                            dispatch(
+                              decreaseQuantity({
+                                productId: product.productId,
+                                variantId: product.variantId,
+                              })
+                            )
+                          }
+                          className="px-3 py-2 hover:bg-gray-100"
                         >
-                          Apply
+                          <BiMinus />
+                        </button>
+
+                        <span className="px-4 text-sm">
+                          {product.qty}
+                        </span>
+
+                        <button
+                          onClick={() =>
+                            dispatch(
+                              increaseQuantity({
+                                productId: product.productId,
+                                variantId: product.variantId,
+                              })
+                            )
+                          }
+                          className="px-3 py-2 hover:bg-gray-100"
+                        >
+                          <Plus size={16} />
                         </button>
                       </div>
-                    )}
-                  </div>
-                </div>
+                    </td>
 
-                {/* Action Buttons */}
-                <Button className="w-full bg-primary text-white py-3 rounded-xl mb-3 hover:opacity-90 transition">
-                  View Cart
-                </Button>
-                <Button className="w-full bg-primary text-white py-3 rounded-xl hover:opacity-90 transition">
-                  Checkout
-                </Button>
-              </div>
+                    {/* TOTAL */}
+                    <td className="p-4 font-medium">
+                      {formatPrice(
+                        product.sellingPrice * product.qty
+                      )}
+                    </td>
 
-              {/* Delivery & Info */}
-              <div className="bg-white p-6 rounded-xl shadow-sm text-sm text-gray-500 space-y-2">
-                <p>Delivery Calculator</p>
-                <p>All our orders are Carbon neutral</p>
-                <p>Members get priority order processing, create an Ultra account during checkout</p>
-                <p>All taxes and duties are already included in the price.</p>
-              </div>
+                    {/* REMOVE */}
+                    <td className="p-4">
+                      <button
+                        onClick={() =>
+                          dispatch(
+                            removeFromCart({
+                              productId: product.productId,
+                              variantId: product.variantId,
+                            })
+                          )
+                        }
+                        className="text-xl text-gray-500 hover:text-red-500"
+                      >
+                        <IoCloseCircleOutline />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* ================= SUMMARY ================= */}
+       <div className="lg:w-1/3 w-full">
+      <div className="bg-gray-50 p-6 rounded-lg sticky top-24">
+        <h3 className="text-xl font-semibold mb-4">
+          Order Summary
+        </h3>
+
+        {/* PRICE DETAILS */}
+        <div className="space-y-3 text-sm">
+          <div className="flex justify-between">
+            <span>Subtotal</span>
+            <span>{formatPrice(subtotal)}</span>
+          </div>
+
+          <div className="flex justify-between text-green-600">
+            <span>Discount</span>
+            <span>- {formatPrice(discount)}</span>
+          </div>
+
+          <div className="border-t pt-3 flex justify-between font-semibold text-lg">
+            <span>Total</span>
+            <span>{formatPrice(subtotal - discount)}</span>
+          </div>
+        </div>
+
+        {/* COUPON DROPDOWN */}
+        <div className="mt-5">
+          <button
+            type="button"
+            onClick={() => setShowCoupon(!showCoupon)}
+            className="w-full flex cursor-pointer items-center justify-between text-sm font-medium hover:underline"
+          >
+            Do you have a promo code?
+            <ChevronDown
+              size={16}
+              className={`transition-transform ${
+                showCoupon ? 'rotate-180' : ''
+              }`}
+            />
+          </button>
+
+          <div
+            className={`overflow-hidden  transition-all duration-300 ease-in-out ${
+              showCoupon ? 'max-h-40 mt-3' : 'max-h-0'
+            }`}
+          >
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={coupon}
+                onChange={(e) => setCoupon(e.target.value)}
+                placeholder="Add promotional code"
+                className="flex-1 rounded-full border px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black"
+              />
+              <button
+                type="button"
+                className="rounded-full cursor-pointer bg-black text-white px-5 text-sm font-medium hover:opacity-90"
+              >
+                Apply
+              </button>
             </div>
           </div>
         </div>
-      )}
-    </div>
+
+        {/* CHECKOUT BUTTON */}
+        <Button
+          asChild
+          className="w-full mt-6 rounded-full bg-black"
+        >
+          <Link href={WEBSITE_CHECKOUT}>
+            Proceed to Checkout
+          </Link>
+        </Button>
+
+        <p className="text-center mt-4">
+          <Link
+            href={WEBSITE_SHOP}
+            className="text-sm hover:underline"
+          >
+            Continue Shopping
+          </Link>
+        </p>
+
+        {/* TRUST & INFO */}
+        <div className="mt-6 pt-5 border-t space-y-3 text-xs text-gray-600 leading-relaxed">
+          <p>
+            All taxes and duties are already included in the price of
+            each order shipped to mainland EU (including Ireland).
+          </p>
+
+          <ul className="space-y-1">
+            <li>• UK’s no. 1 online retailer for run, gym and hike</li>
+            <li>• Next day delivery – 7 days a week</li>
+            <li>• 100 days return or exchange</li>
+          </ul>
+        </div>
+      </div>
+      </div>
+        
+      </div>
+    </>
   )
 }
 
 export default CartPage
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
