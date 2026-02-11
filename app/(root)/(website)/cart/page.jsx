@@ -254,45 +254,7 @@ const CartPage = () => {
             <span>{formatPrice(subtotal - discount)}</span>
           </div>
         </div>
-
-        {/* COUPON DROPDOWN */}
-        <div className="mt-5">
-          <button
-            type="button"
-            onClick={() => setShowCoupon(!showCoupon)}
-            className="w-full flex cursor-pointer items-center justify-between text-sm font-medium hover:underline"
-          >
-            Do you have a promo code?
-            <ChevronDown
-              size={16}
-              className={`transition-transform ${
-                showCoupon ? 'rotate-180' : ''
-              }`}
-            />
-          </button>
-
-          <div
-            className={`overflow-hidden  transition-all duration-300 ease-in-out ${
-              showCoupon ? 'max-h-40 mt-3' : 'max-h-0'
-            }`}
-          >
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={coupon}
-                onChange={(e) => setCoupon(e.target.value)}
-                placeholder="Add promotional code"
-                className="flex-1 rounded-full border px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-black"
-              />
-              <button
-                type="button"
-                className="rounded-full cursor-pointer bg-black text-white px-5 text-sm font-medium hover:opacity-90"
-              >
-                Apply
-              </button>
-            </div>
-          </div>
-        </div>
+   
 
         {/* CHECKOUT BUTTON */}
         <Button

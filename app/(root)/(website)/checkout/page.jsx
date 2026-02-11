@@ -11,8 +11,8 @@ import { CiCircleRemove } from "react-icons/ci";
 import WebsiteBreadcrumb from '@/components/Website/WebsiteBreadcrumb'
 import {
   WEBSITE_SHOP,
-  WEBSITE_CHECKOUT,
   WEBSITE_PRODUCT_DETAILS,
+  WEBSITE_ORDER_DETAILS,
 } from '@/routes/WebsiteRoute'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -22,6 +22,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@/components/ui/form'
 
@@ -32,7 +33,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { showToast } from '@/lib/showToast'
 import { IMAGES } from '@/routes/Images'
-import z from 'zod'
+import { z } from 'zod'
+import Script from 'next/script'
+import { useRouter } from 'next/navigation'
+
 
 /* ---------------- HELPERS ---------------- */
 const formatPrice = (v) =>
@@ -57,6 +61,7 @@ const breadCrumb = {
 }
 
 const CheckOut = () => {
+  const router = useRouter()
   const dispatch = useDispatch()
   const cart = useSelector((state) => state.cartStore)
   const auth = useSelector((state) => state.authStore)
@@ -66,6 +71,9 @@ const CheckOut = () => {
   const [couponDiscount, setCouponDiscount] = useState(0)
   const [couponLoading, setCouponLoading] = useState(false)
   const [isCouponApplied, setIsCouponApplied] = useState(false)
+  const [placingOrder, setPlacingOrder] = useState(false)
+  const [orderConfirmation, setOrderConfirmation] = useState(true)
+  const [savingOrder, setSavingOrder] = useState(false)
 
   /* ---------------- VERIFY CART ---------------- */
   const { data: verifiedResponse } = useFetch(
@@ -176,7 +184,7 @@ const orderFormSchema = zSchema
     city: true,
     pincode: true,
     landmark: true,
-    ordernot: true,
+    ordernote: true,
   })
   .extend({
     userId: z.string().optional(),
@@ -194,14 +202,118 @@ const orderForm = useForm({
     city: '',
     pincode: '',
     landmark: '',
-    ordernot: '',
+    ordernote: '',
     userId: auth?._id,
   },
 })
 
-// const placeOrder = async(formData) = {
 
-// }
+//get order id
+const getOrderId = async (amount) => {
+   try{
+       const { data: orderIdData } = await axios.post('/api/payment/get-order-id',{ amount })
+       if(!orderIdData.success) {
+         throw new Error(orderIdData.message)
+       }
+
+       return { success: true, order_id: orderIdData.data }
+
+
+   } catch(error){
+      return { success: false, message: error.message }
+   }
+}
+
+// razorpay setup
+const placeOrder = async (formData) => {
+  setPlacingOrder(true)
+
+  try {
+    const generateOrderId = await getOrderId(totalAmount)
+    if (!generateOrderId.success) {
+      throw new Error(generateOrderId.message)
+    }
+
+    if (!window.Razorpay) {
+      throw new Error('Razorpay SDK not loaded')
+    }
+
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+      amount: totalAmount * 100,
+      currency: 'INR',
+      name: 'All Spikes',
+      description: 'Payment for order',
+      order_id: generateOrderId.order_id,
+
+      handler: async function (response) {
+        try {
+          setSavingOrder(true)
+
+          const products = cart.products.map((cartItem) => ({
+            productId: cartItem.productId,
+            variantId: cartItem.variantId,
+            name: cartItem.name,
+            qty: cartItem.qty,
+            mrp: cartItem.mrp,
+            sellingPrice: cartItem.sellingPrice,
+          }))
+
+          const { data } = await axios.post('/api/payment/save-order', {
+            ...formData,
+            ...response,
+            products,
+            subtotal,
+            discount,
+            couponDiscount,
+            totalAmount,
+          })
+
+          if (data.success) {
+            showToast('success', data.message)
+            dispatch(clearCart())
+            orderForm.reset()
+            router.push(
+              WEBSITE_ORDER_DETAILS(response.razorpay_order_id)
+            )
+          } else {
+            showToast('error', data.message)
+          }
+        } catch (err) {
+          showToast('error', err.message)
+        } finally {
+          setSavingOrder(false)
+        }
+      },
+
+      prefill: {
+        name: formData.name,
+        email: formData.email,
+        contact: formData.phone,
+      },
+
+      theme: {
+        color: '#f97316',
+      },
+    }
+
+    const rzp = new window.Razorpay(options)
+
+    rzp.on('payment.failed', function (response) {
+      showToast('error', response.error.description)
+    })
+
+    rzp.open()
+  } catch (error) {
+    showToast('error', error.message)
+  } finally {
+    setPlacingOrder(false)
+  }
+}
+
+
+
+
 
 const submitOrder = (values) => {
   const payload = {
@@ -214,10 +326,11 @@ const submitOrder = (values) => {
     totalAmount,
   }
 
-  console.log('ORDER PAYLOAD 👉', payload)
-
-  // axios.post('/api/order/create', payload)
 }
+
+if(savingOrder) return <div className='h-screen w-screen fixed top-0 left-0 flex items-center'>
+  <span>Loading...</span>
+</div>
 
 
   return (
@@ -226,136 +339,169 @@ const submitOrder = (values) => {
 
       <div className="flex flex-wrap lg:flex-nowrap gap-10 my-20 lg:px-32 px-4">
 
-       <div className="lg:w-[70%] w-full">
-  <div className="bg-white p-6 rounded-lg shadow-sm">
-    <h2 className="text-xl font-semibold mb-6">Shipping Details</h2>
+    <div className="lg:w-[70%] w-full">
+  <div className="bg-white p-6 rounded-xl shadow-sm border">
+   <div className="flex flex-row items-center gap-3 mb-6 border-b pb-3">
+  <h2 className="text-xl font-semibold flex items-center gap-3">
+    <img
+      src={IMAGES.shipping}
+      alt="Shipping"
+      className="h-15 w-15 -mt-4"
+      />
+      <span className='font-semibold'>Shipping Details</span>
+    </h2>
+  </div>
 
     <Form {...orderForm}>
       <form
-        onSubmit={orderForm.handleSubmit(submitOrder)}
-        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+        onSubmit={orderForm.handleSubmit(placeOrder)}
+        className="space-y-4"
       >
 
-        {/* NAME */}
+        {/* ROW 1 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* FULL NAME */}
+          <FormField
+            control={orderForm.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter full name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* EMAIL */}
+          <FormField
+            control={orderForm.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email Address</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter email address" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* ROW 2 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* PHONE */}
+          <FormField
+            control={orderForm.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter phone number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* COUNTRY */}
+          <FormField
+            control={orderForm.control}
+            name="country"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Country</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Enter country"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* ROW 3 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* STATE */}
+          <FormField
+            control={orderForm.control}
+            name="state"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>State</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter state" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* CITY */}
+          <FormField
+            control={orderForm.control}
+            name="city"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>City</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter city" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* ROW 4 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* PINCODE */}
+          <FormField
+            control={orderForm.control}
+            name="pincode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Pincode</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter pincode" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* LANDMARK */}
+          <FormField
+            control={orderForm.control}
+            name="landmark"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Landmark</FormLabel>
+                <FormControl>
+                  <Input placeholder="Nearby landmark" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* ORDER NOTE (FULL WIDTH) */}
         <FormField
           control={orderForm.control}
-          name="name"
+          name="ordernote"
           render={({ field }) => (
             <FormItem>
+              <FormLabel>Order Note (Optional)</FormLabel>
               <FormControl>
-                <Input placeholder="Full Name" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* EMAIL */}
-        <FormField
-          control={orderForm.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="Email Address" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* PHONE */}
-        <FormField
-          control={orderForm.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="Phone Number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* COUNTRY */}
-        <FormField
-          control={orderForm.control}
-          name="country"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="Country" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* STATE */}
-        <FormField
-          control={orderForm.control}
-          name="state"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="State" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* CITY */}
-        <FormField
-          control={orderForm.control}
-          name="city"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="City" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* PINCODE */}
-        <FormField
-          control={orderForm.control}
-          name="pincode"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="Pincode" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* LANDMARK */}
-        <FormField
-          control={orderForm.control}
-          name="landmark"
-          render={({ field }) => (
-            <FormItem className="md:col-span-2">
-              <FormControl>
-                <Input placeholder="Landmark" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* ORDER NOTE */}
-        <FormField
-          control={orderForm.control}
-          name="ordernot"
-          render={({ field }) => (
-            <FormItem className="md:col-span-2">
-              <FormControl>
-                <Input placeholder="Order note (optional)" {...field} />
+                <Input placeholder="Any special delivery instructions" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -363,17 +509,18 @@ const submitOrder = (values) => {
         />
 
         {/* SUBMIT */}
-        <Button
-          type="submit"
-          className="md:col-span-2 mt-4 bg-black rounded-full cursor-pointer hover:bg-orange-500 transition-all duration-300"
-        >
-          Place Order
-        </Button>
+      <ButtonLoading
+        type="submit"
+        text="Place Order"
+        loading={placingOrder}
+        className="w-full mt-6 cursor-pointer text-white hover:text-white bg-black rounded-full hover:bg-orange-500 transition-all duration-300"
+      />
 
       </form>
     </Form>
   </div>
-</div>
+    </div>
+
 
 
         <div className="lg:w-1/3 w-full">
@@ -475,11 +622,6 @@ const submitOrder = (values) => {
               </Form>
             )}
 
-            {/* CTA */}
-            {/* <Button asChild className="w-full mt-6 rounded-full bg-black">
-              <Link href={WEBSITE_CHECKOUT}>Proceed to Checkout</Link>
-            </Button> */}
-
             <p className="text-center mt-4">
               <Link href={WEBSITE_SHOP} className="text-sm hover:underline">
                 Continue Shopping
@@ -488,6 +630,8 @@ const submitOrder = (values) => {
           </div>
         </div>
       </div>
+
+      <Script src='https://checkout.razorpay.com/v1/checkout.js'/>
     </div>
   )
 }

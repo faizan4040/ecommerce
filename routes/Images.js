@@ -70,7 +70,8 @@ export const IMAGES = {
   winning: "/assets/images/winning.jpg",
   footprints: "/assets/images/footprints.jpg",
   discount_code: "/assets/images/discount_code.jpg",
-  
+  shipping: "/assets/images/shipping.gif",
+
   
 
 }
