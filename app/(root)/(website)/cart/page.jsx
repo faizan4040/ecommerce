@@ -5,8 +5,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { ChevronDown } from 'lucide-react'
-
 import { Button } from '@/components/ui/button'
 import WebsiteBreadcrumb from '@/components/Website/WebsiteBreadcrumb'
 import { IMAGES } from '@/routes/Images'
@@ -39,13 +37,7 @@ const formatPrice = (value) => {
   })
 }
 
-/**
- * Handles:
- * - [{ url }]
- * - [{ path }]
- * - ['string']
- * - empty / undefined
- */
+
 const getImageSrc = (media) => {
   if (!media) return IMAGES.image_placeholder
 
@@ -94,16 +86,21 @@ const CartPage = () => {
     return (
       <>
         <WebsiteBreadcrumb props={breadCrumb} />
-        <div className="min-h-[70vh] flex items-center justify-center">
-          <div className="text-center">
-            <h2 className="text-3xl font-semibold mb-4">
-              Your cart is empty
-            </h2>
-            <Button asChild>
-              <Link href={WEBSITE_SHOP}>Continue Shopping</Link>
-            </Button>
-          </div>
+       <div className="min-h-[70vh] flex items-center justify-center">
+        <div className="text-center flex flex-col items-center gap-6">
+          <img
+            src={IMAGES.emptycart}
+            alt="Empty Cart"
+            className="w-48 h-48 object-contain"
+          />
+          <h2 className="text-3xl font-semibold text-gray-800">
+            Your cart is empty
+          </h2>
+          <Button className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 transition">
+            <Link href={WEBSITE_SHOP}>Continue Shopping</Link>
+          </Button>
         </div>
+      </div>
       </>
     )
   }

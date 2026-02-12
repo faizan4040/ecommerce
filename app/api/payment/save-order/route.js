@@ -1,6 +1,7 @@
 import { orderNotification } from "@/email/orderNotification";
 import connectDB from "@/lib/databaseConnection";
-import { response } from "@/lib/helperfunction";
+import { catchError, response } from "@/lib/helperfunction";
+import { sendMail } from "@/lib/sendMail";
 import { zSchema } from "@/lib/zodSchema";
 import OrderModel from "@/models/Order.model";
 import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils";
@@ -12,7 +13,7 @@ export async function POST(request) {
     await connectDB()
     const payload = await request.json()
 
-    const schema = z.object({
+    const productSchema = z.object({
         productId: z.string().length(24, 'Invalid product id format'),
         variantId: z.string().length(24, 'Invalid variant id format'),
         name: z.string().min(1),
@@ -22,7 +23,7 @@ export async function POST(request) {
     })
 
     const orderSchema = zSchema.pick({
-        name: true, email: true, phone: true, country: true, state: true, city: true,
+        name: true, email: true, phone: true, address: true, country: true, state: true, city: true,
         pincode: true, landmark:true, ordernote: true
     }).extend({
         userId: z.string().optional(),
@@ -31,7 +32,7 @@ export async function POST(request) {
         razorpay_signature: z.string().min(3, 'Signature id is required.'),
         subtotal: z.number().nonnegative(),
         discount: z.number().nonnegative(),
-        couponDiscountAmount: z.number().nonnegative(),
+        couponDiscount: z.number().nonnegative(),
         totalAmount: z.number().nonnegative(),
         products: z.array(productSchema)
     })
@@ -56,25 +57,27 @@ export async function POST(request) {
     }
 
     const newOrder = await OrderModel.create({
-            user: validateData.userId,
-            name: validateData.name,
-            email: validateData.email,
-            phone: validateData.phone,
-            country: validateData.country,
-            state: validateData.state,
-            city: validateData.city,
-            pincode: validateData.pincode,
-            landmark: validateData.landmark,
-            ordernote: validateData.ordernote,
-            products: validateData.products,
-            subtotal: validateData.subtotal,
-            discount: validateData.discount,
-            couponDiscount: validateData.couponDiscount,
-            totalAmount: validateData.totalAmount,
-            payment_id: validateData.razorpay_payment_id,
-            order_id: validateData.order_id,
-            status: paymentVerification ? 'pending' : 'unverified'
-    })
+    user: validateData.userId || null,                       
+    name: validateData.name,
+    email: validateData.email,
+    phone: validateData.phone,
+    address: validateData.address,
+    country: validateData.country,
+    state: validateData.state,
+    city: validateData.city,
+    pincode: validateData.pincode,
+    landmark: validateData.landmark,
+    ordernote: validateData.ordernote,
+    products: validateData.products,
+    subtotal: validateData.subtotal,
+    discount: validateData.discount,
+    couponDiscount: validateData.couponDiscount || 0,  
+    totalAmount: validateData.totalAmount,
+    payment_id: validateData.razorpay_payment_id,
+    order_id: validateData.razorpay_order_id,               
+    status: paymentVerification ? 'pending' : 'unverified'
+    });
+
 
     try{
         const mailData = {

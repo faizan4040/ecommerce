@@ -71,6 +71,8 @@ export const IMAGES = {
   footprints: "/assets/images/footprints.jpg",
   discount_code: "/assets/images/discount_code.jpg",
   shipping: "/assets/images/shipping.gif",
+  confirmorder: "/assets/images/confirmorder.gif",
+  emptycart: "/assets/images/empty_cart.gif",
 
   
 

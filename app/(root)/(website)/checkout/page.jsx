@@ -72,7 +72,6 @@ const CheckOut = () => {
   const [couponLoading, setCouponLoading] = useState(false)
   const [isCouponApplied, setIsCouponApplied] = useState(false)
   const [placingOrder, setPlacingOrder] = useState(false)
-  const [orderConfirmation, setOrderConfirmation] = useState(true)
   const [savingOrder, setSavingOrder] = useState(false)
 
   /* ---------------- VERIFY CART ---------------- */
@@ -161,16 +160,6 @@ const CheckOut = () => {
   }
 
   /* ---------------- EMPTY CART ---------------- */
-  if (cart.count === 0) {
-    return (
-      <div className="py-32 text-center">
-        <h4 className="text-4xl font-semibold mb-5">Your cart is empty</h4>
-        <Button asChild>
-          <Link href={WEBSITE_SHOP}>Continue Shopping</Link>
-        </Button>
-      </div>
-    )
-  }
 
 
   // place order
@@ -179,6 +168,7 @@ const orderFormSchema = zSchema
     name: true,
     email: true,
     phone: true,
+    address: true,
     country: true,
     state: true,
     city: true,
@@ -197,6 +187,7 @@ const orderForm = useForm({
     name: '',
     email: '',
     phone: '',
+    address: '',
     country: '',
     state: '',
     city: '',
@@ -249,7 +240,6 @@ const placeOrder = async (formData) => {
       handler: async function (response) {
         try {
           setSavingOrder(true)
-
           const products = cart.products.map((cartItem) => ({
             productId: cartItem.productId,
             variantId: cartItem.variantId,
@@ -262,20 +252,19 @@ const placeOrder = async (formData) => {
           const { data } = await axios.post('/api/payment/save-order', {
             ...formData,
             ...response,
-            products,
-            subtotal,
-            discount,
-            couponDiscount,
-            totalAmount,
+            userId: auth?._id,
+            products: products,
+            subtotal: subtotal,
+            discount: discount,
+            couponDiscount: couponDiscount,
+            totalAmount: totalAmount,
           })
 
           if (data.success) {
             showToast('success', data.message)
             dispatch(clearCart())
             orderForm.reset()
-            router.push(
-              WEBSITE_ORDER_DETAILS(response.razorpay_order_id)
-            )
+            router.push(WEBSITE_ORDER_DETAILS(response.razorpay_order_id))
           } else {
             showToast('error', data.message)
           }
@@ -328,39 +317,71 @@ const submitOrder = (values) => {
 
 }
 
-if(savingOrder) return <div className='h-screen w-screen fixed top-0 left-0 flex items-center'>
-  <span>Loading...</span>
-</div>
-
 
   return (
     <div>
+
+       {cart.count === 0 ? (
+        <div className="py-32 text-center">
+          <h4 className="text-4xl font-semibold mb-5">
+            Your cart is empty
+          </h4>
+          <Button asChild>
+            <Link href={WEBSITE_SHOP}>Continue Shopping</Link>
+          </Button>
+        </div>
+      ) : (
+        <>
+           {savingOrder && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div className="flex flex-col items-center gap-4 rounded-2xl bg-white px-8 py-6 shadow-2xl transition-all">
+
+          {/* Image with smooth animation */}
+          <img
+            src={IMAGES.confirmorder}
+            alt="Confirm Order"
+            className="h-24 w-24 animate-[float_2s_ease-in-out_infinite]"
+          />
+
+          {/* Main text */}
+          <h4 className="text-lg font-semibold text-gray-900">
+            Confirming your order
+          </h4>
+
+          {/* Sub text */}
+          <p className="text-sm text-gray-500 animate-pulse text-center">
+            Please wait, we’re almost done 🚚
+          </p>
+        </div>
+      </div>
+    )}
+
+
       <WebsiteBreadcrumb props={breadCrumb} />
 
       <div className="flex flex-wrap lg:flex-nowrap gap-10 my-20 lg:px-32 px-4">
 
-    <div className="lg:w-[70%] w-full">
-  <div className="bg-white p-6 rounded-xl shadow-sm border">
-   <div className="flex flex-row items-center gap-3 mb-6 border-b pb-3">
-  <h2 className="text-xl font-semibold flex items-center gap-3">
-    <img
-      src={IMAGES.shipping}
-      alt="Shipping"
-      className="h-15 w-15 -mt-4"
+    <div className="w-full lg:w-[70%]">
+  <div className="bg-white p-6 md:p-8 rounded-xl shadow-sm border">
+
+    {/* HEADER */}
+    <div className="flex items-center gap-3 mb-6 border-b pb-4">
+      <img
+        src={IMAGES.shipping}
+        alt="Shipping"
+        className="h-10 w-10 object-contain"
       />
-      <span className='font-semibold'>Shipping Details</span>
-    </h2>
-  </div>
+      <h2 className="text-xl font-semibold">Shipping Details</h2>
+    </div>
 
     <Form {...orderForm}>
       <form
         onSubmit={orderForm.handleSubmit(placeOrder)}
-        className="space-y-4"
+        className="space-y-5"
       >
 
         {/* ROW 1 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* FULL NAME */}
           <FormField
             control={orderForm.control}
             name="name"
@@ -375,7 +396,6 @@ if(savingOrder) return <div className='h-screen w-screen fixed top-0 left-0 flex
             )}
           />
 
-          {/* EMAIL */}
           <FormField
             control={orderForm.control}
             name="email"
@@ -393,7 +413,6 @@ if(savingOrder) return <div className='h-screen w-screen fixed top-0 left-0 flex
 
         {/* ROW 2 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* PHONE */}
           <FormField
             control={orderForm.control}
             name="phone"
@@ -408,7 +427,6 @@ if(savingOrder) return <div className='h-screen w-screen fixed top-0 left-0 flex
             )}
           />
 
-          {/* COUNTRY */}
           <FormField
             control={orderForm.control}
             name="country"
@@ -416,10 +434,7 @@ if(savingOrder) return <div className='h-screen w-screen fixed top-0 left-0 flex
               <FormItem>
                 <FormLabel>Country</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Enter country"
-                    {...field}
-                  />
+                  <Input placeholder="Enter country" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -427,9 +442,23 @@ if(savingOrder) return <div className='h-screen w-screen fixed top-0 left-0 flex
           />
         </div>
 
+        {/* ADDRESS (FULL WIDTH) */}
+        <FormField
+          control={orderForm.control}
+          name="address"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Address</FormLabel>
+              <FormControl>
+                <Input placeholder="House no, street, area" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         {/* ROW 3 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* STATE */}
           <FormField
             control={orderForm.control}
             name="state"
@@ -444,7 +473,6 @@ if(savingOrder) return <div className='h-screen w-screen fixed top-0 left-0 flex
             )}
           />
 
-          {/* CITY */}
           <FormField
             control={orderForm.control}
             name="city"
@@ -462,7 +490,6 @@ if(savingOrder) return <div className='h-screen w-screen fixed top-0 left-0 flex
 
         {/* ROW 4 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* PINCODE */}
           <FormField
             control={orderForm.control}
             name="pincode"
@@ -477,7 +504,6 @@ if(savingOrder) return <div className='h-screen w-screen fixed top-0 left-0 flex
             )}
           />
 
-          {/* LANDMARK */}
           <FormField
             control={orderForm.control}
             name="landmark"
@@ -493,7 +519,7 @@ if(savingOrder) return <div className='h-screen w-screen fixed top-0 left-0 flex
           />
         </div>
 
-        {/* ORDER NOTE (FULL WIDTH) */}
+        {/* ORDER NOTE */}
         <FormField
           control={orderForm.control}
           name="ordernote"
@@ -509,17 +535,16 @@ if(savingOrder) return <div className='h-screen w-screen fixed top-0 left-0 flex
         />
 
         {/* SUBMIT */}
-      <ButtonLoading
-        type="submit"
-        text="Place Order"
-        loading={placingOrder}
-        className="w-full mt-6 cursor-pointer text-white hover:text-white bg-black rounded-full hover:bg-orange-500 transition-all duration-300"
-      />
-
+        <ButtonLoading
+          type="submit"
+          text="Place Order"
+          loading={placingOrder}
+          className="w-full mt-6 bg-black text-white rounded-full hover:bg-orange-500 transition-all duration-300"
+        />
       </form>
     </Form>
   </div>
-    </div>
+</div>
 
 
 
@@ -631,11 +656,16 @@ if(savingOrder) return <div className='h-screen w-screen fixed top-0 left-0 flex
         </div>
       </div>
 
-      <Script src='https://checkout.razorpay.com/v1/checkout.js'/>
+     
+        </>
+      )}
+
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
     </div>
   )
 }
 
+    
 export default CheckOut
 
 
