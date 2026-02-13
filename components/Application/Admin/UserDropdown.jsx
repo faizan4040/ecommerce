@@ -45,6 +45,7 @@ const UserDropdown = () => {
       Orders
       </Link>
     </DropdownMenuItem>
+    
      <LogoutButton/>
 
   </DropdownMenuContent>

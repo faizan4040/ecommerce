@@ -64,7 +64,7 @@ const CheckOut = () => {
   const router = useRouter()
   const dispatch = useDispatch()
   const cart = useSelector((state) => state.cartStore)
-  const auth = useSelector((state) => state.authStore)
+  const authStore = useSelector((state) => state.authStore)
 
   /* ---------------- COUPON STATE ---------------- */
   const [couponCode, setCouponCode] = useState('')
@@ -194,9 +194,15 @@ const orderForm = useForm({
     pincode: '',
     landmark: '',
     ordernote: '',
-    userId: auth?._id,
+    userId: authStore?.auth?._id,
   },
 })
+
+useEffect(() =>{
+  if(authStore){
+    orderForm.setValue('userId', authStore?.auth?._id)
+  }
+},[authStore])
 
 
 //get order id
@@ -217,6 +223,8 @@ const getOrderId = async (amount) => {
 
 // razorpay setup
 const placeOrder = async (formData) => {
+
+ 
   setPlacingOrder(true)
 
   try {
@@ -252,7 +260,7 @@ const placeOrder = async (formData) => {
           const { data } = await axios.post('/api/payment/save-order', {
             ...formData,
             ...response,
-            userId: auth?._id,
+            userId: authStore?._id,
             products: products,
             subtotal: subtotal,
             discount: discount,
@@ -298,24 +306,24 @@ const placeOrder = async (formData) => {
   } finally {
     setPlacingOrder(false)
   }
+  
 }
 
 
 
 
 
-const submitOrder = (values) => {
-  const payload = {
-    ...values,
-    products: cart.products,
-    subtotal,
-    discount,
-    couponCode: isCouponApplied ? couponCode : null,
-    couponDiscount,
-    totalAmount,
-  }
-
-}
+// const submitOrder = (values) => {
+//   const payload = {
+//     ...values,
+//     products: cart.products,
+//     subtotal,
+//     discount,
+//     couponCode: isCouponApplied ? couponCode : null,
+//     couponDiscount,
+//     totalAmount,
+//   }
+// }
 
 
   return (

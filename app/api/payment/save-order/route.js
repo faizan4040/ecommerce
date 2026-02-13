@@ -1,3 +1,4 @@
+import { isAuthenticated } from "@/lib/authentication";
 import { orderNotification } from "@/email/orderNotification";
 import connectDB from "@/lib/databaseConnection";
 import { catchError, response } from "@/lib/helperfunction";
@@ -11,6 +12,7 @@ export async function POST(request) {
     try{
        
     await connectDB()
+    const auth = await isAuthenticated('user')
     const payload = await request.json()
 
     const productSchema = z.object({
@@ -57,7 +59,8 @@ export async function POST(request) {
     }
 
     const newOrder = await OrderModel.create({
-    user: validateData.userId || null,                       
+    // user: validateData.userId || null, 
+    user: auth.isAuth ? auth.userId : null,                      
     name: validateData.name,
     email: validateData.email,
     phone: validateData.phone,

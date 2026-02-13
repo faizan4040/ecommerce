@@ -3,6 +3,8 @@ import "./globals.css";
 import { ToastContainer } from 'react-toastify';
 import GlobalProvider from "@/components/Application/GlobalProvider";
 
+import "@/lib/i18n"; 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

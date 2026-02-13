@@ -7,7 +7,7 @@ import {
   ChevronDown,
   Globe,
 } from "lucide-react"
-import { WEBSITE_HOME, WEBSITE_LOGIN, WEBSITE_REGISTER, WEBSITE_SHOP } from "@/routes/WebsiteRoute"
+import { USER_DASHBOARD, WEBSITE_HOME, WEBSITE_LOGIN, WEBSITE_REGISTER, WEBSITE_SHOP } from "@/routes/WebsiteRoute"
 import Card from '@/components/Website/Cart'
 import Link from "next/link"
 import { useSelector } from "react-redux"
@@ -245,11 +245,19 @@ export default function Header() {
               >
                 {!auth ? (
                   // User not logged in → show "Create Free Account" button
+                  <>
                   <Link href={WEBSITE_REGISTER}>
-                    <button className="w-full bg-black text-white py-2 rounded-xl cursor-pointer">
+                    <button className="w-full bg-black hover:bg-orange-500 hover:text-white text-white py-2 rounded-xl cursor-pointer">
                       Create Free Account
                     </button>
                   </Link>
+
+                  <Link href={WEBSITE_LOGIN}>
+                    <button className="w-full bg-black text-white py-2 hover:bg-orange-500 hover:text-white rounded-xl cursor-pointer mt-2">
+                      Sign In
+                    </button>
+                  </Link>
+                </>
                 ) : (
                   // User logged in → show profile dropdown
                   <div className="flex flex-col items-center gap-3 cursor-pointer">
@@ -259,7 +267,7 @@ export default function Header() {
                       </Avatar>
                     </Link>
                     <span className="font-medium">{auth.name}</span>
-                    <Link href={WEBSITE_HOME}>
+                    <Link href={USER_DASHBOARD}>
                       <button className="w-full border py-2 px-4 rounded-xl cursor-pointer border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white transition-all duration-300">Dashboard</button>
                     </Link>
                   </div>
