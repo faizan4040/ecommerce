@@ -6,7 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React, { use, useEffect, useState } from 'react'
 
-const OrderDetails = async ({ params }) => {
+const OrderDetails = ({ params }) => {
   const { orderid } = use(params)
   const [orderData, setOrderData] = useState()
   const {data, loading} = useFetch(`/api/orders/get/${orderid}`)
@@ -237,31 +237,28 @@ export default OrderDetails
 
 
 
-// import WebsiteBreadcrumb from "@/components/Website/WebsiteBreadcrumb";
+// 'use client'
+// import useFetch from "@/hooks/useFetch";
 // import { IMAGES } from "@/routes/Images";
 // import { WEBSITE_PRODUCT_DETAILS } from "@/routes/WebsiteRoute";
-// import axios from "axios";
 // import Image from "next/image";
 // import Link from "next/link";
-// import React, { use } from "react";
+// import React, { use, useEffect, useState } from "react";
 
-// const OrderDetails = async ({ params }) => {
-//   const { orderid } = use(params);
+// const OrderDetails =  ({ params }) => {
+//   const { orderid } = use(params)
+//   const [orderData, setOrderData] = useState()
+//   const {data, loading} = useFetch(`/api/orders/get/${orderid}`)
 
-//   const { data: orderData } = await axios.get(
-//     `${process.env.NEXT_PUBLIC_API_BASE_URL}/orders/get/${orderid}`
-//   );
+
+//   useEffect(()=>{
+//    if(data && data.success){
+//     setOrderData(data.data)
+//    }
+//   },[data])
 
 //   const order = orderData?.data;
 
-//   const breadcrumb = {
-//     title: "Order Details",
-//     links: [
-//       { label: "Order" },
-//       { label: "Order Details" },
-//       { label: `#${order?.order_id}` },
-//     ],
-//   };
 
 //   if (!orderData?.success) {
 //     return (
@@ -273,7 +270,7 @@ export default OrderDetails
 
 //   return (
 //     <div>
-//       <WebsiteBreadcrumb props={breadcrumb} />
+     
 
 //       <div className="max-w-7xl mx-auto px-5 py-10 space-y-8">
 
