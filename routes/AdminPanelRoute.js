@@ -39,3 +39,13 @@ export const ADMIN_REVIEW_SHOW = '/admin/review'
 
 // Trash route
 export const ADMIN_TRASH = '/admin/trash'
+
+
+// Trash route
+export const ADMIN_ORDER_SHOW = '/admin/orders'
+
+export const ADMIN_ORDER_DETAILS = (order_id) => order_id ? `/admin/orders/details/${order_id}` : ''
+
+
+//OrderDetails page
+// export const ADMIN_ORDER_DETAILS_PAGE = '/admin/details'

@@ -27,7 +27,7 @@ const UserSchema = new mongoose.Schema({
     select: false,
   },
   
-  avtar: {
+  avatar: {
     url: {
         type: String,
         trim: true,
