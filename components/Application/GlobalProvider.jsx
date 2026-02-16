@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import Loading from './Loading'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 
 const queryClient = new QueryClient()
@@ -18,9 +18,9 @@ const GlobalProvider = ({ children }) => {
               {children}
             </PersistGate>
         </Provider>
-        <Suspense fallback={null}>
+        {/* <Suspense fallback={null}>
            <ReactQueryDevtools initialIsOpen={false}/>
-        </Suspense>
+        </Suspense> */}
     </QueryClientProvider>
   )
 }

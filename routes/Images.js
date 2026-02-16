@@ -73,6 +73,7 @@ export const IMAGES = {
   shipping: "/assets/images/shipping.gif",
   confirmorder: "/assets/images/confirmorder.gif",
   emptycart: "/assets/images/empty_cart.gif",
+  mastercard: "/assets/images/mastercard.svg",
 
   
 
