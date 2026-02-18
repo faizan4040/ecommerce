@@ -70,7 +70,7 @@ const AppSidebar = () => {
                       className="
                         font-semibold px-2 py-5
                         transition-colors duration-200
-                        hover:bg-gray-700
+                        hover:bg-gray-300
                       "
                     >
                       <Link
@@ -86,6 +86,7 @@ const AppSidebar = () => {
                               ml-auto
                               transition-transform duration-300 ease-in-out
                               group-data-[state=open]/collapsible:rotate-90
+                              hover:text-gray-300
                             "
                           />
                         )}
@@ -99,7 +100,7 @@ const AppSidebar = () => {
                       className="
                         overflow-hidden
                         data-[state=open]:animate-collapsible-down
-                        data-[state=closed]:animate-collapsible-up
+                        data-[state=closed]:animate-collapsible-up hover:text-gray-300
                       "
                     >
                       <SidebarMenuSub className="pl-4">
@@ -110,8 +111,8 @@ const AppSidebar = () => {
                               className="
                                 px-2 py-4 text-gray-300
                                 transition-colors duration-200
-                                hover:bg-gray-700
-                              "
+                                hover:bg-gray-700 hover:text-gray-300
+                              " 
                             >
                               <Link href={submenuItem.url}>
                                 {submenuItem.title}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import {
   Bar,
   BarChart,
@@ -24,28 +24,16 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 
-// FULL DATA (ALL)
-const fullData = [
-  { month: "Jan", amount: 40, click: 25 },
-  { month: "Feb", amount: 55, click: 30 },
-  { month: "Mar", amount: 48, click: 28 },
-  { month: "Apr", amount: 30, click: 20 },
-  { month: "May", amount: 60, click: 35 },
-  { month: "Jun", amount: 52, click: 32 },
-  { month: "Jul", amount: 58, click: 38 },
-  { month: "Aug", amount: 45, click: 30 },
-  { month: "Sep", amount: 50, click: 34 },
-  { month: "Oct", amount: 62, click: 40 },
-  { month: "Nov", amount: 55, click: 36 },
-  { month: "Dec", amount: 68, click: 45 },
-]
+import useFetch from "@/hooks/useFetch"
+
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 
 // FILTER LOGIC
-const filterData = (range) => {
-  if (range === "1M") return fullData.slice(-1)
-  if (range === "6M") return fullData.slice(-6)
-  if (range === "1Y") return fullData
-  return fullData
+const filterData = (data, range) => {
+  if (range === "1M") return data.slice(-1)
+  if (range === "6M") return data.slice(-6)
+  if (range === "1Y" || range === "All") return data
+  return data
 }
 
 // CHART CONFIG
@@ -56,26 +44,50 @@ const chartConfig = {
 
 export function OrderOverview() {
   const [activeRange, setActiveRange] = useState("All")
+  const [chartData, setChartData] = useState([])
 
-  const chartData = filterData(activeRange)
+  const { data: monthlySales, loading } =
+    useFetch("/api/dashboard/admin/monthly-sales")
+
+  // 🔁 Build Jan–Dec data from API
+  useEffect(() => {
+    if (!monthlySales?.success) return
+
+    const formatted = MONTHS.map((month, index) => {
+      const monthData = monthlySales.data.find(
+        (item) => item._id.month === index + 1
+      )
+
+      return {
+        month,
+        amount: monthData ? monthData.totalSales : 0,
+        click: monthData ? monthData.orders : 0,
+      }
+    })
+
+    setChartData(formatted)
+  }, [monthlySales])
+
+  // 🔍 Apply filters
+  const filteredChartData = useMemo(() => {
+    return filterData(chartData, activeRange)
+  }, [chartData, activeRange])
 
   return (
     <Card className="h-full flex flex-col">
       {/* HEADER */}
       <CardHeader className="flex flex-row items-center justify-between pb-3">
-        {/* LEFT */}
         <div className="text-sm font-semibold">Performance</div>
 
-        {/* RIGHT FILTERS */}
         <div className="flex gap-4 text-sm font-medium text-muted-foreground">
           {["All", "1M", "6M", "1Y"].map((item) => (
             <button
               key={item}
               onClick={() => setActiveRange(item)}
-              className={`transition ${
+              className={`px-2 py-1 rounded-lg transition ${
                 activeRange === item
                   ? "text-primary"
-                  : "hover:text-foreground cursor-pointer bg-gray-200 rounded-lg py-1 px-2"
+                  : "bg-gray-200 hover:text-foreground"
               }`}
             >
               {item}
@@ -86,55 +98,41 @@ export function OrderOverview() {
 
       {/* CHART */}
       <CardContent className="flex-1">
-        <ChartContainer config={chartConfig} className="h-65 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={chartData}
-              margin={{ top: 10, right: 20, left: -10, bottom: 10 }}
-            >
-              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+        {loading ? (
+          <div className="h-full flex items-center justify-center text-muted-foreground">
+            Loading...
+          </div>
+        ) : !filteredChartData.length ? (
+          <div className="h-full flex items-center justify-center text-muted-foreground">
+            No sales data available
+          </div>
+        ) : (
+          <ChartContainer config={chartConfig} className="h-65 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={filteredChartData}>
+                <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                <XAxis dataKey="month" tickLine={false} axisLine={false} />
+                <YAxis tickLine={false} axisLine={false} />
+                <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
 
-              <XAxis
-                dataKey="month"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-              />
+                <Bar
+                  dataKey="amount"
+                  fill="var(--color-amount)"
+                  radius={3}
+                  barSize={18}
+                />
 
-              <YAxis
-                tickLine={false}
-                axisLine={false}
-                tick={{ fontSize: 12 }}
-              />
-
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent />}
-              />
-
-              {/* BAR */}
-              <Bar
-                dataKey="amount"
-                fill="var(--color-amount)"
-                radius={3}
-                barSize={18}
-                isAnimationActive
-                animationDuration={600}
-              />
-
-              {/* GREEN LINE */}
-              <Line
-                type="monotone"
-                dataKey="click"
-                stroke="#22c55e"
-                strokeWidth={2}
-                dot={false}
-                isAnimationActive
-                animationDuration={600}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </ChartContainer>
+                <Line
+                  type="monotone"
+                  dataKey="click"
+                  stroke="#22c55e" 
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartContainer>
+        )}
       </CardContent>
 
       {/* FOOTER */}
@@ -144,10 +142,10 @@ export function OrderOverview() {
           <span className="text-muted-foreground">Page View</span>
         </div>
 
-        {/* <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <span className="h-2 w-2 rounded-full bg-green-500" />
           <span className="text-muted-foreground">Click</span>
-        </div> */}
+        </div>
       </CardFooter>
     </Card>
   )

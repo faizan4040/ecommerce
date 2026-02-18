@@ -60,12 +60,11 @@ const DashboardStats = () => {
   const customerData = countData?.data?.customer || 0;
   const orderData = countData?.data?.order || 0;
 
-  // ✅ HARDCODED PREVIOUS VALUES (Replace with real API data)
-  // These should come from your API instead
-  const categoryPrevious = countData?.data?.categoryPrevious || 3;  // Change 3 to your actual value
-  const productPrevious = countData?.data?.productPrevious || 19;   // Change 19 to your actual value
-  const customerPrevious = countData?.data?.customerPrevious || 2;  // Change 2 to your actual value
-  const orderPrevious = countData?.data?.orderPrevious || 10;       // Change 10 to your actual value
+
+  const categoryPrevious = countData?.data?.categoryPrevious || 3;  
+  const productPrevious = countData?.data?.productPrevious || 19;   
+  const customerPrevious = countData?.data?.customerPrevious || 2;  
+  const orderPrevious = countData?.data?.orderPrevious || 10;      
 
   // Calculate percentages
   const categoryPercent = calculatePercent(categoryData, categoryPrevious);

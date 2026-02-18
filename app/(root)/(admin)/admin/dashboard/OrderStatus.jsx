@@ -1,8 +1,7 @@
 "use client"
 
-import React from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { Pie, PieChart, Sector, Label } from "recharts"
-import { MapContainer, TileLayer, ZoomControl } from "react-leaflet"
 
 import {
   Card,
@@ -26,20 +25,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import LatestOrder from "./LatestOrder"
+
 import LatestReview from "./LatestReview"
 import MapOverview from "./MapOverview"
+import useFetch from "@/hooks/useFetch"
 
-/* ------------------ PIE CHART DATA ------------------ */
-const desktopData = [
-  { status: "pending", count: 186, fill: "var(--color-pending)" },
-  { status: "processing", count: 305, fill: "var(--color-processing)" },
-  { status: "shipped", count: 237, fill: "var(--color-shipped)" },
-  { status: "delivered", count: 173, fill: "var(--color-delivered)" },
-  { status: "cancelled", count: 209, fill: "var(--color-cancelled)" },
-  { status: "unverified", count: 209, fill: "var(--color-unverified)" },
-]
-
+/* ------------------ CHART CONFIG ------------------ */
 const chartConfig = {
   status: { label: "Status" },
   pending: { label: "Pending", color: "var(--chart-1)" },
@@ -50,27 +41,60 @@ const chartConfig = {
   unverified: { label: "Unverified", color: "var(--chart-6)" },
 }
 
-/* ------------------ MAIN COMPONENT ------------------ */
+/* ------------------ COMPONENT ------------------ */
 const OrderStatus = () => {
-  const id = "pie-interactive"
-  const [activeStatus, setActiveStatus] = React.useState(desktopData[0].status)
+  const id = "order-status-pie"
 
-  const activeIndex = React.useMemo(
-    () => desktopData.findIndex((i) => i.status === activeStatus),
-    [activeStatus]
+  const [chartData, setChartData] = useState([])
+  const [activeStatus, setActiveStatus] = useState(null)
+  const [totalCount, setTotalCount] = useState(0)
+
+  const { data, loading } = useFetch(
+    "/api/dashboard/admin/order-status"
   )
+
+  /* ---------- API DATA → CHART DATA ---------- */
+  useEffect(() => {
+    if (data?.success) {
+      const formatted = data.data.map((item) => ({
+        status: item._id,
+        count: item.count,
+        fill: `var(--color-${item._id})`,
+      }))
+
+      setChartData(formatted)
+      setActiveStatus(formatted[0]?.status || null)
+
+      const total = formatted.reduce(
+        (sum, i) => sum + i.count,
+        0
+      )
+      setTotalCount(total)
+    }
+  }, [data])
+
+  /* ---------- ACTIVE INDEX ---------- */
+  const activeIndex = useMemo(
+    () => chartData.findIndex((i) => i.status === activeStatus),
+    [activeStatus, chartData]
+  )
+
+  /* ---------- LOADING ---------- */
+  if (loading) {
+    return <div className="p-6 text-center">Loading...</div>
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
-      {/* ================= CARD 1 : PIE CHART ================= */}
+      {/* ================= PIE CHART ================= */}
       <Card className="flex flex-col">
         <ChartStyle id={id} config={chartConfig} />
 
         <CardHeader className="flex-row items-start justify-between">
           <div>
             <CardTitle>Order Status</CardTitle>
-            <CardDescription>Current Week</CardDescription>
+            <CardDescription>Total Orders: {totalCount}</CardDescription>
           </div>
 
           <Select value={activeStatus} onValueChange={setActiveStatus}>
@@ -78,9 +102,9 @@ const OrderStatus = () => {
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
             <SelectContent align="end">
-              {desktopData.map((item) => (
+              {chartData.map((item) => (
                 <SelectItem key={item.status} value={item.status}>
-                  {chartConfig[item.status].label}
+                  {chartConfig[item.status]?.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -95,8 +119,9 @@ const OrderStatus = () => {
           >
             <PieChart>
               <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+
               <Pie
-                data={desktopData}
+                data={chartData}
                 dataKey="count"
                 innerRadius={60}
                 strokeWidth={5}
@@ -122,7 +147,7 @@ const OrderStatus = () => {
                         dominantBaseline="middle"
                       >
                         <tspan className="text-3xl font-bold fill-foreground">
-                          {desktopData[activeIndex]?.count || 0}
+                          {chartData[activeIndex]?.count || 0}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
@@ -141,13 +166,11 @@ const OrderStatus = () => {
         </CardContent>
       </Card>
 
-      {/* ================= CARD 2 : MAP ================= */}
-       <MapOverview />
+      {/* ================= MAP ================= */}
+      <MapOverview />
 
-      {/* ================= CARD 3 : TABLE ================= */}
-      <div>
-          <LatestReview/>
-      </div>
+      {/* ================= TABLE ================= */}
+      <LatestReview />
     </div>
   )
 }

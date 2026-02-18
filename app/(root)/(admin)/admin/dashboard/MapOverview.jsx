@@ -7,11 +7,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import useFetch from "@/hooks/useFetch"
 
 let am4core, am4maps, am4themes_animated, am4geodata_indiaLow
 
 const MapOverview = () => {
   const chartRef = useRef(null)
+  const { data } = useFetch(
+    "/api/dashboard/admin/orders-by-state"
+  )
 
   useLayoutEffect(() => {
     let chart
@@ -33,10 +37,7 @@ const MapOverview = () => {
       chart.projection = new am4maps.projections.Miller()
 
       chart.homeZoomLevel = 1.2
-      chart.homeGeoPoint = { latitude: 22.9734, longitude: 78.6569 }
-      chart.maxZoomLevel = 5
-      chart.minZoomLevel = 1
-      chart.zoomControl = new am4maps.ZoomControl()
+      chart.homeGeoPoint = { latitude: 22.97, longitude: 78.65 }
 
       const polygonSeries = chart.series.push(
         new am4maps.MapPolygonSeries()
@@ -44,15 +45,14 @@ const MapOverview = () => {
       polygonSeries.useGeodata = true
 
       const polygonTemplate = polygonSeries.mapPolygons.template
-      polygonTemplate.tooltipText = "{name}"
-      polygonTemplate.fill = am4core.color("#e5e7eb")
-      polygonTemplate.stroke = am4core.color("#ffffff")
+      polygonTemplate.tooltipText = "{name}: {value}"
+      polygonTemplate.stroke = am4core.color("#fff")
 
-      polygonSeries.data = [
-        { id: "IN-DL", fill: am4core.color("#ff5722") },
-        { id: "IN-AS", fill: am4core.color("#ff5722") },
-        { id: "IN-RJ", fill: am4core.color("#ff5722") },
-      ]
+      polygonSeries.data = data?.data?.map((item) => ({
+        id: item._id,
+        value: item.count,
+        fill: am4core.color("#ff5722"),
+      })) || []
 
       polygonTemplate.propertyFields.fill = "fill"
     }
@@ -62,35 +62,19 @@ const MapOverview = () => {
     return () => {
       if (chart) chart.dispose()
     }
-  }, [])
+  }, [data])
 
   return (
     <Card className="rounded-2xl shadow-sm flex flex-col">
-      
-      {/* HEADER */}
-      <CardHeader className="">
+      <CardHeader>
         <CardTitle className="text-lg font-semibold">
-          Sessions by Country
+          Orders by State
         </CardTitle>
       </CardHeader>
 
-      {/* MAP CENTER */}
       <CardContent className="flex-1 p-0">
-        <div ref={chartRef} className="w-full h-full" />
+        <div ref={chartRef} className="w-full h-80" />
       </CardContent>
-
-      {/* FOOTER */}
-      <div className="px-6 grid grid-cols-2 gap-4 text-sm">
-        <div>
-          <p className="text-muted-foreground">This Week</p>
-          <p className="text-xl font-bold">23.5k</p>
-        </div>
-
-        <div className="text-right">
-          <p className="text-muted-foreground">Last Week</p>
-          <p className="text-xl font-bold">41.05k</p>
-        </div>
-      </div>
     </Card>
   )
 }

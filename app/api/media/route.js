@@ -42,7 +42,6 @@ export async function GET(request){
        })
 
     } catch(error){
-      //  console.error("MEDIA GET ERROR:", error)
        return catchError(error)
        return response(false, 500, "Internal Server Error")
     }

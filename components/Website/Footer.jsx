@@ -14,8 +14,18 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { BsWhatsapp } from "react-icons/bs"
+import { useChat } from "../Chat/ChatProvider"
+
 
 const Footer = () => {
+
+ const { setShowButton, setOpen } = useChat()
+
+  const handleChatClick = () => {
+    setShowButton(true) 
+    setOpen(true)        
+  }
+
   return (
     <footer className="bg-gray-800 text-gray-200">
 
@@ -85,9 +95,15 @@ const Footer = () => {
 
      
         <ul className="space-y-8">
-          <li className="flex text-lg items-center gap-2 hover:text-white cursor-pointer">
-            <MessageCircle size={20} /> Chat
-          </li>
+          <div>
+                <li
+          onClick={handleChatClick}
+          className="flex text-lg items-center gap-2 cursor-pointer hover:text-orange-500"
+        >
+          <MessageCircle size={20} /> Chat
+        </li>
+          </div>
+          
          <li className="flex items-center gap-2 text-lg hover:text-green-500 cursor-pointer">
           <a
             href="https://wa.me/911234567890" 

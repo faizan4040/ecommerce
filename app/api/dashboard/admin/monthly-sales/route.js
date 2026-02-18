@@ -29,15 +29,17 @@ export async function GET() {
       },
       {
         $group: {
-          _id: { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } },
+          _id: { year: { $year: "$createdAt" }, 
+          month: { $month: "$createdAt" } },
           totalSales: { $sum: "$totalAmount" },
-          orders: { $sum: 1 }, // optional: number of orders
+          orders: { $sum: 1 }, 
         },
       },
       { $sort: { "_id.month": 1 } },
     ]);
 
     return response(true, 200, "Monthly sales data found.", monthlySales);
+    
   } catch (error) {
     return catchError(error);
   }
