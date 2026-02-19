@@ -2,7 +2,7 @@
 
 import React from "react"
 import { useRouter } from "next/navigation"
-import { IMAGES } from "@/routes/Images"
+import { IMAGES } from "@/routes/AllImages"
 
 const categories = [
   {

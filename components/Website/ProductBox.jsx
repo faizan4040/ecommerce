@@ -1,4 +1,4 @@
-import { IMAGES } from '@/routes/Images'
+import { IMAGES } from '@/routes/AllImages'
 import { WEBSITE_PRODUCT_DETAILS } from '@/routes/WebsiteRoute'
 import Image from 'next/image'
 import Link from 'next/link'

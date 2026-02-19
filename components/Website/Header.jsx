@@ -12,7 +12,7 @@ import Card from '@/components/Website/Cart'
 import Link from "next/link"
 import { useSelector } from "react-redux"
 import { Avatar, AvatarImage } from "../ui/avatar"
-import { IMAGES } from "@/routes/Images"
+import { IMAGES } from "@/routes/AllImages"
 import {
   X,
   ChevronRight,

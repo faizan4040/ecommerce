@@ -7,7 +7,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { IMAGES } from "@/routes/Images"
+import { IMAGES } from "@/routes/AllImages"
 import { WEBSITE_CART, WEBSITE_PRODUCT_DETAILS, WEBSITE_SHOP } from "@/routes/WebsiteRoute"
 import { decode, encode } from "entities"
 import Image from "next/image"

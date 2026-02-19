@@ -27,7 +27,7 @@ import { zSchema } from "@/lib/zodSchema";
 import ButtonLoading from "@/components/Application/ButtonLoading";
 import { WEBSITE_LOGIN } from "@/routes/WebsiteRoute";
 import { showToast } from "@/lib/showToast";
-import { IMAGES } from "@/routes/Images";
+import { IMAGES } from "@/routes/AllImages";
 
 
 /* --------------------

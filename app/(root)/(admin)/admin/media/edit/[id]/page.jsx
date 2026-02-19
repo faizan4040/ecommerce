@@ -12,7 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import React, { use, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { IMAGES } from "@/routes/Images";
+import { IMAGES } from "@/routes/AllImages";
 import { showToast } from '@/lib/showToast'
 import axios from 'axios'
 

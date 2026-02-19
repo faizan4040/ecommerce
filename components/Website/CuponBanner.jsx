@@ -1,7 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import VideoSection from "./VideoSection"
-import { IMAGES } from "@/routes/Images"
+import { IMAGES } from "@/routes/AllImages"
 
 export default function CuponBanner() {
   return (

@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
 import ModalMediaBlock from './ModalMediaBlock'
 import { showToast } from '@/lib/showToast'
-import { IMAGES } from '@/routes/Images'
+import { IMAGES } from '@/routes/AllImages'
 
 
 const MediaModal = ({open, setOpen, selectedMedia, setSelectedMedia, isMultiple }) => {

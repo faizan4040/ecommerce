@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import axios from "axios"
 import Link from "next/link"
-import { IMAGES } from "@/routes/Images"
+import { IMAGES } from "@/routes/AllImages"
 import { WEBSITE_SHOP } from "@/routes/WebsiteRoute"
 
 const ProductSlider = () => {

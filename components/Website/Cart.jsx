@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { IMAGES } from '@/routes/Images'
+import { IMAGES } from '@/routes/AllImages'
 import { removeFromCart } from '@/store/reducer/cartReducer'
 import { Button } from '../ui/button'
 import { WEBSITE_CART, WEBSITE_CHECKOUT } from '@/routes/WebsiteRoute'

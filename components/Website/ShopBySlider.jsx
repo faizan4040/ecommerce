@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { IMAGES } from "@/routes/Images"
+import { IMAGES } from "@/routes/AllImages"
 
 const categories = [
   { id: 1, title: "Running", image: IMAGES.runnin },

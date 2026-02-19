@@ -7,7 +7,7 @@ import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
 import WebsiteBreadcrumb from '@/components/Website/WebsiteBreadcrumb'
-import { IMAGES } from '@/routes/Images'
+import { IMAGES } from '@/routes/AllImages'
 import {
   WEBSITE_CHECKOUT,
   WEBSITE_PRODUCT_DETAILS,

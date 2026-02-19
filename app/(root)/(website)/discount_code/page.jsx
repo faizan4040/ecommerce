@@ -1,6 +1,6 @@
 'use client'
 
-import { IMAGES } from '@/routes/Images'
+import { IMAGES } from '@/routes/AllImages'
 import React, { useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 

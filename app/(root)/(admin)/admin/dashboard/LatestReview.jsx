@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import useFetch from "@/hooks/useFetch"
-import { IMAGES } from "@/routes/Images"
+import { IMAGES } from "@/routes/AllImages"
 import { IoStar } from "react-icons/io5"
 
 const LatestReview = () => {

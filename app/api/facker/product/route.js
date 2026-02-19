@@ -8,23 +8,22 @@ import CategoryModel from "@/models/Category.model";
 import { response } from "@/lib/helperfunction";
 import connectDB from "@/lib/databaseConnection";
 
-// Helper to pick random items from array
+
 function getRandomItems(array, count = 1) {
     const shuffled = [...array].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, count);
 }
 
-// Helper to pick a single random item
+
 function getRandomItem(array) {
     return array[Math.floor(Math.random() * array.length)];
 }
 
-// POST API to generate fake data
 export async function POST(req) {
     await connectDB();
 
     try {
-        // Fetch all categories
+      
         const categories = await CategoryModel.find();
         if (categories.length === 0) {
             return response(false, 400, "No categories found!");

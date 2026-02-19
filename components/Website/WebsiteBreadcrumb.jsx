@@ -1,4 +1,4 @@
-import { IMAGES } from "@/routes/Images"
+import { IMAGES } from "@/routes/AllImages"
 import { WEBSITE_HOME } from "@/routes/WebsiteRoute"
 import Link from "next/link"
 import React from "react"

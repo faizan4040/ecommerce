@@ -20,12 +20,12 @@ import {
 import Link from "next/link";
 import { zSchema } from "@/lib/zodSchema";
 import ButtonLoading from "@/components/Application/ButtonLoading";
-import { IMAGES } from "@/lib/images";
 import { WEBSITE_LOGIN} from "@/routes/WebsiteRoute";
 import axios from "axios";
 import { showToast } from "@/lib/showToast";
 import OTPVerification from "@/components/Application/OTPVerification";
 import UpdatePassword from "@/components/Application/UpdatePassword";
+import { IMAGES } from "@/routes/AllImages";
 
 const ResetPassword = () => {
 

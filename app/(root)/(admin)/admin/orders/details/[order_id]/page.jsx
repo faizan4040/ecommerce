@@ -4,7 +4,7 @@ import React, { useEffect, useState, use } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import useFetch from '@/hooks/useFetch'
-import { IMAGES } from '@/routes/Images'
+import { IMAGES } from '@/routes/AllImages'
 import { WEBSITE_PRODUCT_DETAILS } from '@/routes/WebsiteRoute'
 import { CiMemoPad } from "react-icons/ci";
 import { LuTicket } from "react-icons/lu";

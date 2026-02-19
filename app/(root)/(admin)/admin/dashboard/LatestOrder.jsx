@@ -18,7 +18,7 @@ import {
 
 import useFetch from "@/hooks/useFetch"
 import { statusBadge } from "@/lib/helperfunction"
-import { IMAGES } from "@/routes/Images"
+import { IMAGES } from "@/routes/AllImages"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 

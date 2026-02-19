@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { IMAGES } from "@/routes/Images"
+import { IMAGES } from "@/routes/AllImages"
 
 const items = [
   {

@@ -7,7 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { IMAGES } from '@/routes/Images'
+import { IMAGES } from '@/routes/AllImages'
 
 const faqs = [
   {

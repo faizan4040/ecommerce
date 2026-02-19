@@ -1,4 +1,4 @@
-import { IMAGES } from '@/routes/Images'
+import { IMAGES } from '@/routes/AllImages'
 import dayjs from 'dayjs'
 import Image from 'next/image'
 import relativeTime from 'dayjs/plugin/relativeTime'

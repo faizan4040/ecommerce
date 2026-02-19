@@ -1,7 +1,7 @@
 
 import React from "react"
 import Link from "next/link"
-import { IMAGES } from "../../../../routes/Images"
+import { IMAGES } from "../../../../routes/AllImages"
 
 
 export const metadata = {

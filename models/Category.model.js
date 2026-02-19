@@ -19,13 +19,6 @@ const categorySchema = new mongoose.Schema({
         default: null,
         index: true
     },
-    // media: [
-    //     {
-    //         type: mongoose.Schema.Types.ObjectId,
-    //         ref: "Media",
-    //         required: true
-    //     },
-    // ],
 
 }, {timestamps: true})
 

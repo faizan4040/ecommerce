@@ -1,5 +1,5 @@
 import WebsiteBreadcrumb from '@/components/Website/WebsiteBreadcrumb'
-import { IMAGES } from '@/routes/Images'
+import { IMAGES } from '@/routes/AllImages'
 import { WEBSITE_PRODUCT_DETAILS } from '@/routes/WebsiteRoute'
 import axios from 'axios'
 import Image from 'next/image'

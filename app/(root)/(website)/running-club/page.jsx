@@ -1,6 +1,6 @@
 'use client'
 
-import { IMAGES } from '@/routes/Images'
+import { IMAGES } from '@/routes/AllImages'
 import React from 'react'
 
 const RunningClub = () => {
