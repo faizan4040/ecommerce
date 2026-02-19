@@ -20,7 +20,7 @@ import {
 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { IoSearchOutline } from "react-icons/io5"
-
+import { categories } from "@/routes/MenuCategories"
 
 
 const ads = [
@@ -29,23 +29,9 @@ const ads = [
   "JOIN ULTRA & GET EXCLUSIVE BENEFITS",
 ]
 
-const categories = [
-  "The Sale",
-  "New In",
-  "Men's",
-  "Women's",
-  "Kids'",
-  "Run",
-  "Trail",
-  "Hike",
-  "Sports",
-  "Brands",
-  "Partners",
-  "Advice",
-]
 
 export default function Header() {
-    const [showSearch, setShowSearch] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
   const [query, setQuery] = useState("");
   const router = useRouter();
   const [open, setOpen] = useState(false)
@@ -60,9 +46,9 @@ export default function Header() {
   const [activeItem, setActiveItem] = useState(null)
 
   const handleCategoryClick = (category) => {
-  setActiveCategory(category)   // highlight category in header
-  setActiveItem(category)       // show content in sidebar
-  setSidebarOpen(true)          // open sidebar
+  setActiveCategory(category)   
+  setActiveItem(category)       
+  setSidebarOpen(true)       
 }
 
   const miniBarRef = useRef(null)
@@ -323,89 +309,88 @@ export default function Header() {
       </header>
 
       {/* OVERLAY */}
-<div
-  className={`fixed inset-0 z-50 transition-all duration-300 ${
-    sidebarOpen ? "bg-black/40 visible" : "invisible"
-  }`}
-  onClick={() => setSidebarOpen(false)}
-/>
+        <div
+          className={`fixed inset-0 z-50 transition-all duration-300 ${
+            sidebarOpen ? "bg-black/40 visible" : "invisible"
+          }`}
+          onClick={() => setSidebarOpen(false)}
+        />
 
-{/* SIDEBAR */}
-<div
-  className={`fixed top-0 left-0 z-50 h-full w-full md:w-325 bg-white shadow-2xl
-  transform transition-transform duration-500
-  ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
->
-  {/* HEADER */}
-  <div className="flex justify-between items-center p-5 border-b ">
-    <h3 className="font-semibold text-lg">Menu</h3>
-    <button onClick={() => setSidebarOpen(false)} className="cursor-pointer">
-      <X size={22} />
-    </button>
-  </div>
-
-  <div className="flex h-full">
-    {/* LEFT MENU */}
-    <div className="w-1/6 border-r p-4 space-y-3">
-      {categories.map((item) => (
-        <button
-          key={item}
-          onClick={() => {
-            setActiveItem(item)
-            setActiveCategory(item)
-          }}
-          className="w-full flex justify-between items-center py-2 px-2 hover:bg-gray-100 rounded-lg"
+        {/* SIDEBAR */}
+        <div
+          className={`fixed top-0 left-0 z-50 h-full w-full md:w-325 bg-white shadow-2xl
+          transform transition-transform duration-500
+          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
         >
-          <span className="font-medium">{item}</span>
-          <ChevronRight size={18} />
-        </button>
-      ))}
-    </div>
+          {/* HEADER */}
+          <div className="flex justify-between items-center p-5 border-b">
+            <h3 className="font-semibold text-lg">Menu</h3>
+            <button onClick={() => setSidebarOpen(false)} className="cursor-pointer">
+              <X size={22} />
+            </button>
+          </div>
 
-    {/* RIGHT CONTENT */}
-    <div className="w-1/2 p-4">
-      {!activeItem ? (
-        <p className="text-gray-400 text-sm">
-          Select a category
-        </p>
-      ) : (
-        <div className="space-y-4">
-          <h4 className="font-semibold">{activeItem}</h4>
+          <div className="flex h-full">
+            {/* LEFT MENU */}
+            <div className="w-1/6 border-r p-4 space-y-3">
+              {categories.map((item) => (
+                <button
+                  key={item.name} 
+                  onClick={() => {
+                    setActiveItem(item); // ✅ store full object
+                    setActiveCategory(item.name);
+                  }}
+                  className="w-full flex justify-between items-center py-2 px-2 hover:bg-gray-100 rounded-lg"
+                >
+                  <span className="font-medium">{item.name}</span>
+                  <ChevronRight size={18} />
+                </button>
+              ))}
+            </div>
 
-          <img
-            src="/dummy-category.jpg"
-            alt={activeItem}
-            className="rounded-xl w-full h-40 object-cover"
-          />
+            {/* RIGHT CONTENT */}
+            <div className="w-2/3 p-4 overflow-y-auto">
+              {!activeItem ? (
+                <p className="text-gray-400 text-sm">
+                  Select a category
+                </p>
+              ) : (
+                activeItem.sections?.map((section) => (
+                  <div key={section.title} className="mb-6">
+                    {/* Section Title */}
+                    <h4 className="font-semibold mb-2">{section.title}</h4>
 
-          <p className="text-sm text-gray-600">
-            Explore latest products from {activeItem}
-          </p>
-
-          <button className="text-sm underline">
-            View All {activeItem}
-          </button>
+                    {/* Section Items */}
+                    <div className="flex flex-wrap gap-2">
+                      {section.items.map((sub) => (
+                        <Link key={sub.name} href={sub.link}>
+                          <span className="text-sm text-gray-700 hover:underline cursor-pointer">
+                            {sub.name}
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
         </div>
-      )}
-    </div>
-  </div>
-  
-</div>
 
 
       {/* CATEGORY BAR DESKTOP */}
       <nav className="hidden md:block border-t bg-white">
         <ul className="flex gap-6 px-6 py-3 text-sm font-medium overflow-x-auto">
-          {categories.map((item) => (
-            <li
-            key={item}
-            onClick={() => handleCategoryClick(item)}
+           {categories.map((item) => (
+           <li
+            key={item.name}
+            onClick={() => handleCategoryClick(item)} // ✅ pass full object
             className={`cursor-pointer whitespace-nowrap relative ${
-              activeCategory === item ? "font-semibold" : ""
+              activeCategory === item.name ? "font-semibold" : ""
             }`}
           >
-            {item}
-            {activeCategory === item && (
+            {item.name}
+            {activeCategory === item.name && (
               <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-black" />
             )}
           </li>
