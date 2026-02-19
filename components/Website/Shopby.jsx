@@ -3,6 +3,8 @@
 import React from "react"
 import { useRouter } from "next/navigation"
 import { IMAGES } from "@/routes/AllImages"
+import Link from "next/link"
+import { WEBSITE_SHOP } from "@/routes/WebsiteRoute"
 
 const categories = [
   {
@@ -71,6 +73,7 @@ const Shopby = () => {
                 {item.title}
               </h3>
 
+              <Link href={WEBSITE_SHOP}>
               <button
                 className="
                   px-6 py-2
@@ -85,6 +88,7 @@ const Shopby = () => {
               >
                 Shop Shoes
               </button>
+              </Link>
             </div>
           </div>
         ))}
