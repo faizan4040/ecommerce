@@ -1,12 +1,14 @@
 export const IMAGES = {
   coupon: "/assets/images/coupon.PNG",
-  logo: "/assets/images/logo.webp",
+  logos: "/assets/images/logo_1.webp",
   logo: "/assets/images/logo.png",
   dashboardlogo:"/assets/images/logo.png", 
   image_placeholder: "/assets/images/image_placeholder.webp",
   profile: "/assets/images/profile.jpg",
   shopbanner: "/assets/images/shopbanner.png",
   loading: '/assets/images/loading.gif',
+  login: '/assets/images/login.jpg',
+  loginfail: '/assets/images/login_fail.jpg',
    
   // New in Footwear
   shoes_1: "/assets/images/shoes_1.avif",

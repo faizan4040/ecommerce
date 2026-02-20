@@ -19,8 +19,10 @@ const EmailVerification = ({ params }) => {
   useEffect(() => {
        const verify = async () =>{
         const {data: verificationResponse} = await axios.post('/api/auth/verify-email',{token})
-        if(!verificationResponse.success){
-           setIsVerified(true)
+        if (verificationResponse.success) {
+          setIsVerified(true)
+        } else {
+          setIsVerified(false)
         }
     }
     verify();
@@ -49,7 +51,7 @@ const EmailVerification = ({ params }) => {
           )}
 
           {isVerified !== null && (
-            <Button asChild>
+            <Button className='hover:bg-orange-500 hover:text-white' asChild>
               <Link href={WEBSITE_HOME}>Continue Shopping</Link>
             </Button>
           )}
