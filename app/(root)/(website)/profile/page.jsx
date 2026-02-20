@@ -77,26 +77,37 @@ const Profile = () => {
 
 
   const updateProfile = async (values) => {
-    setLoading(true)
-    try {
-      const formData = new FormData()
-      formData.append('name', values.name)
-      formData.append('phone', values.phone)
-      formData.append('address', values.address)
+  setLoading(true);
+  try {
+    const formData = new FormData();
+    formData.append("name", values.name);
+    formData.append("phone", values.phone);
+    formData.append("address", values.address);
 
-      const { data: response } = await axios.put('/api/profile/update', formData)
-      if (!response.success) {
-        throw new Error(response.message)
-      }
-
-      showToast('success', response.message)
-      dispatch(login(response.data))
-    } catch (error) {
-      showToast('error', error.message || 'Something went wrong')
-    } finally {
-      setLoading(false)
+    if (file) {
+      formData.append("file", file); 
     }
+
+    const { data: response } = await axios.put('/api/profile/update', formData);
+
+    if (!response.success) throw new Error(response.message);
+
+    showToast("success", response.message);
+
+    // Update redux state
+    dispatch(login(response.data));
+
+    // Update preview immediately
+    if (response.data.avatar?.url) {
+      setPreview(response.data.avatar.url);
+    }
+
+  } catch (error) {
+    showToast("error", error.message || "Something went wrong");
+  } finally {
+    setLoading(false);
   }
+};
 
   return (
     <div>

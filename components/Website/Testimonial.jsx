@@ -128,9 +128,7 @@ const Testimonial = () => {
             Showing our 5-star reviews.
           </p>
 
-          <button className="px-8 py-3 rounded-full bg-black text-white font-semibold hover:bg-gray-800 transition">
-            View all reviews
-          </button>
+         
         </div>
 
       </div>

@@ -1,28 +1,12 @@
 import mongoose from "mongoose";
 
-const ChatSchema = new mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    senderRole: {
-      type: String,
-      enum: ["user", "admin"],
-      required: true,
-    },
-    message: {
-      type: String,
-      required: true,
-    },
-    isRead: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  { timestamps: true }
-);
+const ChatSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  adminId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  message: { type: String, required: true },
+  from: { type: String, enum: ["user", "admin", "bot"], required: true },
+  file: { type: String },
+  createdAt: { type: Date, default: Date.now },
+});
 
-export default mongoose.models.Chat ||
-  mongoose.model("Chat", ChatSchema);
+export default mongoose.models.Chat || mongoose.model("Chat", ChatSchema);

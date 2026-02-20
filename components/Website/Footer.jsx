@@ -1,6 +1,6 @@
 "use client"
 
-import { WEBSITE_ABOUT, WEBSITE_CAREERS, WEBSITE_CONTACT_US, WEBSITE_COOKIE_POLICY, WEBSITE_DELIVERY_RETURNS, WEBSITE_DISCOUNT_CODES, WEBSITE_GIFT_VOUCHERS, WEBSITE_ORDER_TRACKING, WEBSITE_PRICE_BEAT_PROMISE, WEBSITE_PRIVACY_POLICY, WEBSITE_RUNNING_CLUB, WEBSITE_STUDENT_DISCOUNT, WEBSITE_TERMS_CONDITIONS, WEBSITE_ULTRA_MEMBERSHIP } from "@/routes/WebsiteRoute"
+import { WEBSITE_ABOUT, WEBSITE_CAREERS, WEBSITE_CONTACT_US, WEBSITE_COOKIE_POLICY, WEBSITE_DELIVERY_RETURNS, WEBSITE_DISCOUNT_CODES, WEBSITE_GIFT_VOUCHERS, WEBSITE_ORDER_TRACKING, WEBSITE_PRICE_BEAT_PROMISE, WEBSITE_PRIVACY_POLICY, WEBSITE_RUNNING_CLUB, WEBSITE_STUDENT_DISCOUNT, WEBSITE_TERMS_CONDITIONS, } from "@/routes/WebsiteRoute"
 import {
   Youtube,
   Instagram,
@@ -10,7 +10,6 @@ import {
   Headphones,
   Info,
   Globe,
-  ArrowRight,
 } from "lucide-react"
 import Link from "next/link"
 import { BsWhatsapp } from "react-icons/bs"
@@ -168,18 +167,6 @@ const Footer = () => {
             </a>
           </li>
 
-
-          <li className="flex items-center text-lg gap-2 hover:text-orange-500 cursor-pointer">
-            <a
-              href="https://www.strava.com/athletes/YourStravaID" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2"
-            >
-              <ArrowRight size={20} /> Strava
-            </a>
-          </li>
-
      
           <li className="flex text-lg items-center gap-2 hover:text-blue-700 cursor-pointer">
             <a
@@ -189,18 +176,6 @@ const Footer = () => {
               className="flex items-center gap-2"
             >
               <Facebook size={20} /> Facebook
-            </a>
-          </li>
-
-    
-          <li className="flex text-lg items-center gap-2 hover:text-green-500 cursor-pointer">
-            <a
-              href="https://www.komoot.com/user/YourKomootID"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2"
-            >
-              <ArrowRight size={20} /> Komoot
             </a>
           </li>
         </ul>

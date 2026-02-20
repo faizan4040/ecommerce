@@ -1,4 +1,3 @@
-
 'use client'
 
 import React, { useState } from "react";
@@ -23,22 +22,7 @@ const users = [
     online: true,
     unread: 2,
   },
-  {
-    id: 2,
-    name: "Gaston Lapierre",
-    message: "How are you today?",
-    time: "10:20 AM",
-    online: true,
-    unread: 0,
-  },
-  {
-    id: 3,
-    name: "Fantina LeBatieler",
-    message: "Reminder for tomorrow's meeting...",
-    time: "11:03 AM",
-    online: false,
-    unread: 1,
-  },
+
 ];
 
 const ChatApp = () => {

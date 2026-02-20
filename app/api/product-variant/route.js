@@ -115,10 +115,6 @@ filters.forEach((filter) => {
 });
 
 
-
-
- 
-
     //  Build sort query
     let sortQuery = { createdAt: -1 };
     if (sorting.length) {

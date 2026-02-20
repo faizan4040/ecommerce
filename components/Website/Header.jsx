@@ -227,7 +227,7 @@ export default function Header() {
             {profileOpen && (
               <div
                 ref={profileRef}
-                className="absolute right-0 mt-5 -mr-20 w-72 cursor-pointer bg-white text-black rounded-2xl shadow-xl border p-6"
+                className="absolute right-0 mt-5 -mr-16 w-72 cursor-pointer bg-white text-black rounded-2xl shadow-xl border p-6"
               >
                 {!auth ? (
                   // User not logged in → show "Create Free Account" button
@@ -262,8 +262,6 @@ export default function Header() {
             )}
           </div>
 
-
-            <Heart className="hidden sm:block cursor-pointer" />
             <Card className="cursor-pointer" />
           </div>
         </div>
