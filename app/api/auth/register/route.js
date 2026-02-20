@@ -52,8 +52,7 @@ export async function POST(request) {
 
             await sendMail(
             "Email verification request from BrandName",
-            email, emailVerificationLink(`${process.env.SPORT_SHOES_WEBSITE_URL}/auth/verify-email/${token}`));
-
+            email, emailVerificationLink(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/verify-email/${token}`));
 
          return response(true, 200, 'Registration success, please verify your email address.');
 

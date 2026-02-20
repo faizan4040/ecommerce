@@ -45,7 +45,7 @@ export async function POST(request){
 
         await sendMail(
         "Email verification request from Developer's Goswami",
-        email, emailVerificationLink(`${process.env.SPORT_SHOES_WEBSITE_URL}/auth/verify-email/${token}`));
+        email, emailVerificationLink(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/verify-email/${token}`));
 
         return response(false, 400, 'Your email is not verified. We have send a verifation link to your registered email address.')
         }
