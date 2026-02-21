@@ -19,11 +19,11 @@ import React, { use, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import slugify from 'slugify'
 
-const breadcrumbData = [
-  {href: ADMIN_DASHBOARD, label: 'Home'},
-  {href: ADMIN_PRODUCT_SHOW, label: 'Products'},
-  {href: '', label: 'Edit Product'},
-]
+    const breadcrumbData = [
+      {href: ADMIN_DASHBOARD, label: 'Home'},
+      {href: ADMIN_PRODUCT_SHOW, label: 'Products'},
+      {href: '', label: 'Edit Product'},
+    ]
 
     const EditProduct = ({ params }) => {
     const {id} = use(params)

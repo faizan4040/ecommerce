@@ -18,7 +18,7 @@ export default function CuponBanner() {
           hover:shadow-lg transition
         "
       >
-        {/* LEFT IMAGE */}
+       
         <div className="relative w-full h-[18vh] sm:h-[20vh] md:h-[24vh] bg-white">
           <Image
             src={IMAGES.coupon}
@@ -29,7 +29,7 @@ export default function CuponBanner() {
           />
         </div>
 
-        {/* RIGHT CONTENT */}
+       
         <div className="p-4 md:p-6 text-center md:text-left">
           <span className="text-[10px] tracking-widest text-gray-500 uppercase">
             Limited Time
@@ -43,7 +43,7 @@ export default function CuponBanner() {
             2026 Collection
           </p>
 
-          {/* ONLY BUTTON IS LINK */}
+        
           <Link href={WEBSITE_SHOP}>
             <button
               type="button"

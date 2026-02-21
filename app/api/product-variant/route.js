@@ -87,32 +87,32 @@ export async function GET(request) {
     }
 
     // Column filters
-filters.forEach((filter) => {
-  if (!filter?.id || filter?.value === undefined || filter?.value === '') return;
+    filters.forEach((filter) => {
+      if (!filter?.id || filter?.value === undefined || filter?.value === '') return;
 
-  // Numeric fields
-  if (
-    filter.id === 'mrp' ||
-    filter.id === 'sellingPrice' ||
-    filter.id === 'discountPercentage'
-  ) {
-    matchQuery[filter.id] = Number(filter.value);
-  } 
-  // Product name filter (nested)
-  else if (filter.id === 'product') {
-    matchQuery["productData.name"] = {
-      $regex: filter.value,
-      $options: 'i',
-    };
-  }
-  // String fields
-  else {
-    matchQuery[filter.id] = {
-      $regex: filter.value,
-      $options: 'i',
-    };
-  }
-});
+      // Numeric fields
+      if (
+        filter.id === 'mrp' ||
+        filter.id === 'sellingPrice' ||
+        filter.id === 'discountPercentage'
+      ) {
+        matchQuery[filter.id] = Number(filter.value);
+      } 
+      // Product name filter (nested)
+      else if (filter.id === 'product') {
+        matchQuery["productData.name"] = {
+          $regex: filter.value,
+          $options: 'i',
+        };
+      }
+      // String fields
+      else {
+        matchQuery[filter.id] = {
+          $regex: filter.value,
+          $options: 'i',
+        };
+      }
+    });
 
 
     //  Build sort query
@@ -152,6 +152,7 @@ filters.forEach((filter) => {
           size: 1,
           gender: 1,
           sku: 1,
+          stock: 1,
           mrp: 1,
           sellingPrice: 1,
           discountPercentage: 1,

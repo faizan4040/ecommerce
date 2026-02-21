@@ -7,7 +7,7 @@ export async function GET() {
     await connectDB();
 
     const genders = await ProductVariantModel.aggregate([
-      { $match: { deletedAt: null } },   // 👈 safety
+      { $match: { deletedAt: null } },  
       { $group: { _id: "$gender" } },
       { $sort: { _id: 1 } },
       { $project: { _id: 0, gender: "$_id" } },

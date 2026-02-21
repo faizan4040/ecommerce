@@ -183,48 +183,17 @@ const formatCurrency = (amount) => {
 ]
 
 
-
-//  const handleNextStatus = async () => {
-//   const nextStatus = STATUS_FLOW[orderData.status];
-//   if (!nextStatus) return;
-
-//   setLoading(true);
-//   try {
-//     const response = await fetch(`/api/orders/${orderData._id || orderData.order_id}/status`, {
-//       method: "PUT",
-//       headers: { "Content-Type": "application/json" },
-//       body: JSON.stringify({ status: nextStatus }),
-//     });
-
-//     const data = await response.json();
-
-//     if (!response.ok) throw new Error(data.message || "Failed to update");
-
-//     // ✅ Safely update status only if data.order exists
-//     if (data.order && data.order.status) {
-//       setOrderData(prev => ({
-//         ...prev,
-//         status: data.order.status,
-//       }));
-//     } else {
-//       // fallback: just use nextStatus
-//       setOrderData(prev => ({
-//         ...prev,
-//         status: nextStatus,
-//       }));
-//     }
-
-//     alert(`Order status updated to ${nextStatus.replace('_', ' ')}`);
-//   } catch (err) {
-//     console.error(err);
-//     alert("Error updating order status");
-//   } finally {
-//     setLoading(false);
-//   }
-// };
-
   const activeStep = getActiveStep(orderData.status);
 
+
+const timeline = [
+  { title: "Order Placed", sub: `Customer: ${orderData.name}` },
+  { title: "Invoice Sent", sub: orderData.email },
+  { title: "Payment Received", sub: `Method: ${orderData.paymentMethod || 'Master Card'}` },
+  normalizeStatus(orderData.status) === "processing" && { title: "Processing Started", sub: "Warehouse confirmed" },
+  normalizeStatus(orderData.status) === "shipped" && { title: "Shipped", sub: `Tracking ID: ${orderData.trackingId || 'N/A'}` },
+  normalizeStatus(orderData.status) === "delivered" && { title: "Delivered", sub: `Delivered on ${formatDate(orderData.deliveryDate)}` },
+].filter(Boolean); // remove any false items
 
   return (
     <div className="px-4 lg:px-2 py-8 bg-[#f7f8fc] min-h-screen space-y-6 ">
@@ -254,11 +223,11 @@ const formatCurrency = (amount) => {
             </p>
           </div>
 
-          <div className="flex gap-3">
+          {/* <div className="flex gap-3">
             <ActionBtn text="Refund" />
             <ActionBtn text="Return" />
             <ActionBtn text="Edit Order" primary />
-          </div>
+          </div> */}
         </div>
 
         {/* Progress Bar */}
@@ -332,6 +301,9 @@ const formatCurrency = (amount) => {
                     text="Save Status"
                     loading={updatingStatus}
                     onClick={handleOrderStatus}
+                    className="w-full bg-linear-to-r cursor-pointer hover:text-white from-orange-400 to-orange-600 hover:from-orange-500 hover:to-orange-700 
+                              text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg 
+                              transition-all duration-300 ease-in-out active:scale-95"
                   />
                 </div>
               </div>
@@ -569,13 +541,21 @@ const formatCurrency = (amount) => {
       <div className="grid lg:grid-cols-3 gap-6">
 
         {/* LEFT */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
-          <h3 className="font-semibold mb-6">Order Timeline</h3>
+      <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
+  <h3 className="font-semibold mb-6">Order Timeline</h3>
 
-          <TimelineItem title="The packing has been started" sub="Confirmed by Gaston Lapierre" />
-          <TimelineItem title="Invoice sent to customer" sub={orderData.email} />
-          <TimelineItem title="Order Payment" sub="Using Master Card" />
-        </div>
+  {timeline.length > 0 ? (
+    timeline.map((item, index) => (
+      <TimelineItem
+        key={index}
+        title={item.title}
+        sub={item.sub}
+      />
+    ))
+  ) : (
+    <p className="text-sm text-gray-400">No timeline data available</p>
+  )}
+</div>
 
         {/* RIGHT */}
         <div className="space-y-7 ">
@@ -585,17 +565,13 @@ const formatCurrency = (amount) => {
     {/* PROFILE + NAME */}
     <div className="flex gap-4 items-center">
       {/* PROFILE IMAGE */}
-      <div className="w-16 h-16 rounded-full overflow-hidden border bg-gray-100 shrink-0">
+      {/* <div className="w-16 h-16 rounded-full overflow-hidden border bg-gray-100 shrink-0">
         <img
-          src={
-            orderData.user?.avatar ||
-            orderData.user?.profileImage ||
-            IMAGES.user_placeholder
-          }
+          src={orderData.user?.avatar?.url || orderData.user?.profileImage || IMAGES.user_placeholder}
           className="w-full h-full object-cover border-2 rounded-full"
-          alt={orderData.name}
+          alt={orderData.user?.name || "User"}
         />
-      </div>
+      </div> */}
 
       {/* NAME & EMAIL */}
       <div className="flex flex-col">
@@ -813,318 +789,6 @@ export default OrderDetails
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 'use client'
-// import BreadCrumb from '@/components/Application/Admin/BreadCrumb'
-// import ButtonLoading from '@/components/Application/ButtonLoading'
-// import Select from '@/components/Application/Select'
-
-// import useFetch from '@/hooks/useFetch'
-// import { showToast } from '@/lib/showToast'
-// import { ADMIN_DASHBOARD, ADMIN_ORDER_SHOW } from '@/routes/AdminPanelRoute'
-// import { IMAGES } from '@/routes/Images'
-// import { WEBSITE_PRODUCT_DETAILS } from '@/routes/WebsiteRoute'
-// import axios from 'axios'
-// import Image from 'next/image'
-// import Link from 'next/link'
-
-// import React, { use, useEffect, useState } from 'react'
-
-
-// const breadcrumbData = [
-//   {href: ADMIN_DASHBOARD, label: "Home"},
-//   {href: ADMIN_ORDER_SHOW, label: "Orders"},
-//   {href: '', label: "Orders Details"},
-// ]
-
-// const statusOptions = [
-//   { label: 'Pending', value: 'pending' },
-//   { label: 'Processing', value: 'processing' },
-//   { label: 'Shipped', value: 'shipped' },
-//   { label: 'Delivered', value: 'delivered' },
-//   { label: 'Canceled', value: 'canceled' },
-//   { label: 'Unverified', value: 'unverified' }, // lowercase
-// ]
-
-
-
-// const OrderDetails = ({ params }) => {
-//   const { order_id } = use(params)
-//   const [orderData, setOrderData] = useState()
-//   const [orderStatus, setOrderStatus] = useState()
-//   const [updatingStatus, setUpdatingStatus] = useState(false)
-//   const {data, loading} = useFetch(`/api/orders/get/${order_id}`)
-
-//   useEffect(()=>{
-//    if(data && data.success){
-//     setOrderData(data.data)
-//     setOrderStatus(data?.data?.status)
-//    }
-//   },[data])
-
-// const handleOrderStatus = async () => {
-//   setUpdatingStatus(true)
-//   try {
-//     const { data: response } = await axios.put('/api/orders/update-status', {
-//       _id: orderData?._id,
-//       status: orderStatus,
-//     })
-
-//     if (!response.success) {
-//       throw new Error(response.message) // ✅ fix here
-//     }
-
-//     showToast('success', response.message)
-
-//   } catch (error) {
-//     showToast('error', error.message)
-//   } finally {
-//     setUpdatingStatus(false)
-//   }
-// }
-
-//   return (
-//     <div>
-     
-//       <BreadCrumb breadcrumbData={breadcrumbData}/>
-//       <div className='lg:px-32 px-5 my-20'>
-//         {!orderData ?
-//           <div className='flex justify-center items-center py-32'>
-//             <h4 className='text-red-600 text-xl font-semibold'>Order Not Found</h4>
-//           </div>
-//           :
-//           <div>
-//             <div className="mb-6 border rounded-lg p-4 bg-gray-50">
-//               <div className="grid sm:grid-cols-3 grid-cols-1 gap-3 text-sm">
-
-//                 <div>
-//                   <p className="text-gray-500">Order ID</p>
-//                   <p className="font-semibold text-gray-900">
-//                     {orderData?.order_id || '—'}
-//                   </p>
-//                 </div>
-
-//                 <div>
-//                   <p className="text-gray-500">Transaction ID</p>
-//                   <p className="font-semibold text-gray-900">
-//                     {orderData?.payment_id || '—'}
-//                   </p>
-//                 </div>
-
-//                 <div>
-//                   <p className="text-gray-500">Status</p>
-//                   <span
-//                     className={`inline-block px-3 py-1 rounded-full text-xs font-semibold capitalize
-//                     ${orderData?.status === 'success'
-//                         ? 'bg-green-100 text-green-700'
-//                         : orderData?.status === 'pending'
-//                           ? 'bg-yellow-100 text-yellow-700'
-//                           : 'bg-red-100 text-red-700'
-//                       }`}
-//                   >
-//                     {orderData?.status || 'unknown'}
-//                   </span>
-//                 </div>
-
-//               </div>
-//             </div>
-
-//             <div className="overflow-x-auto ">
-//               <table className="w-full border-collapse border border-gray-200 ">
-//                 {/* Table Head */}
-//                 <thead className="bg-gray-100 ">
-//                   <tr>
-//                     <th className="text-start p-3 text-gray-700 font-semibold">Product</th>
-//                     <th className="text-center p-3 text-gray-700 font-semibold">Price</th>
-//                     <th className="text-center p-3 text-gray-700 font-semibold">Quantity</th>
-//                     <th className="text-center p-3 text-gray-700 font-semibold">Total</th>
-//                   </tr>
-//                 </thead>
-
-//                 {/* Table Body */}
-//                 <tbody>
-//                   {orderData?.products?.map((product) => (
-//                     <tr
-//                       key={product.variantId._id}
-//                       className="border-b hover:bg-gray-50 transition-colors"
-//                     >
-//                       {/* Product Info */}
-//                       <td className="p-3 flex items-center gap-4">
-//                         <Image
-//                           src={product?.variantId?.media[0]?.secure_url || IMAGES.image_placeholder}
-//                           width={60}
-//                           height={60}
-//                           alt={product?.productId?.name}
-//                           className="rounded-lg object-cover"
-//                         />
-//                         <div>
-//                           <Link
-//                             href={WEBSITE_PRODUCT_DETAILS(product?.productId?.slug)}
-//                             className="font-medium text-gray-800 hover:underline"
-//                           >
-//                             {product?.productId?.name}
-//                           </Link>
-//                           <p className="text-sm text-gray-500 mt-1">Color: {product?.variantId?.color}</p>
-//                           <p className="text-sm text-gray-500">Size: {product?.variantId?.size}</p>
-//                         </div>
-//                       </td>
-
-//                       {/* Price */}
-//                       <td className="text-center p-3 text-gray-700 font-medium">
-//                         {product.sellingPrice.toLocaleString("en-IN", {
-//                           style: "currency",
-//                           currency: "INR",
-//                         })}
-//                       </td>
-
-//                       {/* Quantity */}
-//                       <td className="text-center p-3 text-gray-700 font-medium">{product.qty}</td>
-
-//                       {/* Total */}
-//                       <td className="text-center p-3 text-gray-900 font-semibold">
-//                         {(product.qty * product.sellingPrice).toLocaleString("en-IN", {
-//                           style: "currency",
-//                           currency: "INR",
-//                         })}
-//                       </td>
-//                     </tr>
-//                   ))}
-//                 </tbody>
-//               </table>
-//             </div>
-
-
-//             <div className="grid md:grid-cols-2 grid-cols-1 gap-6 mt-10">
-//               {/* Shipping Address */}
-//               <div className="p-6 bg-white shadow rounded-lg border border-gray-200">
-//                 <h4 className="text-xl font-semibold mb-4 border-b pb-2">Shipping Address</h4>
-//                 <div className="space-y-2 text-gray-700">
-//                   <div className="flex justify-between">
-//                     <span className="font-medium">Name:</span>
-//                     <span>{orderData?.name}</span>
-//                   </div>
-//                   <div className="flex justify-between">
-//                     <span className="font-medium">Email:</span>
-//                     <span>{orderData?.email}</span>
-//                   </div>
-//                   <div className="flex justify-between">
-//                     <span className="font-medium">Phone:</span>
-//                     <span>{orderData?.phone}</span>
-//                   </div>
-//                   <div className="flex justify-between">
-//                     <span className="font-medium">Address:</span>
-//                     <span>{orderData?.address}</span>
-//                   </div>
-//                   <div className="flex justify-between">
-//                     <span className="font-medium">Country:</span>
-//                     <span>{orderData?.country}</span>
-//                   </div>
-//                   <div className="flex justify-between">
-//                     <span className="font-medium">State:</span>
-//                     <span>{orderData?.state}</span>
-//                   </div>
-//                   <div className="flex justify-between">
-//                     <span className="font-medium">City:</span>
-//                     <span>{orderData?.city}</span>
-//                   </div>
-//                   <div className="flex justify-between">
-//                     <span className="font-medium">Pincode:</span>
-//                     <span>{orderData?.pincode}</span>
-//                   </div>
-//                   <div className="flex justify-between">
-//                     <span className="font-medium">Landmark:</span>
-//                     <span>{orderData?.landmark}</span>
-//                   </div>
-//                   <div className="flex justify-between">
-//                     <span className="font-medium">Order Note:</span>
-//                     <span>{orderData?.ordernote || '...'}</span>
-//                   </div>
-//                 </div>
-//               </div>
-
-//               {/* Order Summary */}
-//               <div className="p-6 bg-white shadow rounded-lg border border-gray-200">
-//                 <h4 className="text-xl font-semibold mb-4 border-b pb-2">Order Summary</h4>
-//                 <div className="space-y-2 text-gray-700">
-//                   <div className="flex justify-between">
-//                     <span className="font-medium">Subtotal</span>
-//                     <span>{orderData?.subtotal.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</span>
-//                   </div>
-//                   <div className="flex justify-between">
-//                     <span className="font-medium">Discount</span>
-//                     <span>{orderData?.discount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</span>
-//                   </div>
-//                   <div className="flex justify-between">
-//                     <span className="font-medium">Coupon Discount</span>
-//                     <span>{orderData?.couponDiscount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</span>
-//                   </div>
-//                   <div className="flex justify-between mt-4 pt-2 border-t text-lg font-bold text-gray-900">
-//                     <span>Total</span>
-//                     <span>{orderData?.totalAmount.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</span>
-//                   </div>
-//                 </div>
-              
-              
-//               <hr/>
-
-//           <div className="pt-3">
-//           <h4 className="font-semibold mb-2">Order Status</h4>
-
-//           <Select
-//             options={statusOptions}
-//             selected={orderStatus}
-//             setSelected={(value) => setOrderStatus(value)}
-//             placeholder="Select"
-//             isMulti={false}
-//           />
-//           <ButtonLoading type="button" text='Save Status' loading={updatingStatus} onClick={handleOrderStatus}/>
-//         </div>
-
-//               </div>
-
-
-
-              
-//             </div>
-
-
-           
-
-//           </div>
-
-//         }
-
-//       </div>
-//     </div>
-//   )
-// }
-
-// export default OrderDetails
 
 
 

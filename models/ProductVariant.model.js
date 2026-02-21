@@ -46,6 +46,13 @@ const ProductVariantSchema = new mongoose.Schema({
         unique: true,
     },
 
+    stock: {
+        type: Number,
+        required: true,
+        default: 0,
+        min: 0,
+    },
+
     media: [
         {
             type: mongoose.Schema.Types.ObjectId,

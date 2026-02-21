@@ -52,14 +52,15 @@ const breadcrumbData = [
          setProductOption(options)
        }
     },[getProduct])
-    
+     
     
     const formSchema = zSchema.pick({
       product: true,        
       sku: true,            
       color: true,          
       size: true,   
-      gender: true,  
+      gender: true,
+      stock: true,  
       mrp: true,
       sellingPrice: true,
       discountPercentage: true,
@@ -274,6 +275,22 @@ const breadcrumbData = [
             setSelected={field.onChange}
             isMulti={false}
           />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+</div>
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+   <FormField
+    control={form.control}
+    name="stock"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Stock Quantity *</FormLabel>
+        <FormControl>
+          <Input type="number" placeholder="Enter stock quantity" {...field} />
         </FormControl>
         <FormMessage />
       </FormItem>

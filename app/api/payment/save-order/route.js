@@ -6,6 +6,7 @@ import { sendMail } from "@/lib/sendMail";
 import { zSchema } from "@/lib/zodSchema";
 import OrderModel from "@/models/Order.model";
 import { validatePaymentVerification } from "razorpay/dist/utils/razorpay-utils";
+import ProductVariantModel from "@/models/ProductVariant.model";
 import z from "zod";
 
 export async function POST(request) {
@@ -81,6 +82,15 @@ export async function POST(request) {
     status: paymentVerification ? 'pending' : 'unverified'
     });
 
+        if (paymentVerification) {
+        for (const item of validateData.products) {
+            await ProductVariantModel.findOneAndUpdate(
+            { _id: item.variantId, stock: { $gte: item.qty } },
+            { $inc: { stock: -item.qty } }
+            )
+        }
+        }
+
 
     try{
         const mailData = {
@@ -91,7 +101,7 @@ export async function POST(request) {
         await sendMail('Order placed successfully.', validateData.email, orderNotification(mailData))
 
     } catch(error){
-        console.log(error)
+    
     }
 
     return response(true, 200, 'Order placed successfully.')
