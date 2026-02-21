@@ -41,7 +41,7 @@ export async function POST(request){
           size: variantData.size,
           gender: variantData.gender,
           sku: variantData.sku,
-          stock: stockValue,   
+          stock: variantData.stock,   
           mrp: variantData.mrp,
           sellingPrice: variantData.sellingPrice,
           discountPercentage: variantData.discountPercentage,

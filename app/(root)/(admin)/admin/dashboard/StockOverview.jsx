@@ -20,9 +20,7 @@ import useFetch from "@/hooks/useFetch"
 import { Badge } from "@/components/ui/badge"
 
 const StockOverview = () => {
-  const { data, loading } = useFetch(
-    "/api/dashboard/admin/stock-overview"
-  )
+  const { data, loading } = useFetch("/api/dashboard/admin/stock-overview")
 
   if (loading) {
     return (
@@ -38,16 +36,17 @@ const StockOverview = () => {
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
-      {/*  STOCK TABLE */}
-      <Card className="xl:col-span-2 rounded-2xl shadow-sm">
+      {/* STOCK TABLE */}
+      <Card className="xl:col-span-2 rounded-2xl shadow-sm h-full">
         <CardHeader className="border-b">
           <CardTitle>Product Stock Overview</CardTitle>
         </CardHeader>
 
         <CardContent className="p-4">
-          <div className="max-h-96 overflow-y-auto">
+          {/* Scrollable table container */}
+          <div className="max-h-150 overflow-y-auto">
             <Table>
-              <TableHeader className="sticky top-0 bg-background">
+              <TableHeader className="sticky top-0 bg-background z-10">
                 <TableRow>
                   <TableHead>Product</TableHead>
                   <TableHead>SKU</TableHead>
@@ -64,7 +63,6 @@ const StockOverview = () => {
                     <TableCell className="font-mono text-xs">{row.sku}</TableCell>
                     <TableCell>{row.totalSold}</TableCell>
                     <TableCell>{row.remainingStock}</TableCell>
-
                     <TableCell>
                       {row.status === "Out of Stock" && (
                         <Badge variant="secondary">Out of Stock</Badge>
@@ -84,28 +82,29 @@ const StockOverview = () => {
         </CardContent>
       </Card>
 
-      {/* 🔥 MOST SOLD */}
-      <Card className="rounded-2xl shadow-sm">
+      {/* MOST SOLD */}
+      <Card className="rounded-2xl shadow-sm h-full">
         <CardHeader className="border-b">
           <CardTitle>Most Sold Products</CardTitle>
         </CardHeader>
 
-        <CardContent className="p-4 space-y-3">
-          {mostSold.map(item => (
-            <div
-              key={item.variantId}
-              className="flex justify-between items-center p-3 rounded-lg bg-muted"
-            >
-              <div>
-                <p className="font-medium">{item.productName}</p>
-                <p className="text-xs text-muted-foreground">{item.sku}</p>
+        <CardContent className="p-0">
+          <div className="max-h-150 overflow-y-auto space-y-3 p-4">
+            {mostSold.map(item => (
+              <div
+                key={item.variantId}
+                className="flex justify-between items-center p-3 rounded-lg bg-muted"
+              >
+                <div>
+                  <p className="font-medium">{item.productName}</p>
+                  <p className="text-xs text-muted-foreground">{item.sku}</p>
+                </div>
+                <Badge>{item.totalSold} Sold</Badge>
               </div>
-              <Badge>{item.totalSold} Sold</Badge>
-            </div>
-          ))}
+            ))}
+          </div>
         </CardContent>
       </Card>
-
     </div>
   )
 }
