@@ -39,11 +39,13 @@ const ProductDetails = ({ product, variant, colors = [], sizes = [], reviewCount
   const [isProductLoading, setIsProductLoading] = useState(false)
 
 
-  useEffect(() => {
-    if (variant?.media?.length) {
-      setActiveThumb(variant.media[0].secure_url)
-    }
-  }, [variant])
+useEffect(() => {
+  if (variant?.media?.length) {
+    setActiveThumb(variant.media[0].secure_url)
+  }
+
+  setIsProductLoading(false)
+}, [variant])
 
   useEffect(()=>{
      if(cartStore.count > 0) {
@@ -145,14 +147,14 @@ const ProductDetails = ({ product, variant, colors = [], sizes = [], reviewCount
 
       {/* Main Image */}
       <div className="flex-1">
-        <Image
-          src={activeThumb || IMAGES.image_placeholder}
-          alt="product"
-          width={600}
-          height={600}
-          className="w-full max-h-105 sm:max-h-130 object-contain rounded-xl border"
-          priority
-        />
+            <Image
+            src={activeThumb || IMAGES.image_placeholder}
+            alt="product"
+            width={600}
+            height={600}
+            onLoadingComplete={() => setIsProductLoading(false)}
+            className="w-full object-contain rounded-xl border"
+          />
       </div>
     </div>
 
@@ -205,42 +207,36 @@ const ProductDetails = ({ product, variant, colors = [], sizes = [], reviewCount
       <div className="mb-6">
         <p className="font-semibold mb-2">Color</p>
         <div className="flex gap-2 flex-wrap">
-          {colors?.map((color) => (
-            <Link onClick={() => setIsProductLoading(true)}
+          {colors.map((color) => {
+            return (
+              <Link
               key={color}
-              href={`${WEBSITE_PRODUCT_DETAILS(
-                product?.slug
-              )}?color=${color}&size=${variant?.size}`}
-              className={`px-4 py-1.5 rounded-full border text-sm transition
-                ${
-                  color === variant?.color
-                    ? "bg-primary text-white border-primary"
-                    : "hover:border-primary"
-                }`}
+              onClick={() => setIsProductLoading(true)}
+              href={`${WEBSITE_PRODUCT_DETAILS(product.slug)}?color=${color}&size=${variant.size}`}
+              className={`border py-1 px-3 rounded-lg cursor-pointer transition
+                hover:bg-primary hover:text-white
+                ${color === variant.color ? "bg-primary text-white" : ""}`}
             >
               {color}
             </Link>
-          ))}
+            )
+          })}
         </div>
       </div>
 
       {/* Sizes */}
       <div className="mb-6">
-        <p className="font-semibold mb-2">Size</p>
+        <p className="font-semibold mb-2">Size: {variant?.size}</p>
+
         <div className="flex gap-2 flex-wrap">
-          {sizes?.map((size) => (
+          {sizes.map((size) => (
             <Link
-              onClick={() => setIsProductLoading(true)}
               key={size}
-              href={`${WEBSITE_PRODUCT_DETAILS(
-                product?.slug
-              )}?color=${variant?.color}&size=${size}`}
-              className={`px-4 py-1.5 rounded-full border text-sm transition
-                ${
-                  size === variant?.size
-                    ? "bg-primary text-white border-primary"
-                    : "hover:border-primary"
-                }`}
+              onClick={() => setIsProductLoading(true)}
+              href={`${WEBSITE_PRODUCT_DETAILS(product.slug)}?color=${variant.color}&size=${size}`}
+              className={`border py-1 px-3 rounded-lg cursor-pointer transition
+                hover:bg-primary hover:text-white
+                ${size === variant.size ? "bg-primary text-white" : ""}`}
             >
               {size}
             </Link>
@@ -277,14 +273,14 @@ const ProductDetails = ({ product, variant, colors = [], sizes = [], reviewCount
         {!isAddedIntoCart ? (
           <ButtonLoading
             onClick={handleAddToCart}
-            className="flex-1 bg-primary text-white py-3 rounded-full font-semibold hover:opacity-90 transition"
+            text='Add to Cart'
+            className="flex-1 bg-primary text-white py-3 hover:bg-orange-500 hover:text-white cursor-pointer rounded-full font-semibold hover:opacity-90 transition"
           >
-            Add to Cart
           </ButtonLoading>
         ) : (
           <Button
             asChild
-            className="flex-1 bg-primary text-white py-3 rounded-full font-semibold hover:opacity-90 transition"
+            className="flex-1 bg-primary text-white py-3  hover:bg-orange-500 hover:text-white cursor-pointer rounded-full font-semibold hover:opacity-90 transition"
           >
             <Link href={WEBSITE_CART}>
               Go to Cart

@@ -3,13 +3,12 @@ import connectDB from "@/lib/databaseConnection"
 import { response, catchError } from "@/lib/helperfunction"
 import OrderModel from "@/models/Order.model"
 import ProductVariantModel from "@/models/ProductVariant.model"
-import { NextResponse } from "next/server"
 
 const LOW_STOCK_LIMIT = 5
 
 export async function GET() {
   try {
-    // 🔐 Admin auth
+    // Admin Auth
     const auth = await isAuthenticated("admin")
     if (!auth.isAuth) {
       return response(false, 403, "Unauthorized")
@@ -17,7 +16,7 @@ export async function GET() {
 
     await connectDB()
 
-    // 1️⃣ Total sold per variant
+    // Total sold per variant (REAL orders)
     const soldData = await OrderModel.aggregate([
       { $unwind: "$products" },
       {
@@ -28,29 +27,27 @@ export async function GET() {
       },
     ])
 
+    // Convert sold array to map
     const soldMap = {}
     soldData.forEach(item => {
       soldMap[item._id.toString()] = item.totalSold
     })
 
-    // 2️⃣ Fetch variants
-    // const variants = await ProductVariantModel.find({ deletedAt: null })
-    //   .populate("product", "name")
-    //   .lean()
-      const variants = await ProductVariantModel.find({ deletedAt: null }).populate("product", "name").lean()
-        variants.forEach(v => {
-        console.log("STOCK DEBUG =>", {
-            sku: v.sku,
-            stock: v.stock,
-            id: v._id.toString(),
-        })
-        })
+    // Fetch product variants
+    const variants = await ProductVariantModel.find({
+      deletedAt: null,
+    })
+      .populate("product", "name")
+      .lean()
 
+    // Build stock table
     const stockTable = variants.map(v => {
       const sold = soldMap[v._id.toString()] || 0
-
-      // 🔥 CRITICAL FIX
       const remaining = Number(v.stock ?? 0)
+
+      let status = "In Stock"
+      if (remaining === 0) status = "Out of Stock"
+      else if (remaining <= LOW_STOCK_LIMIT) status = "Low Stock"
 
       return {
         variantId: v._id,
@@ -58,30 +55,30 @@ export async function GET() {
         sku: v.sku,
         totalSold: sold,
         remainingStock: remaining,
-        status:
-          remaining === 0
-            ? "Out of Stock"
-            : remaining <= LOW_STOCK_LIMIT
-            ? "Low Stock"
-            : "In Stock",
+        status,
       }
     })
 
-    // 3️⃣ Most sold
+    // LOW STOCK NOTIFICATIONS (LIVE)
+    const lowStock = stockTable.filter(
+      item => item.status === "Low Stock"
+    )
+
+    // Most sold products
     const mostSold = [...stockTable]
-      .filter(p => p.totalSold > 0)
+      .filter(item => item.totalSold > 0)
       .sort((a, b) => b.totalSold - a.totalSold)
       .slice(0, 5)
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        stockTable,
-        mostSold,
-      },
+    // Final response
+    return response(true, 200, "Stock report fetched", {
+      stockTable,
+      mostSold,
+      lowStock, 
     })
+
   } catch (error) {
-    console.error("STOCK OVERVIEW ERROR:", error)
+    console.error("STOCK REPORT ERROR:", error)
     return catchError(error)
   }
 }

@@ -18,20 +18,46 @@ import {
 
 import useFetch from "@/hooks/useFetch"
 import { Badge } from "@/components/ui/badge"
+import { CheckCircle, AlertTriangle, XCircle } from "lucide-react"
 
 const StockOverview = () => {
   const { data, loading } = useFetch("/api/dashboard/admin/stock-overview")
 
   if (loading) {
     return (
-      <div className="h-full w-full flex justify-center items-center">
-        Loading...
+      <div className="h-full w-full flex justify-center items-center text-muted-foreground">
+        Loading stock data...
       </div>
     )
   }
 
   const stockTable = data?.data?.stockTable || []
   const mostSold = data?.data?.mostSold || []
+
+  // ✅ Status badge renderer
+  const renderStatus = (status) => {
+    if (status === "Out of Stock") {
+      return (
+        <Badge className="bg-red-600 text-white flex items-center gap-1">
+          <XCircle size={14} /> Out of Stock
+        </Badge>
+      )
+    }
+
+    if (status === "Low Stock") {
+      return (
+        <Badge className="bg-yellow-500 text-black flex items-center gap-1 animate-pulse">
+          <AlertTriangle size={14} /> Low Stock
+        </Badge>
+      )
+    }
+
+    return (
+      <Badge className="bg-green-600 text-white flex items-center gap-1">
+        <CheckCircle size={14} /> In Stock
+      </Badge>
+    )
+  }
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
@@ -43,15 +69,14 @@ const StockOverview = () => {
         </CardHeader>
 
         <CardContent className="p-4">
-          {/* Scrollable table container */}
-          <div className="max-h-150 overflow-y-auto">
+          <div className="max-h-112.5 overflow-y-auto">
             <Table>
               <TableHeader className="sticky top-0 bg-background z-10">
                 <TableRow>
                   <TableHead>Product</TableHead>
                   <TableHead>SKU</TableHead>
-                  <TableHead>Sold</TableHead>
-                  <TableHead>Remaining</TableHead>
+                  <TableHead className="text-center">Sold</TableHead>
+                  <TableHead className="text-center">Stock qty</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -59,20 +84,24 @@ const StockOverview = () => {
               <TableBody>
                 {stockTable.map(row => (
                   <TableRow key={row.variantId}>
-                    <TableCell>{row.productName}</TableCell>
-                    <TableCell className="font-mono text-xs">{row.sku}</TableCell>
-                    <TableCell>{row.totalSold}</TableCell>
-                    <TableCell>{row.remainingStock}</TableCell>
+                    <TableCell className="font-medium">
+                      {row.productName}
+                    </TableCell>
+
+                    <TableCell className="font-mono text-xs">
+                      {row.sku}
+                    </TableCell>
+
+                    <TableCell className="text-center">
+                      {row.totalSold}
+                    </TableCell>
+
+                    <TableCell className="text-center">
+                      {row.remainingStock}
+                    </TableCell>
+
                     <TableCell>
-                      {row.status === "Out of Stock" && (
-                        <Badge variant="secondary">Out of Stock</Badge>
-                      )}
-                      {row.status === "Low Stock" && (
-                        <Badge variant="destructive">Low Stock</Badge>
-                      )}
-                      {row.status === "In Stock" && (
-                        <Badge variant="success">In Stock</Badge>
-                      )}
+                      {renderStatus(row.status)}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -88,21 +117,28 @@ const StockOverview = () => {
           <CardTitle>Most Sold Products</CardTitle>
         </CardHeader>
 
-        <CardContent className="p-0">
-          <div className="max-h-150 overflow-y-auto space-y-3 p-4">
-            {mostSold.map(item => (
+        <CardContent className="p-4 space-y-3 max-h-112.5 overflow-y-auto">
+          {mostSold.length ? (
+            mostSold.map(item => (
               <div
                 key={item.variantId}
-                className="flex justify-between items-center p-3 rounded-lg bg-muted"
+                className="flex justify-between items-center p-3 rounded-xl bg-muted"
               >
                 <div>
                   <p className="font-medium">{item.productName}</p>
                   <p className="text-xs text-muted-foreground">{item.sku}</p>
                 </div>
-                <Badge>{item.totalSold} Sold</Badge>
+
+                <Badge className="bg-orange-500 text-white">
+                  {item.totalSold} Sold
+                </Badge>
               </div>
-            ))}
-          </div>
+            ))
+          ) : (
+            <p className="text-muted-foreground text-sm">
+              No sales data available
+            </p>
+          )}
         </CardContent>
       </Card>
     </div>

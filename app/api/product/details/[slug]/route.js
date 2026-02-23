@@ -87,8 +87,6 @@ export async function GET(request, {params}) {
 
        return response(true, 200, 'Product data found.', productData)
 
-        
-        
     } catch(error){
         return catchError(error)
     }

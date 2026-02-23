@@ -284,18 +284,23 @@ const breadcrumbData = [
 
 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
    <FormField
-    control={form.control}
-    name="stock"
-    render={({ field }) => (
-      <FormItem>
-        <FormLabel>Stock Quantity *</FormLabel>
-        <FormControl>
-          <Input type="number" placeholder="Enter stock quantity" {...field} />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    )}
-  />
+  control={form.control}
+  name="stock"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Stock Quantity *</FormLabel>
+      <FormControl>
+        <Input
+          type="number"
+          placeholder="Enter stock quantity"
+          value={field.value}
+          onChange={(e) => field.onChange(e.target.valueAsNumber)}
+        />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
 </div>
 
 

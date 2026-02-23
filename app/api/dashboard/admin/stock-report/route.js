@@ -40,9 +40,9 @@ export async function GET() {
       .populate("product", "name")
       .lean()
 
-    const stockTable = variants.map(v => {
+      const stockTable = variants.map(v => {
       const sold = soldMap[v._id.toString()] || 0
-      const remaining = Number(v.stock || 0) // ✅ real stock
+      const remaining = Number(v.stock || 0) 
 
       return {
         variantId: v._id,
