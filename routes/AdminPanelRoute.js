@@ -12,6 +12,17 @@ export const ADMIN_CATEGORY_SHOW = '/admin/category'
 export const ADMIN_CATEGORY_EDIT = (id) => id ? `/admin/category/edit/${id}` : ''
 
 
+// WareHouse routes
+export const ADMIN_WAREHOUSE_SHOW = '/admin/warehouse'
+export const ADMIN_WAREHOUSE_ADD = '/admin/warehouse/add'
+export const ADMIN_WAREHOUSE_EDIT = (id) => `/admin/warehouse/edit/${id}`
+
+// Optional - for trash management
+export const ADMIN_WAREHOUSE_TRASH = '/admin/warehouse/trash'
+
+// WareHouse stock
+export const ADMIN_STOCK_SHOW = '/admin/stock'
+
 // Product routes
 export const ADMIN_PRODUCT_ADD = '/admin/product/add'
 export const ADMIN_PRODUCT_SHOW = '/admin/product'

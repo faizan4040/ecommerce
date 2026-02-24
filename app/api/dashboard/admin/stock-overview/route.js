@@ -16,7 +16,7 @@ export async function GET() {
 
     await connectDB()
 
-    // Total sold per variant (REAL orders)
+    // Total sold per variant (from REAL orders)
     const soldData = await OrderModel.aggregate([
       { $unwind: "$products" },
       {
@@ -27,17 +27,16 @@ export async function GET() {
       },
     ])
 
-    // Convert sold array to map
     const soldMap = {}
     soldData.forEach(item => {
       soldMap[item._id.toString()] = item.totalSold
     })
 
-    // Fetch product variants
+    // Fetch variants WITH product images
     const variants = await ProductVariantModel.find({
       deletedAt: null,
     })
-      .populate("product", "name")
+      .populate("product", "name thumbnail")
       .lean()
 
     // Build stock table
@@ -53,16 +52,15 @@ export async function GET() {
         variantId: v._id,
         productName: v.product?.name || "—",
         sku: v.sku,
+        image: v.product?.thumbnail || null,
         totalSold: sold,
         remainingStock: remaining,
         status,
       }
     })
 
-    // LOW STOCK NOTIFICATIONS (LIVE)
-    const lowStock = stockTable.filter(
-      item => item.status === "Low Stock"
-    )
+    // Low stock notifications
+    const lowStock = stockTable.filter(item => item.status === "Low Stock")
 
     // Most sold products
     const mostSold = [...stockTable]
@@ -70,11 +68,10 @@ export async function GET() {
       .sort((a, b) => b.totalSold - a.totalSold)
       .slice(0, 5)
 
-    // Final response
     return response(true, 200, "Stock report fetched", {
       stockTable,
       mostSold,
-      lowStock, 
+      lowStock,
     })
 
   } catch (error) {
