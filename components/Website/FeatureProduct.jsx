@@ -20,7 +20,9 @@ const FeatureProduct = () => {
       const { data } = await axios.get(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/get-feature-product`
       )
-      setProducts(data?.data || [])
+      // Reverse products so newest comes first
+      const reversedProducts = (data?.data || []).slice().reverse()
+      setProducts(reversedProducts)
     } catch (err) {
       console.error("Failed to fetch products:", err)
       setProducts([])
@@ -104,13 +106,13 @@ const FeatureProduct = () => {
           {currentPage < totalPages && (
             <button
               onClick={handleLoadMore}
-              className="px-6 py-2 rounded-lg  border-orange-500 hover:bg-orange-500 border-2 hover:text-white transition-all duration-300 cursor-pointer font-semibold"
+              className="px-6 py-2 rounded-lg border-orange-500 hover:bg-orange-500 border-2 hover:text-white transition-all duration-300 cursor-pointer font-semibold"
             >
               Load More
             </button>
           )}
 
-          {/* Page Numbers (Right Side) */}
+          {/* Page Numbers */}
           <div className="flex gap-2">
             {Array.from({ length: totalPages }).map((_, index) => {
               const page = index + 1

@@ -7,23 +7,28 @@ import Link from "next/link"
 import { IMAGES } from "@/routes/AllImages"
 import { WEBSITE_SHOP } from "@/routes/WebsiteRoute"
 
+const MAX_PRODUCTS = 12
+
 const ProductSlider = () => {
   const sliderRef = useRef(null)
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(false)
 
-  // Fetch latest 10 products
+  // Fetch latest products
   const fetchLatestProducts = async () => {
     setLoading(true)
     try {
       const { data } = await axios.get(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/get-feature-product?limit=10`
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/product/get-feature-product?limit=${MAX_PRODUCTS}`
       )
-
       
-      setProducts(data.data || [])
+      // Reverse products so newest appear first
+      const sortedProducts = (data.data || []).slice().reverse()
+      // Limit to MAX_PRODUCTS
+      setProducts(sortedProducts.slice(0, MAX_PRODUCTS))
     } catch (err) {
       console.error("Failed to fetch latest products:", err)
+      setProducts([])
     } finally {
       setLoading(false)
     }
@@ -50,7 +55,10 @@ const ProductSlider = () => {
           <span className="bg-black rounded-full text-white text-sm px-4 py-2 cursor-pointer transition-all duration-300">
             Footwear
           </span>
-          <Link href={WEBSITE_SHOP} className="border-2 border-orange-500 text-orange-500 rounded-full text-sm px-4 py-2 hover:bg-orange-500 hover:text-white transition-all duration-300 cursor-pointer">
+          <Link
+            href={WEBSITE_SHOP}
+            className="border-2 border-orange-500 text-orange-500 rounded-full text-sm px-4 py-2 hover:bg-orange-500 hover:text-white transition-all duration-300 cursor-pointer"
+          >
             Shop Know
           </Link>
         </h2>
@@ -106,7 +114,6 @@ const ProductSlider = () => {
                 <p className="text-sm text-gray-500 mt-1 line-clamp-2">
                   {product.description || "No description available"}
                 </p>
-                
               </div>
             </Link>
           ))}
