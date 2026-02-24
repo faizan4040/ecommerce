@@ -40,7 +40,7 @@ export async function GET() {
       .lean()
 
     // Build stock table
-    const stockTable = variants.map(v => {
+      const stockTable = variants.map(v => {
       const sold = soldMap[v._id.toString()] || 0
       const remaining = Number(v.stock ?? 0)
 

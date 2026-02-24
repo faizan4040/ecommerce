@@ -15,6 +15,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { WEBSITE_HOME, WEBSITE_SHOP } from '@/routes/WebsiteRoute'
 import { Button } from '../ui/button'
 import Link from 'next/link'
+import { sizes } from '@/lib/utils'
 
 const Filter = () => {
     const  searchParams = useSearchParams()
@@ -184,23 +185,21 @@ const Filter = () => {
     <AccordionItem value="item-3">
     <AccordionTrigger className="uppercase font-semibold cursor-pointer">Size</AccordionTrigger>
     <AccordionContent>
-        <div className="max-h-48 overflow-auto">
-        <ul>
-            {sizeData?.success &&
-                sizeData?.data?.map((size) => (
-                    <li key={size.size}>
-                    <label className="flex items-center space-x-3">
-                        <Checkbox
-                        className="cursor-pointer"
-                        onCheckedChange={() => handleSizeFilter(size.size)}
-                        checked={selectedSize.includes(size.size)}
-                        />
-                        <span>{size.size}</span>
-                    </label>
-                    </li>
-                ))}
-
-        </ul>
+       <div className="max-h-48 overflow-auto">
+          <ul>
+            {sizes.map((size) => (
+              <li key={size.value}>
+                <label className="flex items-center space-x-3">
+                  <Checkbox
+                    className="cursor-pointer"
+                    onCheckedChange={() => handleSizeFilter(size.value)}
+                    checked={selectedSize.includes(size.value)}
+                  />
+                  <span>{size.label}</span>
+                </label>
+              </li>
+            ))}
+          </ul>
         </div>
     </AccordionContent>
     </AccordionItem>
