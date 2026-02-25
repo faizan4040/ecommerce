@@ -51,24 +51,26 @@ const Cart = () => {
   const [open, setOpen] = useState(false)
 
   /* ================= CALCULATIONS ================= */
-  useEffect(() => {
-    const products = cart.products || []
+useEffect(() => {
+  const products = cart.products || []
 
-    const sub = products.reduce(
-      (sum, p) => sum + p.sellingPrice * p.qty,
-      0
-    )
+  // Final price user pays
+  const sub = products.reduce(
+    (sum, p) => sum + p.sellingPrice * p.qty,
+    0
+  )
 
-    const disc = products.reduce(
-      (sum, p) => sum + (p.mrp - p.sellingPrice) * p.qty,
-      0
-    )
+  // Discount shown only for UI (NOT used in total)
+  const disc = products.reduce(
+    (sum, p) => sum + Math.max(p.mrp - p.sellingPrice, 0) * p.qty,
+    0
+  )
 
-    setSubtotal(sub)
-    setDiscount(disc)
-  }, [cart.products])
+  setSubtotal(sub)
+  setDiscount(disc)
+}, [cart.products])
 
-  const totalPayable = subtotal - discount
+  const totalPayable = subtotal
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>

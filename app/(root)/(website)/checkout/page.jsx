@@ -91,23 +91,30 @@ const CheckOut = () => {
   }, [verifiedResponse, dispatch])
 
   /* ---------------- PRICE CALCULATIONS ---------------- */
-  const { subtotal, discount, totalAmount } = useMemo(() => {
-    const products = cart.products || []
+const { subtotal, discount, totalAmount } = useMemo(() => {
+  const products = cart.products || []
 
-    const sub = products.reduce(
-      (sum, p) => sum + p.sellingPrice * p.qty,
-      0
-    )
+  // Selling price already discounted
+  const sub = products.reduce(
+    (sum, p) => sum + p.sellingPrice * p.qty,
+    0
+  )
 
-    const disc = products.reduce(
-      (sum, p) => sum + (p.mrp - p.sellingPrice) * p.qty,
-      0
-    )
+  // Informational (You Saved)
+  const disc = products.reduce(
+    (sum, p) => sum + (p.mrp - p.sellingPrice) * p.qty,
+    0
+  )
 
-    const total = Math.max(sub - couponDiscount, 0)
+  // ONLY coupon discount is subtracted
+  const total = Math.max(sub - couponDiscount, 0)
 
-    return { subtotal: sub, discount: disc, totalAmount: total }
-  }, [cart.products, couponDiscount])
+  return {
+    subtotal: sub,
+    discount: disc,
+    totalAmount: total,
+  }
+}, [cart.products, couponDiscount])
 
   /* ---------------- COUPON FORM ---------------- */
   const couponForm = useForm({
@@ -309,21 +316,6 @@ const placeOrder = async (formData) => {
   
 }
 
-
-
-
-
-// const submitOrder = (values) => {
-//   const payload = {
-//     ...values,
-//     products: cart.products,
-//     subtotal,
-//     discount,
-//     couponCode: isCouponApplied ? couponCode : null,
-//     couponDiscount,
-//     totalAmount,
-//   }
-// }
 
 
   return (
@@ -547,7 +539,7 @@ const placeOrder = async (formData) => {
           type="submit"
           text="Place Order"
           loading={placingOrder}
-          className="w-full mt-6 bg-black text-white rounded-full hover:bg-orange-500 transition-all duration-300"
+          className="w-full mt-6 bg-black text-white rounded-full hover:bg-orange-500 hover:text-white transition-all duration-300"
         />
       </form>
     </Form>

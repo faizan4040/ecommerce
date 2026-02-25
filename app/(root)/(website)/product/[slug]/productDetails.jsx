@@ -99,7 +99,7 @@ useEffect(() => {
       </div>
     }
 
-    <div >
+    <div>
       <Breadcrumb className="mb-6 sm:mb-8 text-sm">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -314,8 +314,6 @@ useEffect(() => {
 
   </div>
 </div>
-
-
 
    <ProdcutReview productId={product._id}/>
 

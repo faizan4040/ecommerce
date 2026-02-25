@@ -186,6 +186,7 @@ const formatCurrency = (amount) => {
   const activeStep = getActiveStep(orderData.status);
 
 
+
 const timeline = [
   { title: "Order Placed", sub: `Customer: ${orderData.name}` },
   { title: "Invoice Sent", sub: orderData.email },
@@ -379,99 +380,99 @@ const timeline = [
 
         {/* LEFT */}
 
-    <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm overflow-hidden">
-      <h3 className="p-5 font-semibold border-b text-gray-800">
-        Products
-      </h3>
+   <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm overflow-hidden">
+  <h3 className="p-5 font-semibold border-b text-gray-800">
+    Products
+  </h3>
 
-      <table className="w-full text-sm">
-        <thead className="bg-gray-50 text-gray-600">
-          <tr>
-            <th className="p-4 text-left">Product</th>
-            <th className="text-center">Status</th>
-            <th className="text-center">Qty</th>
-            <th className="text-right">Price</th>
-            <th className="text-right">Coupon</th>
-            <th className="text-right pr-6">Amount</th>
-          </tr>
-        </thead>
+  <table className="w-full text-sm">
+    <thead className="bg-gray-50 text-gray-600">
+      <tr>
+        <th className="p-4 text-left">Product</th>
+        <th className="text-center">Status</th>
+        <th className="text-center">Qty</th>
+        <th className="text-right">Price</th>
+        <th className="text-right">Coupon</th>
+        <th className="text-right pr-6">Amount</th>
+      </tr>
+    </thead>
 
-        <tbody>
-          {orderData.products.map((p) => {
-            const status = normalizeStatus(
-              p.status || orderData.status
-            )
+ <tbody>
+  {orderData.products.map((p) => {
+    const status = normalizeStatus(p.status || orderData.status)
+    const qty = Number(p.qty || 0)
+    const price = Number(p.sellingPrice || 0)
 
-            const coupon = p.couponDiscount || 0
-            const amount = p.qty * p.sellingPrice - coupon
 
-            return (
-              <tr
-                key={p.variantId._id}
-                className="border-t hover:bg-gray-50 transition"
-              >
-                {/* Product */}
-                <td className="p-4 flex gap-4">
-                  <Image
-                    src={
-                      p.variantId.media?.[0]?.secure_url ||
-                      IMAGES.image_placeholder
-                    }
-                    width={56}
-                    height={56}
-                    className="rounded-lg border bg-white"
-                    alt={p.productId.name}
-                  />
-                  <div>
-                    <Link
-                      href={WEBSITE_PRODUCT_DETAILS(p.productId.slug)}
-                      className="font-medium text-gray-800 hover:underline"
-                    >
-                      {p.productId.name}
-                    </Link>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Size: {p.variantId.size}
-                    </p>
-                  </div>
-                </td>
+    // Calculate total amount of all products once (outside map)
+    const totalProductsAmount = orderData.products.reduce(
+      (sum, item) => sum + Number(item.qty || 0) * Number(item.sellingPrice || 0),
+      0
+    )
 
-                {/* Status */}
-                <td className="text-center">
-                  <span
-                    className={`inline-block px-3 py-1 text-xs rounded-full font-medium text-orange-500
-                      ${getStatusBadge(status)}`}
-                  >
-                    {status.toUpperCase()}
-                  </span>
-                </td>
+    // Product total for this row
+    const productTotal = qty * price
 
-                {/* Qty */}
-                <td className="text-center font-medium text-gray-800">
-                  {p.qty}
-                </td>
+    // proportional coupon for this product
+    const couponShare = (productTotal / totalProductsAmount) * (orderData.couponDiscount || 0)
 
-                {/* Price */}
-                <td className="text-right text-gray-700">
-                  ₹{p.sellingPrice.toLocaleString('en-IN')}
-                </td>
+    // final amount after coupon
+    const amount = productTotal - couponShare
 
-                {/* Coupon */}
-                <td className="text-right text-red-500">
-                  {coupon > 0
-                    ? `-₹${coupon.toLocaleString('en-IN')}`
-                    : '—'}
-                </td>
+    return (
+      <tr key={p.variantId._id} className="border-t hover:bg-gray-50 transition">
+        {/* Product */}
+        <td className="p-4 flex gap-4 items-center">
+          <Image
+            src={p.variantId.media?.[0]?.secure_url || IMAGES.image_placeholder}
+            width={56}
+            height={56}
+            className="rounded-lg border bg-white object-cover"
+            alt={p.productId.name || 'Product'}
+          />
+          <div className="flex flex-col">
+            <Link
+              href={WEBSITE_PRODUCT_DETAILS(p.productId.slug)}
+              className="font-medium text-gray-800 hover:underline"
+            >
+              {p.productId.name}
+            </Link>
+            {p.variantId.size && (
+              <p className="text-xs text-gray-500 mt-1">Size: {p.variantId.size}</p>
+            )}
+          </div>
+        </td>
 
-                {/* Amount */}
-                <td className="text-right pr-6 font-semibold text-gray-900">
-                  ₹{amount.toLocaleString('en-IN')}
-                </td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
-    </div>
+        {/* Status */}
+        <td className="text-center">
+          <span className={`inline-block px-3 py-1 text-xs rounded-full font-medium ${getStatusBadge(status)}`}>
+            {status.toUpperCase()}
+          </span>
+        </td>
+
+        {/* Qty */}
+        <td className="text-center font-medium text-gray-800">{qty}</td>
+
+        {/* Price */}
+        <td className="text-right text-gray-700">
+          ₹{price.toLocaleString('en-IN')}
+        </td>
+
+        {/* Coupon */}
+        <td className="text-right text-red-500">
+          {couponShare > 0 ? `-₹${Math.round(couponShare).toLocaleString('en-IN')}` : '—'}
+        </td>
+
+        {/* Amount */}
+        <td className="text-right pr-6 font-semibold text-gray-900">
+          ₹{Math.round(amount).toLocaleString('en-IN')}
+        </td>
+      </tr>
+    )
+  })}
+</tbody>
+  </table>
+</div>
 
 
 
@@ -542,20 +543,20 @@ const timeline = [
 
         {/* LEFT */}
       <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
-  <h3 className="font-semibold mb-6">Order Timeline</h3>
+        <h3 className="font-semibold mb-6">Order Timeline</h3>
 
-  {timeline.length > 0 ? (
-    timeline.map((item, index) => (
-      <TimelineItem
-        key={index}
-        title={item.title}
-        sub={item.sub}
-      />
-    ))
-  ) : (
-    <p className="text-sm text-gray-400">No timeline data available</p>
-  )}
-</div>
+        {timeline.length > 0 ? (
+          timeline.map((item, index) => (
+            <TimelineItem
+              key={index}
+              title={item.title}
+              sub={item.sub}
+            />
+          ))
+        ) : (
+          <p className="text-sm text-gray-400">No timeline data available</p>
+        )}
+      </div>
 
         {/* RIGHT */}
         <div className="space-y-7 ">
@@ -690,7 +691,7 @@ const timeline = [
       {/* Date */}
       <div className="flex flex-row items-center gap-4 text-center">
         <div className="font-semibold">Date</div>
-        <div>{new Date(orderData.date).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' })}</div>
+        <div>{formatDate(orderData?.createdAt)}</div>
         <span className="text-gray-400 text-lg mt-1">
           <IoCalendarNumber className='text-orange-500 h-10 w-10 bg-gray-100 rounded-xl'/>
         </span>

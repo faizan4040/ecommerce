@@ -6,7 +6,7 @@ import React from "react"
 const WebsiteBreadcrumb = ({ title, links = [] }) => {
   return (
     <div
-      className="relative h-55 sm:h-65 md:h-140 bg-cover bg-center"
+      className="relative h-55 sm:h-65 md:h-100 bg-cover bg-center"
       style={{
         backgroundImage: `url(${IMAGES.shopbanner})`,
       }}

@@ -9,7 +9,7 @@ const LOW_STOCK_LIMIT = 5
 
 export async function GET() {
   try {
-    // 🔐 Admin auth
+    // Admin auth
     const auth = await isAuthenticated("admin")
     if (!auth.isAuth) {
       return response(false, 403, "Unauthorized")
@@ -17,7 +17,7 @@ export async function GET() {
 
     await connectDB()
 
-    // 1️⃣ Total sold per variant
+    // Total sold per variant
     const soldData = await OrderModel.aggregate([
       { $unwind: "$products" },
       {
@@ -33,7 +33,7 @@ export async function GET() {
       soldMap[item._id.toString()] = item.totalSold
     })
 
-    // 2️⃣ Fetch variants with REAL stock
+    // Fetch variants with REAL stock
     const variants = await ProductVariantModel.find({
       deletedAt: null,
     })
@@ -59,10 +59,10 @@ export async function GET() {
       }
     })
 
-    // 🔽 Sort: low stock first (admin-friendly)
+    // Sort: low stock first (admin-friendly)
     stockTable.sort((a, b) => a.remainingStock - b.remainingStock)
 
-    // 3️⃣ Most sold products
+    // Most sold products
     const mostSold = [...stockTable]
       .filter(item => item.totalSold > 0)
       .sort((a, b) => b.totalSold - a.totalSold)

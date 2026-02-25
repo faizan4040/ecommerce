@@ -105,12 +105,17 @@ const Stock = () => {
                         <div className="flex items-center gap-3">
                           <div className="relative w-10 h-10">
                             <Image
-                              src={row.image ? `${process.env.NEXT_PUBLIC_API_URL}${row.image}` : IMAGES.image_placeholder}
-                              alt={row.productName}
-                              fill
-                              className="rounded-md border object-cover"
-                              unoptimized={!row.image}
-                            />
+                                src={
+                                  row.image
+                                    ? row.image.startsWith("http")
+                                      ? row.image
+                                      : `${process.env.NEXT_PUBLIC_API_URL}${row.image}`
+                                    : IMAGES.image_placeholder
+                                }
+                                alt={row.productName}
+                                fill
+                                className="object-cover rounded-lg"
+                              />
                           </div>
 
                           <div className="leading-tight">

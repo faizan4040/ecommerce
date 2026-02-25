@@ -57,71 +57,117 @@ const LatestOrder = () => {
 
   return (
     <Card className="rounded-2xl shadow-sm h-full bg-background -mt-4">
-  {/* HEADER */}
-  <CardHeader className="px-6 py-5 border-b flex flex-row items-center justify-between">
-    <CardTitle className="text-lg font-semibold tracking-tight">
-      Recent Orders
-    </CardTitle>
+      {/* HEADER */}
+      <CardHeader className="px-6 py-5 border-b flex flex-row items-center justify-between">
+        <CardTitle className="text-lg font-semibold tracking-tight">
+          Recent Orders
+        </CardTitle>
 
-    <span className="text-xs text-muted-foreground">
-      Showing last {latestOrder.length} orders
-    </span>
-  </CardHeader>
+        <span className="text-xs text-muted-foreground">
+          Showing last {latestOrder.length} orders
+        </span>
+      </CardHeader>
 
-  {/* CONTENT */}
-  <CardContent className="p-4">
-    {/* SCROLL CONTAINER */}
-    <div className="relative max-h-80 overflow-y-auto">
-      <Table className="table-fixed w-full">
-        {/* STICKY HEADER */}
-        <TableHeader className="sticky top-0 z-20 bg-background shadow-sm">
-          <TableRow className="pr-4">
-            <TableHead className="w-[22%]">Order ID</TableHead>
-            <TableHead className="w-[22%]">Payment ID</TableHead>
-            <TableHead className="w-[12%] text-center">Items</TableHead>
-            <TableHead className="w-[20%]">Status</TableHead>
-            <TableHead className="w-[16%] text-right pr-6">
-              Amount
-            </TableHead>
-          </TableRow>
-        </TableHeader>
+      {/* CONTENT */}
+      <CardContent className="p-4">
+        <div className="relative max-h-80 overflow-y-auto">
+          <Table className="table-fixed w-full">
+            {/* HEADER */}
+            <TableHeader className="sticky top-0 z-20 bg-background shadow-sm">
+              <TableRow>
+                <TableHead className="w-[32%]">Product</TableHead>
+                <TableHead className="w-[20%]">Order ID</TableHead>
+                <TableHead className="w-[18%]">Payment ID</TableHead>
+                <TableHead className="w-[10%] text-center">Items</TableHead>
+                <TableHead className="w-[10%]">Status</TableHead>
+                <TableHead className="w-[10%] text-right pr-6">
+                  Amount
+                </TableHead>
+              </TableRow>
+            </TableHeader>
 
-        <TableBody>
-          {latestOrder.map((order, index) => (
-            <TableRow
-              key={order._id}
-              className={`transition-colors hover:bg-muted/50 ${
-                index % 2 === 0 ? "bg-muted/20" : ""
-              }`}
-            >
-              <TableCell className="w-[22%] font-mono text-xs text-muted-foreground truncate">
-                {order._id}
-              </TableCell>
+            {/* BODY */}
+            <TableBody>
+              {latestOrder.map((order, index) => {
+                const product = order.products?.[0]
 
-              <TableCell className="w-[22%] font-mono text-xs truncate">
-                {order.payment_id || "—"}
-              </TableCell>
+                const rawImage =
+                  product?.variantId?.media?.[0]?.secure_url ||
+                  product?.variantId?.media?.[0]?.url ||
+                  product?.variantId?.media?.[0]?.path ||
+                  null
 
-              <TableCell className="w-[12%] text-center font-medium">
-                {order.products?.length || 0}
-              </TableCell>
+                const finalImage = rawImage
+                  ? rawImage.startsWith("http")
+                    ? rawImage
+                    : `${process.env.NEXT_PUBLIC_API_URL}${rawImage}`
+                  : IMAGES.image_placeholder
 
-              <TableCell className="w-[20%]">
-                {statusBadge(order.status)}
-              </TableCell>
+                const productName =
+                  product?.productId?.name || "Product"
 
-              <TableCell className="w-[16%] text-right font-semibold pr-6">
-                ₹{order.totalAmount.toLocaleString("en-IN")}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  </CardContent>
-</Card>
+                const sku =
+                  product?.variantId?.sku || "SKU"
 
+                return (
+                  <TableRow
+                    key={order._id}
+                    className={`h-20 transition-colors hover:bg-muted/50 ${
+                      index % 2 === 0 ? "bg-muted/20" : ""
+                    }`}
+                  >
+                    {/* PRODUCT COLUMN */}
+                  <TableCell>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="relative w-20 h-20 shrink-0">
+                        <Image
+                          src={finalImage}
+                          alt={productName}
+                          fill
+                          sizes="80px"
+                          className="rounded-md border object-cover bg-white"
+                          unoptimized
+                        />
+                      </div>
 
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-sm font-medium truncate">{productName}</span>
+                        <span className="text-xs text-muted-foreground truncate">{sku}</span>
+                      </div>
+                    </div>
+                  </TableCell>
+                    {/* ORDER ID */}
+                    <TableCell className="font-mono text-xs truncate text-muted-foreground">
+                      {order._id}
+                    </TableCell>
+
+                    {/* PAYMENT ID */}
+                    <TableCell className="font-mono text-xs truncate">
+                      {order.payment_id || "—"}
+                    </TableCell>
+
+                    {/* ITEMS */}
+                    <TableCell className="text-center font-medium">
+                      {order.products?.length || 0}
+                    </TableCell>
+
+                    {/* STATUS */}
+                    <TableCell>
+                      {statusBadge(order.status)}
+                    </TableCell>
+
+                    {/* AMOUNT */}
+                    <TableCell className="text-right font-semibold pr-6">
+                      ₹{order.totalAmount.toLocaleString("en-IN")}
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 

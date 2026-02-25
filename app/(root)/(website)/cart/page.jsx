@@ -91,12 +91,12 @@ const CartPage = () => {
           <img
             src={IMAGES.emptycart}
             alt="Empty Cart"
-            className="w-48 h-48 object-contain"
+            className="w-80 h-80 object-contain"
           />
           <h2 className="text-3xl font-semibold text-gray-800">
             Your cart is empty
           </h2>
-          <Button className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700 transition">
+          <Button className="bg-black text-white px-6 py-2 rounded hover:bg-orange-500 transition">
             <Link href={WEBSITE_SHOP}>Continue Shopping</Link>
           </Button>
         </div>
@@ -248,7 +248,7 @@ const CartPage = () => {
 
           <div className="border-t pt-3 flex justify-between font-semibold text-lg">
             <span>Total</span>
-            <span>{formatPrice(subtotal - discount)}</span>
+            <span>{formatPrice(subtotal)}</span>
           </div>
         </div>
    

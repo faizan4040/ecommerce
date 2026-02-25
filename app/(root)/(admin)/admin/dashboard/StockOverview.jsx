@@ -19,6 +19,8 @@ import {
 import useFetch from "@/hooks/useFetch"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle, AlertTriangle, XCircle } from "lucide-react"
+import Image from "next/image"
+import { IMAGES } from "@/routes/AllImages"
 
 const StockOverview = () => {
   const { data, loading } = useFetch("/api/dashboard/admin/stock-overview")
@@ -84,9 +86,23 @@ const StockOverview = () => {
               <TableBody>
                 {stockTable.map(row => (
                   <TableRow key={row.variantId}>
-                    <TableCell className="font-medium">
-                      {row.productName}
-                    </TableCell>
+                    <TableCell>
+                  <div className="flex items-center gap-3">
+                   <Image
+                      src={row.image || IMAGES.product_placeholder}
+                      width={40}
+                      height={40}
+                      className="rounded-lg border object-cover"
+                      alt={row.productName}
+                    />
+                    <div>
+                      <p className="font-medium">{row.productName}</p>
+                      <p className="text-xs text-muted-foreground">
+                        SKU: {row.sku}
+                      </p>
+                    </div>
+                  </div>
+                </TableCell>
 
                     <TableCell className="font-mono text-xs">
                       {row.sku}
@@ -124,11 +140,24 @@ const StockOverview = () => {
                 key={item.variantId}
                 className="flex justify-between items-center p-3 rounded-xl bg-muted"
               >
-                <div>
-                  <p className="font-medium">{item.productName}</p>
-                  <p className="text-xs text-muted-foreground">{item.sku}</p>
+                {/* LEFT: Image + Product Info */}
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 relative shrink-0">
+                    <Image
+                      src={item.image || IMAGES.product_placeholder}
+                      alt={item.productName}
+                      fill
+                      className="rounded-lg border object-cover"
+                      unoptimized
+                    />
+                  </div>
+                  <div>
+                    <p className="font-medium">{item.productName}</p>
+                    <p className="text-xs text-muted-foreground">{item.sku}</p>
+                  </div>
                 </div>
 
+                {/* RIGHT: Sold Badge */}
                 <Badge className="bg-orange-500 text-white">
                   {item.totalSold} Sold
                 </Badge>

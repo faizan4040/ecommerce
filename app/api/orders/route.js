@@ -76,7 +76,7 @@ export async function GET(request) {
         path: "products.variantId",
         populate: {
           path: "media",
-          select: "url",
+          select: "secure_url url path",
         },
       })
       .lean();
