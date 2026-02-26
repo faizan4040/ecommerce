@@ -48,7 +48,7 @@ const ProductBox = ({ product }) => {
           </span>
         </div>
         <button className="cursor-pointer hover:bg-orange-500 mt-1 w-full bg-black text-white text-xs sm:text-sm py-1 rounded-md transition">
-          Add to Cart
+          Product Details
         </button>
       </div>
     </Link>

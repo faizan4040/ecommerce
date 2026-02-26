@@ -36,7 +36,7 @@ const StockOverview = () => {
   const stockTable = data?.data?.stockTable || []
   const mostSold = data?.data?.mostSold || []
 
-  // ✅ Status badge renderer
+  // Status badge renderer
   const renderStatus = (status) => {
     if (status === "Out of Stock") {
       return (

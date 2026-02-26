@@ -39,13 +39,13 @@ const ProductDetails = ({ product, variant, colors = [], sizes = [], reviewCount
   const [isProductLoading, setIsProductLoading] = useState(false)
 
 
-useEffect(() => {
-  if (variant?.media?.length) {
-    setActiveThumb(variant.media[0].secure_url)
-  }
+  useEffect(() => {
+    if (variant?.media?.length) {
+      setActiveThumb(variant.media[0].secure_url)
+    }
 
-  setIsProductLoading(false)
-}, [variant])
+    setIsProductLoading(false)
+  }, [variant])
 
   useEffect(()=>{
      if(cartStore.count > 0) {
@@ -91,13 +91,15 @@ useEffect(() => {
   return (
    <div className="px-4 sm:px-6 lg:px-20 xl:px-32 py-6 sm:py-10">
 
-    {isProductLoading && 
-      <div className="fixed top-10 left-1/2 z-50">
+    {isProductLoading && (
+      <div className="fixed top-30 left-1/2 z-50 -translate-x-1/2">
         <img
-        src={IMAGES.loading}
+          src={IMAGES.loading}
+          alt="Loading"
+          className="w-20 h-20"  
         />
       </div>
-    }
+    )}
 
     <div>
       <Breadcrumb className="mb-6 sm:mb-8 text-sm">

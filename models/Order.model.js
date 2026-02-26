@@ -48,6 +48,12 @@ const orderSchema = new mongoose.Schema({
         required: false,
     },
 
+    paymentStatus: {
+    type: String,
+    enum: ["Paid", "Pending", "Refunded", "Failed"],
+    default: "Pending",
+    },
+
     products: [
         {
             productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },

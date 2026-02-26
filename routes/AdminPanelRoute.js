@@ -17,6 +17,7 @@ export const ADMIN_WAREHOUSE_SHOW = '/admin/warehouse'
 export const ADMIN_WAREHOUSE_ADD = '/admin/warehouse/add'
 export const ADMIN_WAREHOUSE_EDIT = (id) => `/admin/warehouse/edit/${id}`
 
+
 // Optional - for trash management
 export const ADMIN_WAREHOUSE_TRASH = '/admin/warehouse/trash'
 
@@ -41,6 +42,11 @@ export const ADMIN_COUPON_SHOW = '/admin/coupon'
 export const ADMIN_COUPON_EDIT = (id) => id ? `/admin/coupon/edit/${id}` : ''
 
 
+// Menual orders 
+export const ADMIN_MANUAL_ORDERS_ADD = '/admin/orders/manual'
+export const ADMIN_MANUAL_ORDERS_DETAILS = '/admin/orders/show-manual-orders'
+
+
 // Chat show
 export const ADMIN_CHAT_SHOW = '/admin/chat'
 
@@ -61,5 +67,3 @@ export const ADMIN_ORDER_SHOW = '/admin/orders'
 export const ADMIN_ORDER_DETAILS = (order_id) => order_id ? `/admin/orders/details/${order_id}` : ''
 
 
-//OrderDetails page
-// export const ADMIN_ORDER_DETAILS_PAGE = '/admin/details'

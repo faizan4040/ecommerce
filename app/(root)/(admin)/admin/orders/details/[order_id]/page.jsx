@@ -41,15 +41,13 @@ const OrderDetails = ({ params }) => {
 
 
 const statusOptions = [
-  { label: 'Pending', value: 'pending' },
-  { label: 'Processing', value: 'processing' },
-  { label: 'Shipped', value: 'shipped' },
-  { label: 'Delivered', value: 'delivered' },
-  { label: 'Canceled', value: 'canceled' },
-  { label: 'Unverified', value: 'unverified' }, // lowercase
-]
-
-
+  { label: "Pending", value: "pending" },
+  { label: "Processing", value: "processing" },
+  { label: "Shipped", value: "shipped" },
+  { label: "Delivered", value: "delivered" },
+  { label: 'Cancelled', value: 'cancelled' }, 
+  { label: "Unverified", value: "unverified" },
+];
 
 
 useEffect(()=>{
@@ -115,6 +113,11 @@ const getActiveStep = (status) => {
       return 3
     case 'delivered':
       return 4
+
+    case 'cancelled':
+    case 'unverified':
+      return -1   // 👈 special state
+
     default:
       return 0
   }
@@ -179,6 +182,7 @@ const formatCurrency = (amount) => {
   { key: 'pending', label: 'Payment Pending' },
   { key: 'processing', label: 'Processing' },
   { key: 'shipped', label: 'Shipping' },
+  // { label: 'cancelled', value: 'Cancelled' }, 
   { key: 'delivered', label: 'Delivered' },
 ]
 
@@ -223,8 +227,8 @@ const timeline = [
               {new Date(orderData.createdAt).toLocaleString()}
             </p>
           </div>
-
-          {/* <div className="flex gap-3">
+{/* 
+          <div className="flex gap-3">
             <ActionBtn text="Refund" />
             <ActionBtn text="Return" />
             <ActionBtn text="Edit Order" primary />
@@ -235,45 +239,56 @@ const timeline = [
         <div className="mt-8">
           <p className="font-semibold mb-4">Progress</p>
 
-          <div className="flex items-center justify-between mb-6">
-            {ORDER_PROGRESS.map((step, i) => {
-              const activeStep = ORDER_PROGRESS.findIndex(
-                s => s.key === orderData.status
-              );
-              const isActive = i === activeStep;
-              const isComplete = i < activeStep;
+         const activeStep = getActiveStep(orderData.status)
 
-              return (
-                <div key={step.key} className="flex-1 flex flex-col items-center relative">
-                  {/* Circle */}
-                  <div
-                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-semibold transition-all ${
-                      isComplete
-                        ? 'bg-green-500 border-green-500 text-white'
-                        : isActive
-                        ? 'bg-yellow-400 border-yellow-400 text-white'
-                        : 'bg-white border-gray-300 text-gray-400'
-                    }`}
-                  >
-                    {i + 1}
-                  </div>
+        <div className="flex items-center justify-between mb-6">
+          {ORDER_PROGRESS.map((step, i) => {
+            const stepIndex = i + 1
+            const isCancelled = activeStep === -1
 
-                  {/* Label */}
-                  <p className="mt-2 text-center text-xs">{step.label}</p>
+            const isActive = !isCancelled && stepIndex === activeStep
+            const isComplete = !isCancelled && stepIndex < activeStep
 
-                  {/* Connecting line */}
-                  {i < ORDER_PROGRESS.length - 1 && (
-                    <div
-                      className={`absolute top-2.5 left-1/2 h-1 transform -translate-x-1/2 z-[-1] ${
-                        isComplete ? 'bg-green-500' : 'bg-gray-200'
-                      }`}
-                      style={{ width: '100%' }}
-                    />
-                  )}
+            return (
+              <div
+                key={step.key}
+                className="flex-1 flex flex-col items-center relative"
+              >
+                {/* Circle */}
+                <div
+                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-semibold transition-all ${
+                    isCancelled
+                      ? 'bg-red-500 border-red-500 text-white'
+                      : isComplete
+                      ? 'bg-green-500 border-green-500 text-white'
+                      : isActive
+                      ? 'bg-yellow-400 border-yellow-400 text-white'
+                      : 'bg-white border-gray-300 text-gray-400'
+                  }`}
+                >
+                  {stepIndex}
                 </div>
-              );
-            })}
-          </div>
+
+                {/* Label */}
+                <p className="mt-2 text-center text-xs">{step.label}</p>
+
+                {/* Line */}
+                {i < ORDER_PROGRESS.length - 1 && (
+                  <div
+                    className={`absolute top-2.5 left-1/2 h-1 transform -translate-x-1/2 z-[-1] ${
+                      isCancelled
+                        ? 'bg-red-300'
+                        : isComplete
+                        ? 'bg-green-500'
+                        : 'bg-gray-200'
+                    }`}
+                    style={{ width: '100%' }}
+                  />
+                )}
+              </div>
+            )
+          })}
+        </div>
 
           {/* Footer: Estimated shipping & Status Select */}
           <div className="flex justify-between items-start gap-4">
@@ -534,29 +549,39 @@ const timeline = [
 
 </SideCard>
 
-
-
       </div>
 
       {/* ================= ROW 3 ================= */}
       <div className="grid lg:grid-cols-3 gap-6">
 
         {/* LEFT */}
-      <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
-        <h3 className="font-semibold mb-6">Order Timeline</h3>
+     <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm">
+  <h3 className="font-semibold mb-6">Order Timeline</h3>
 
-        {timeline.length > 0 ? (
-          timeline.map((item, index) => (
-            <TimelineItem
-              key={index}
-              title={item.title}
-              sub={item.sub}
-            />
-          ))
-        ) : (
-          <p className="text-sm text-gray-400">No timeline data available</p>
-        )}
-      </div>
+  <div className="relative pl-8">
+    {/* Vertical Line */}
+    <div className="absolute left-3 top-0 bottom-0 w-px bg-gray-200" />
+
+    {timeline.map((item, index) => {
+      const isLast = index === timeline.length - 1
+      const status = normalizeStatus(orderData.status)
+
+      const isCancelled = status === 'cancelled' || status === 'unverified'
+      const isActive = !isCancelled && index === timeline.length - 1
+
+      return (
+        <TimelineItem
+          key={`${item.title}-${index}`}
+          title={item.title}
+          sub={item.sub}
+          isLast={isLast}
+          isActive={isActive}
+          isCancelled={isCancelled}
+        />
+      )
+    })}
+  </div>
+</div>
 
         {/* RIGHT */}
         <div className="space-y-7 ">
@@ -566,13 +591,14 @@ const timeline = [
     {/* PROFILE + NAME */}
     <div className="flex gap-4 items-center">
       {/* PROFILE IMAGE */}
-      {/* <div className="w-16 h-16 rounded-full overflow-hidden border bg-gray-100 shrink-0">
+      
+      <div className="w-16 h-16 rounded-full overflow-hidden border bg-gray-100 shrink-0">
         <img
-          src={orderData.user?.avatar?.url || orderData.user?.profileImage || IMAGES.user_placeholder}
+          src={orderData.user?.avatar?.url || orderData.user?.profileImage || IMAGES.placeholder}
           className="w-full h-full object-cover border-2 rounded-full"
           alt={orderData.user?.name || "User"}
         />
-      </div> */}
+      </div>
 
       {/* NAME & EMAIL */}
       <div className="flex flex-col">

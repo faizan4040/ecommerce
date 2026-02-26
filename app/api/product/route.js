@@ -115,40 +115,111 @@ filters.forEach((filter) => {
     }
 
     // Aggregation pipeline
+    // const getProduct = await ProductModel.aggregate([
+    //   {
+    //     $lookup: {
+    //       from: "categories",
+    //       localField: "category",
+    //       foreignField: "_id",
+    //       as: "categoryData",
+    //     },
+    //   },
+    //   {
+    //     $unwind: {
+    //       path: "$categoryData",
+    //       preserveNullAndEmptyArrays: true,
+    //     },
+    //   },
+    //   { $match: matchQuery },
+    //   { $sort: Object.keys(sortQuery).length ? sortQuery : { createdAt: -1 } },
+    //   { $skip: start },
+    //   { $limit: size },
+    //   {
+    //     $project: {
+    //       _id: 1,
+    //       name: 1,
+    //       slug: 1,
+    //       mrp: 1,
+    //       sellingPrice: 1,
+    //       discountPercentage: 1,
+    //       category: "$categoryData.name",
+    //       createdAt: 1,
+    //       updatedAt: 1,
+    //       deletedAt: 1,
+    //     },
+    //   },
+    // ]);
+
     const getProduct = await ProductModel.aggregate([
-      {
-        $lookup: {
-          from: "categories",
-          localField: "category",
-          foreignField: "_id",
-          as: "categoryData",
-        },
+  // CATEGORY
+  {
+    $lookup: {
+      from: "categories",
+      localField: "category",
+      foreignField: "_id",
+      as: "categoryData",
+    },
+  },
+  { $unwind: { path: "$categoryData", preserveNullAndEmptyArrays: true } },
+
+  // VARIANTS
+  {
+    $lookup: {
+      from: "productvariants",
+      localField: "_id",
+      foreignField: "product",
+      as: "variants",
+    },
+  },
+
+  // PICK FIRST VARIANT
+  {
+    $addFields: {
+      variant: { $arrayElemAt: ["$variants", 0] },
+    },
+  },
+
+  // MEDIA FROM VARIANT
+  {
+    $lookup: {
+      from: "media",
+      localField: "variant.media",
+      foreignField: "_id",
+      as: "media",
+    },
+  },
+
+  // PICK FIRST IMAGE
+  {
+    $addFields: {
+      image: {
+        $ifNull: [
+          { $arrayElemAt: ["$media.secure_url", 0] },
+          { $arrayElemAt: ["$media.url", 0] },
+        ],
       },
-      {
-        $unwind: {
-          path: "$categoryData",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
-      { $match: matchQuery },
-      { $sort: Object.keys(sortQuery).length ? sortQuery : { createdAt: -1 } },
-      { $skip: start },
-      { $limit: size },
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-          slug: 1,
-          mrp: 1,
-          sellingPrice: 1,
-          discountPercentage: 1,
-          category: "$categoryData.name",
-          createdAt: 1,
-          updatedAt: 1,
-          deletedAt: 1,
-        },
-      },
-    ]);
+    },
+  },
+
+  { $match: matchQuery },
+  { $sort: sortQuery },
+  { $skip: start },
+  { $limit: size },
+
+  // FINAL SHAPE
+  {
+    $project: {
+      name: 1,
+      slug: 1,
+      mrp: 1,
+      sellingPrice: 1,
+      discountPercentage: 1,
+      category: "$categoryData.name",
+      image: 1,
+      createdAt: 1,
+    },
+  },
+]);
 
 
 
