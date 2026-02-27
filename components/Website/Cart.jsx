@@ -17,7 +17,7 @@ import { IMAGES } from '@/routes/AllImages'
 import { removeFromCart } from '@/store/reducer/cartReducer'
 import { Button } from '../ui/button'
 import { WEBSITE_CART, WEBSITE_CHECKOUT } from '@/routes/WebsiteRoute'
-import { showToast } from '@/lib/showToast'
+
 
 /* ================= HELPERS ================= */
 

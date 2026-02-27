@@ -182,7 +182,7 @@ export default function Header() {
 
 
             {/* LANGUAGE */}
-            <button
+            {/* <button
               onClick={() => { setLangOpen(!langOpen); setProfileOpen(false) }}
               className="flex items-center gap-1.5 text-sm hover:underline"
             >
@@ -200,7 +200,7 @@ export default function Header() {
                 </select>
                 <button className="w-full bg-black text-white py-2.5 rounded-xl text-sm">Update</button>
               </div>
-            )}
+            )} */}
 
            {/* PROFILE / AUTH */}
           <div className="relative">

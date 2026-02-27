@@ -21,8 +21,10 @@ export const ADMIN_WAREHOUSE_EDIT = (id) => `/admin/warehouse/edit/${id}`
 // Optional - for trash management
 export const ADMIN_WAREHOUSE_TRASH = '/admin/warehouse/trash'
 
+
 // WareHouse stock
 export const ADMIN_STOCK_SHOW = '/admin/stock'
+
 
 // Product routes
 export const ADMIN_PRODUCT_ADD = '/admin/product/add'
@@ -43,8 +45,9 @@ export const ADMIN_COUPON_EDIT = (id) => id ? `/admin/coupon/edit/${id}` : ''
 
 
 // Menual orders 
-export const ADMIN_MANUAL_ORDERS_ADD = '/admin/orders/manual'
-export const ADMIN_MANUAL_ORDERS_DETAILS = '/admin/orders/show-manual-orders'
+export const ADMIN_MANUAL_ORDERS_ADD = '/admin/manual-order'
+export const ADMIN_MANUAL_ORDERS_DETAILS = '/admin/manual-order/show-manual-orders'
+export const ADMIN_MANUAL_ORDER_DETAILS = (id) => `/admin/manual-order/details/${id}`
 
 
 // Chat show
@@ -54,8 +57,10 @@ export const ADMIN_CHAT_SHOW = '/admin/chat'
 // Customers route
 export const ADMIN_CUSTOMERS_SHOW = '/admin/customers'
 
+
 // Review route
 export const ADMIN_REVIEW_SHOW = '/admin/review'
+
 
 // Trash route
 export const ADMIN_TRASH = '/admin/trash'
@@ -64,6 +69,8 @@ export const ADMIN_TRASH = '/admin/trash'
 // Trash route
 export const ADMIN_ORDER_SHOW = '/admin/orders'
 
+
+// Admin order details
 export const ADMIN_ORDER_DETAILS = (order_id) => order_id ? `/admin/orders/details/${order_id}` : ''
 
 

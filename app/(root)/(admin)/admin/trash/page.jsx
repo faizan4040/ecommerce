@@ -62,6 +62,22 @@ const TRASH_CONFIG = {
     fetchUrl: '/api/orders',
     exportUrl: '/api/orders/export',
     deleteUrl: '/api/orders/delete',
+  },
+
+    warehouse:  {
+    title: 'warehouse Trash',
+    columns: DT_WAREHOUSE_COLUMN,
+    fetchUrl: '/api/warehouse',
+    exportUrl: '/api/warehouse/export',
+    deleteUrl: '/api/warehouse/delete',
+  },
+
+    manual:  {
+    title: 'manual Trash',
+    columns: DT_ORDER_COLUMN,
+    fetchUrl: '/api/manual',
+    exportUrl: '/api/manual/export',
+    deleteUrl: '/api/manual/delete',
   }
 }
 

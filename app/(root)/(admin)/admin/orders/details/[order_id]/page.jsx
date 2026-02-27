@@ -186,9 +186,9 @@ const formatCurrency = (amount) => {
   { key: 'delivered', label: 'Delivered' },
 ]
 
+  
 
-  const activeStep = getActiveStep(orderData.status);
-
+const activeStep = getActiveStep(orderData.status);
 
 
 const timeline = [
@@ -227,19 +227,17 @@ const timeline = [
               {new Date(orderData.createdAt).toLocaleString()}
             </p>
           </div>
-{/* 
+        {/* 
           <div className="flex gap-3">
             <ActionBtn text="Refund" />
             <ActionBtn text="Return" />
             <ActionBtn text="Edit Order" primary />
           </div> */}
-        </div>
+         </div>
 
         {/* Progress Bar */}
         <div className="mt-8">
           <p className="font-semibold mb-4">Progress</p>
-
-         const activeStep = getActiveStep(orderData.status)
 
         <div className="flex items-center justify-between mb-6">
           {ORDER_PROGRESS.map((step, i) => {
@@ -592,13 +590,13 @@ const timeline = [
     <div className="flex gap-4 items-center">
       {/* PROFILE IMAGE */}
       
-      <div className="w-16 h-16 rounded-full overflow-hidden border bg-gray-100 shrink-0">
+      {/* <div className="w-16 h-16 rounded-full overflow-hidden border bg-gray-100 shrink-0">
         <img
           src={orderData.user?.avatar?.url || orderData.user?.profileImage || IMAGES.placeholder}
           className="w-full h-full object-cover border-2 rounded-full"
           alt={orderData.user?.name || "User"}
         />
-      </div>
+      </div> */}
 
       {/* NAME & EMAIL */}
       <div className="flex flex-col">

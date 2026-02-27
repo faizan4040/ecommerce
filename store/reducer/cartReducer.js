@@ -19,7 +19,7 @@ export const cartReducer = createSlice({
       );
 
       if (existingProduct >= 0) {
-        // 🔥 Increase qty if already exists
+        // Increase qty if already exists
         state.products[existingProduct].qty += payload.qty || 1;
       } else {
         state.products.push(payload);
