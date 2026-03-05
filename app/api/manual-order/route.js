@@ -14,7 +14,7 @@ export async function GET() {
       data: orders,
     })
   } catch (error) {
-    console.error('FETCH MANUAL ORDERS ERROR ❌', error)
+    console.error('FETCH MANUAL ORDERS ERROR ', error)
 
     return NextResponse.json(
       { success: false, message: 'Failed to fetch manual orders' },

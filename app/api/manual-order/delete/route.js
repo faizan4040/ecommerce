@@ -36,7 +36,7 @@ export async function PUT(req) {
       data: result,
     })
   } catch (error) {
-    console.error('SOFT DELETE MANUAL ORDER ❌', error)
+    console.error('SOFT DELETE MANUAL ORDER', error)
     return NextResponse.json(
       { success: false, message: 'Soft delete failed' },
       { status: 500 }
@@ -74,7 +74,7 @@ export async function DELETE(req) {
       message: 'Manual order deleted permanently',
     })
   } catch (error) {
-    console.error('PERMANENT DELETE MANUAL ORDER ❌', error)
+    console.error('PERMANENT DELETE MANUAL ORDER', error)
     return NextResponse.json(
       { success: false, message: 'Permanent delete failed' },
       { status: 500 }

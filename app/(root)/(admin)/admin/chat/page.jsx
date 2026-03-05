@@ -23,6 +23,7 @@ const users = [
     unread: 2,
   },
 
+
 ];
 
 const ChatApp = () => {
@@ -55,7 +56,7 @@ const ChatApp = () => {
             lg:translate-x-0
           `}
         >
-          {/* Sidebar Header */}
+
           <div className="p-5 border-b bg-gray-50">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">Messages</h2>

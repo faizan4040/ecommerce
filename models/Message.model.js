@@ -2,20 +2,38 @@ import mongoose from "mongoose";
 
 const MessageSchema = new mongoose.Schema(
   {
-    room: { type: String, required: true, index: true },
-
-    sender: {
+    roomId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "ChatRoom",
+      required: true,
+      index: true,
+    },
+
+    senderType: {
+      type: String,
+      enum: ["user", "admin"],
       required: true,
     },
 
-    text: { type: String, required: true },
+    senderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
 
-    read: { type: Boolean, default: false },
+    message: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    isRead: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
 
-export default mongoose.models.Message ||
-  mongoose.model("Message", MessageSchema);
+const MessageModel = mongoose.models.Message || mongoose.model("Message", MessageSchema);
+
+export default MessageModel;

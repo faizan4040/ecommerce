@@ -56,7 +56,7 @@ const LatestOrder = () => {
   }
 
   return (
-    <Card className="rounded-2xl shadow-sm h-full bg-background -mt-4">
+    <Card className="rounded-2xl shadow-sm h-full bg-background -mt-14">
       {/* HEADER */}
       <CardHeader className="px-6 py-5 border-b flex flex-row items-center justify-between">
         <CardTitle className="text-lg font-semibold tracking-tight">

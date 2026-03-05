@@ -3,30 +3,28 @@ import React from "react"
 const ProductInfo = () => {
   return (
    <section className="w-full py-1">
-  <div
-    className="
-      max-w-7xl
-      mx-auto
-      px-4 sm:px-8 lg:px-20
-      grid grid-cols-1 lg:grid-cols-2
-      gap-10 lg:gap-52
-      items-start
-    "
-  >
+    <div
+      className="
+        max-w-7xl
+        mx-auto
+        px-4 sm:px-8 lg:px-20
+        grid grid-cols-1 lg:grid-cols-2
+        gap-10 lg:gap-52
+        items-start
+      "
+    >
     {/* LEFT CONTENT */}
     <div>
       <h2 className="text-3xl sm:text-4xl font-bold mb-6 lg:text-lg">
         Lace up for your next adventure
         <p className="text-gray-700 leading-relaxed mb-5">
         Lace up for your next adventure with{" "}
-        <span className="font-semibold">SportsShoes.com</span> – Europe’s #1
+        <span className="font-semibold">SportsShoes.com</span> – India’s #1
         performance destination.
       </p>
       </h2>
-
       
-
-      <p className="text-gray-700 leading-relaxed mb-5">
+      <p className="text-gray-700 leading-relaxed mb-4">
         Whether you're chasing a PB on the road, pushing your limits on the
         track, or tackling rugged trails, we’re here to power every step of your
         journey. With 40 years of expertise and over 15,000 products, we bring
@@ -54,7 +52,7 @@ const ProductInfo = () => {
     </div>
 
     {/* RIGHT LINKS */}
-    <div className="flex flex-col gap-10 text-lg font-medium lg:pt-12">
+    <div className="flex flex-col gap-10 text-2xl font-medium lg:pt-12">
       {[
         "Men's Running Shoes",
         "Women's Running Shoes",
@@ -73,7 +71,7 @@ const ProductInfo = () => {
             after:absolute
             after:left-0
             after:-bottom-1
-            after:h-[2px]
+            after:h-0.5
             after:w-0
             after:bg-black
             after:transition-all

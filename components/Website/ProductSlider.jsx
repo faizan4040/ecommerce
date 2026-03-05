@@ -94,7 +94,7 @@ const ProductSlider = () => {
           {products.map((product) => (
             <Link
               key={product._id}
-              href={`/product/${product._id}`}
+              href={`/product/${product.slug}`}
               className="min-w-[70%] sm:min-w-50 md:min-w-55 lg:min-w-62.5 bg-white rounded-xl shadow-md hover:shadow-xl transition overflow-hidden"
             >
               {/* IMAGE */}

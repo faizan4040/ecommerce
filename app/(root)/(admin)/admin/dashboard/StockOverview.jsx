@@ -66,9 +66,9 @@ const StockOverview = () => {
 
       {/* STOCK TABLE */}
       <Card className="xl:col-span-2 rounded-2xl shadow-sm h-full">
-        <CardHeader className="border-b">
+        <CardHeader className="border-b ">
           <CardTitle>Product Stock Overview</CardTitle>
-        </CardHeader>
+      </CardHeader>
 
         <CardContent className="p-4">
           <div className="max-h-112.5 overflow-y-auto">

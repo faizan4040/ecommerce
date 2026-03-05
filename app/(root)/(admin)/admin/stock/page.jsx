@@ -76,7 +76,7 @@ const Stock = () => {
 
       <div className="py-4">
         <Card className="rounded-2xl shadow-sm w-full">
-          <CardHeader className="border-b">
+          <CardHeader className="border-b text-2xl">
             <CardTitle>Product Stock Overview</CardTitle>
           </CardHeader>
 

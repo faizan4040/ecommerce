@@ -11,19 +11,19 @@ const categories = [
     id: 1,
     title: "Men",
     image: IMAGES.men,
-    link: "/shop/men",
+    link: "/shop",
   },
   {
     id: 2,
     title: "Women",
     image: IMAGES.womens,
-    link: "/shop/women",
+    link: "/shop",
   },
   {
     id: 3,
     title: "Kids",
     image: IMAGES.kids,
-    link: "/shop/kids",
+    link: "/shop",
   },
 ]
 
@@ -73,8 +73,9 @@ const Shopby = () => {
                 {item.title}
               </h3>
 
-              <Link href={WEBSITE_SHOP}>
-              <button
+            
+              <Link
+                href={WEBSITE_SHOP}
                 className="
                   px-6 py-2
                   border border-white
@@ -87,8 +88,8 @@ const Shopby = () => {
                 "
               >
                 Shop Shoes
-              </button>
               </Link>
+             
             </div>
           </div>
         ))}

@@ -37,7 +37,7 @@ const breadcrumbData = [
     <div>
         <BreadCrumb breadcrumbData={breadcrumbData}/>
         <div className='py-4'>
-        <Card className="py-0 max-w-302.5 rounded-3xl shadow-sm gap-0">
+        <Card className="py-0 max-w-300 rounded-3xl shadow-sm gap-0">
         <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
         <div className='flex justify-between items-center'>
           <h4 className='text-xl font-semibold'>Show Product Variants</h4>

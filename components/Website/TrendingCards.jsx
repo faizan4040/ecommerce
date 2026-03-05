@@ -2,6 +2,8 @@
 
 import React from "react"
 import { IMAGES } from "@/routes/AllImages"
+import Link from "next/link"
+import { WEBSITE_SHOP } from "@/routes/WebsiteRoute"
 
 const items = [
   {
@@ -37,8 +39,9 @@ const TrendingCards = () => {
       {/* CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {items.map((item) => (
-          <div
+          <Link
             key={item.id}
+            href={WEBSITE_SHOP}
             className="
               relative
               h-105 sm:h-130
@@ -71,7 +74,7 @@ const TrendingCards = () => {
                 {item.desc}
               </p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 

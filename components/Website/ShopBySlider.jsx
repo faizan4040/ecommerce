@@ -3,6 +3,8 @@
 import React, { useRef } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { IMAGES } from "@/routes/AllImages"
+import Link from "next/link"
+import { WEBSITE_SHOP } from "@/routes/WebsiteRoute"
 
 const categories = [
   { id: 1, title: "Running", image: IMAGES.runnin },
@@ -59,8 +61,9 @@ const ShopBySlider = () => {
         "
       >
         {categories.map((item) => (
-          <div
+          <Link
             key={item.id}
+            href={WEBSITE_SHOP}
             className="
               min-w-65 sm:min-w-85 lg:min-w-105
               h-85 sm:h-105
@@ -91,7 +94,7 @@ const ShopBySlider = () => {
                 {item.title}
               </h3>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>
