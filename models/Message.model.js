@@ -1,3 +1,4 @@
+// models/Message.model.js
 import mongoose from "mongoose";
 
 const MessageSchema = new mongoose.Schema(
@@ -8,24 +9,20 @@ const MessageSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-
     senderType: {
       type: String,
       enum: ["user", "admin"],
       required: true,
     },
-
     senderId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
-
     message: {
       type: String,
       required: true,
       trim: true,
     },
-
     isRead: {
       type: Boolean,
       default: false,
@@ -34,6 +31,4 @@ const MessageSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const MessageModel = mongoose.models.Message || mongoose.model("Message", MessageSchema);
-
-export default MessageModel;
+export default mongoose.models.Message || mongoose.model("Message", MessageSchema);

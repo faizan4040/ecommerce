@@ -18,12 +18,11 @@ import { useChat } from "../Chat/ChatProvider"
 
 const Footer = () => {
 
- const { setShowButton, setOpen } = useChat()
+const { openChat } = useChat()
 
-  const handleChatClick = () => {
-    setShowButton(true) 
-    setOpen(true)        
-  }
+const handleChatClick = () => {
+  openChat()
+}
 
   return (
     <footer className="bg-gray-800 text-gray-200">

@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node server.js",
+    "devz": "next dev",
     "build": "next build",
     "start": "next start"
   },
@@ -40,6 +41,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "dayjs": "^1.11.19",
+    "dotenv": "^17.3.1",
     "entities": "^7.0.1",
     "export-to-csv": "^1.4.0",
     "framer-motion": "^12.34.1",

@@ -45,7 +45,7 @@ const DashboardNotifications = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-      {/* 🔴 LOW STOCK ALERTS */}
+      {/* LOW STOCK ALERTS */}
       <Card className="bg-red-50 border-red-300 rounded-2xl shadow-lg">
         <CardHeader className="flex items-center gap-2">
           <FiAlertTriangle className="text-red-600 w-6 h-6 animate-pulse" />
@@ -77,7 +77,7 @@ const DashboardNotifications = () => {
                 </div>
               ))}
 
-              {/* 💡 SUGGESTION */}
+              {/* SUGGESTION */}
               <div className="flex items-start gap-2 text-sm text-red-700 bg-red-100 p-3 rounded-xl">
                 <FiShoppingCart className="mt-0.5" />
                 <p>
@@ -94,7 +94,7 @@ const DashboardNotifications = () => {
         </CardContent>
       </Card>
 
-      {/* 🟢 MOST SOLD PRODUCTS */}
+      {/* MOST SOLD PRODUCTS */}
       <Card className="bg-green-50 border-green-300 rounded-2xl shadow-lg">
         <CardHeader className="flex items-center gap-2">
           <FiTrendingUp className="text-green-600 w-6 h-6 animate-bounce" />
@@ -126,7 +126,7 @@ const DashboardNotifications = () => {
                 </div>
               ))}
 
-              {/* 💡 SUGGESTION */}
+              {/* SUGGESTION */}
               <div className="flex items-start gap-2 text-sm text-green-700 bg-green-100 p-3 rounded-xl">
                 <FiTrendingUp className="mt-0.5" />
                 <p>
