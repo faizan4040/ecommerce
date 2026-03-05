@@ -1,4 +1,3 @@
-// components/Application/GlobalProvider.jsx
 'use client'
 
 import { persistor, store } from '@/store/store'
