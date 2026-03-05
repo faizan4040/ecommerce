@@ -29,8 +29,8 @@ export async function POST(request){
           })
 
       const validate = schema.safeParse(payload)
-      console.log("API RECEIVED 👉", payload)
-      console.log("STOCK TYPE 👉", typeof payload.stock)
+      console.log("API RECEIVED", payload)
+      console.log("STOCK TYPE", typeof payload.stock)
       if(!validate.success){
         return response(false, 400, 'Invalid or missing fields.', validate.error)
       }
@@ -50,11 +50,11 @@ export async function POST(request){
           media: variantData.media,
       })
        
-      console.log("SAVING TO DB 👉", variantData.stock)
+      console.log("SAVING TO DB", variantData.stock)
       await newProductVariant.save()
       await newProductVariant.save()
 
-      console.log("DB SAVED 👉", newProductVariant)
+      console.log("DB SAVED", newProductVariant)
 
       return response(true, 200, 'Product Variant added successfully.')
 

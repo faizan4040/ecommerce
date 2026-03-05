@@ -77,7 +77,7 @@ const WarehouseForm = ({ initialData = null }) => {
       }
     } catch (error) {
       showToast.error('Failed to submit form')
-      console.error(error)
+      // console.error(error)
     } finally {
       setLoading(false)
     }

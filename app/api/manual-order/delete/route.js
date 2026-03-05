@@ -1,83 +1,84 @@
-import { NextResponse } from 'next/server'
-import connectDB from '@/lib/databaseConnection'
-import ManualOrder from '@/models/ManualOrder.model'
+import { isAuthenticated } from "@/lib/authentication";
+import connectDB from "@/lib/databaseConnection";
+import { catchError, response } from "@/lib/helperfunction";
+import ManualOrderModel from "@/models/ManualOrder.model";
 
-/* =========================
-   SOFT DELETE (TRASH)
-   ========================= */
-export async function PUT(req) {
-  try {
-    await connectDB()
+export async function PUT(request) {
+    try {
+        const auth = await isAuthenticated('admin')
+        if (!auth.isAuth) {
+            return response(false, 403, "Unauthorized.")
+        }
 
-    const { ids, deleteType } = await req.json()
+        await connectDB()
+        const payload = await request.json()
 
-    if (!Array.isArray(ids) || ids.length === 0) {
-      return NextResponse.json(
-        { success: false, message: 'Invalid or empty id list' },
-        { status: 400 }
-      )
+        const ids = payload.ids || []
+        const deleteType = payload.deleteType
+
+        if (!Array.isArray(ids) || ids.length === 0) {
+            return response(false, 400, "Invalid or empty id list.")
+        }
+
+        const data = await ManualOrderModel.find({ _id: { $in: ids } }).lean()
+        if (!data.length) {
+            return response(false, 404, 'Data not found.')
+        }
+
+        if (!['SD', 'RSD'].includes(deleteType)) {
+            return response(false, 400, "Invalid delete operation. Delete type should be SD or RSD for this route.")
+        }
+
+        if (deleteType === "SD") {
+            await ManualOrderModel.updateMany(
+                { _id: { $in: ids } },
+                { $set: { deletedAt: new Date().toISOString() } }
+            )
+        } else {
+            await ManualOrderModel.updateMany(
+                { _id: { $in: ids } },
+                { $set: { deletedAt: null } }
+            )
+        }
+
+        return response(true, 200, deleteType === 'SD' ? 'Data moved into trash.' : 'Data restored.')
+
+    } catch (error) {
+        return catchError(error)
     }
-
-    if (deleteType !== 'SD') {
-      return NextResponse.json(
-        { success: false, message: 'Invalid delete type for PUT' },
-        { status: 400 }
-      )
-    }
-
-    const result = await ManualOrder.updateMany(
-      { _id: { $in: ids } },
-      { $set: { deletedAt: new Date() } }
-    )
-
-    return NextResponse.json({
-      success: true,
-      message: 'Manual order moved to trash',
-      data: result,
-    })
-  } catch (error) {
-    console.error('SOFT DELETE MANUAL ORDER', error)
-    return NextResponse.json(
-      { success: false, message: 'Soft delete failed' },
-      { status: 500 }
-    )
-  }
 }
 
-/* =========================
-   PERMANENT DELETE
-   ========================= */
-export async function DELETE(req) {
-  try {
-    await connectDB()
+export async function DELETE(request) {
+    try {
+        const auth = await isAuthenticated('admin')
+        if (!auth.isAuth) {
+            return response(false, 403, "Unauthorized.")
+        }
 
-    const { ids, deleteType } = await req.json()
+        await connectDB()
+        const payload = await request.json()
 
-    if (!Array.isArray(ids) || ids.length === 0) {
-      return NextResponse.json(
-        { success: false, message: 'Invalid or empty id list' },
-        { status: 400 }
-      )
+        const ids = payload.ids || []
+        const deleteType = payload.deleteType
+
+        if (!Array.isArray(ids) || ids.length === 0) {
+            return response(false, 400, "Invalid or empty id list.")
+        }
+
+        const data = await ManualOrderModel.find({ _id: { $in: ids } }).lean()
+        if (!data.length) {
+            return response(false, 404, 'Data not found.')
+        }
+
+        if (deleteType !== 'PD') {
+            return response(false, 400, "Invalid delete operation. Delete type should be PD for this route.")
+        }
+
+        await ManualOrderModel.deleteMany({ _id: { $in: ids } })
+
+        return response(true, 200, 'Data deleted permanently.')
+
+    } catch (error) {
+        return catchError(error)
     }
-
-    if (deleteType !== 'PD') {
-      return NextResponse.json(
-        { success: false, message: 'Invalid delete type for DELETE' },
-        { status: 400 }
-      )
-    }
-
-    await ManualOrder.deleteMany({ _id: { $in: ids } })
-
-    return NextResponse.json({
-      success: true,
-      message: 'Manual order deleted permanently',
-    })
-  } catch (error) {
-    console.error('PERMANENT DELETE MANUAL ORDER', error)
-    return NextResponse.json(
-      { success: false, message: 'Permanent delete failed' },
-      { status: 500 }
-    )
-  }
 }

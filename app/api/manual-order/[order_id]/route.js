@@ -1,27 +1,28 @@
-import { NextResponse } from 'next/server'
 import connectDB from '@/lib/databaseConnection'
-import ManualOrder from '@/models/ManualOrder.model'
+import { catchError, response } from '@/lib/helperfunction'
+import ManualOrderModel from '@/models/ManualOrder.model'
 
-export async function GET(req, { params }) {
+/* =====================================================================
+   GET /api/manual-order/[order_id]
+   Fetches a single manual order by its order_id string (e.g. MANUAL-1234)
+   ===================================================================== */
+export async function GET(request, { params }) {
   try {
+    // FIX: In Next.js 15, dynamic params must be awaited before use
+    const { order_id } = await params
+
+    if (!order_id) return response(false, 400, 'order_id is required.')
+
     await connectDB()
 
-    const order = await ManualOrder.findOne({
-      order_id: params.order_id,
-    }).lean()
+    const order = await ManualOrderModel.findOne({ order_id })
+      .populate('products.category', 'name')
+      .lean()
 
-    if (!order) {
-      return NextResponse.json(
-        { success: false, message: 'Order not found' },
-        { status: 404 }
-      )
-    }
+    if (!order) return response(false, 404, 'Order not found.')
 
-    return NextResponse.json({ success: true, data: order })
-  } catch {
-    return NextResponse.json(
-      { success: false, message: 'Failed to fetch' },
-      { status: 500 }
-    )
+    return response(true, 200, 'Order fetched successfully.', order)
+  } catch (error) {
+    return catchError(error)
   }
 }

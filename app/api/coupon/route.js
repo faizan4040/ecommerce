@@ -45,7 +45,7 @@ if (deleteType === "SD") {
   matchQuery = { deletedAt: null };
 }
 
-// ✅ YAHI PE ADD KARNA HAI
+// YAHI PE ADD KARNA HAI
 matchQuery.validity = { $gte: new Date() };
 
 

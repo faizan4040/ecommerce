@@ -42,8 +42,8 @@ export function ChatProvider({ children, userId }) {
       }
     }
 
-    setShowButton(true); // 👈 show floating chat icon
-    setOpen(true);       // 👈 open chat window
+    setShowButton(true); // show floating chat icon
+    setOpen(true);       // open chat window
     setUnread(0);
   }
 

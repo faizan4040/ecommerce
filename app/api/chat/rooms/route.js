@@ -22,7 +22,7 @@ export async function GET(req) {
 
     return NextResponse.json({ success: true, data: rooms });
   } catch (error) {
-    console.error(" GET /api/chat/rooms:", error);
+    // console.error(" GET /api/chat/rooms:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch rooms" },
       { status: 500 }
@@ -56,7 +56,7 @@ export async function POST(req) {
 
     return NextResponse.json({ success: true, data: room });
   } catch (error) {
-    console.error(" POST /api/chat/rooms:", error);
+    // console.error(" POST /api/chat/rooms:", error);
     return NextResponse.json(
       { success: false, message: "Failed to create room" },
       { status: 500 }

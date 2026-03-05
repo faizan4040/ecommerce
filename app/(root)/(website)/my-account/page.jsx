@@ -17,7 +17,6 @@ const breadCrumbData = {
 
 const MyAccount = () => {
   const { data: dashboardData } = useFetch('/api/dashboard/user')
-  console.log(dashboardData)
   const cartStore = useSelector(store => store.cartStore)
   const totalOrders = dashboardData?.data?.totalOrder ?? 0
   const recentOrders = dashboardData?.data?.recentOrders ?? []

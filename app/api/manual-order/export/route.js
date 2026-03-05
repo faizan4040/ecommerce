@@ -4,6 +4,8 @@ import { catchError, response } from "@/lib/helperfunction";
 import ManualOrderModel from "@/models/ManualOrder.model";
 
 
+
+
 export async function GET(request) {
     try{
         const auth = await isAuthenticated('admin')
@@ -13,7 +15,6 @@ export async function GET(request) {
 
         await connectDB()
 
-    
         const filter = {
               deletedAt: null
         }

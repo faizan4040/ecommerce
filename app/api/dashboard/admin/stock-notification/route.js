@@ -8,13 +8,13 @@ const LOW_STOCK_LIMIT = 5
 
 export async function GET() {
   try {
-    // 🔐 Auth
+    // Auth
     const auth = await isAuthenticated("admin")
     if (!auth.isAuth) return response(false, 403, "Unauthorized")
 
     await connectDB()
 
-    // 🧮 Get total sold per variant from orders (REAL DATA)
+    // Get total sold per variant from orders (REAL DATA)
     const soldData = await OrderModel.aggregate([
       { $unwind: "$products" },
       {
@@ -25,13 +25,13 @@ export async function GET() {
       },
     ])
 
-    // ⚡ Convert sold array → map for fast lookup
+    // Convert sold array → map for fast lookup
     const soldMap = {}
     soldData.forEach(item => {
       soldMap[item._id.toString()] = item.totalSold
     })
 
-    // 📦 Fetch product variants
+    // Fetch product variants
     const variants = await ProductVariantModel.find({
       deletedAt: null,
     })
@@ -39,7 +39,7 @@ export async function GET() {
       .populate("media", "url")
       .lean()
 
-    // 📊 Build stock table (REAL CALCULATIONS)
+    // Build stock table (REAL CALCULATIONS)
     const stockTable = variants.map(v => {
       const sold = soldMap[v._id.toString()] || 0
       const stock = Number(v.stock) || 0
@@ -55,11 +55,11 @@ export async function GET() {
         image: v.media?.[0]?.url || null,
         totalSold: sold,
         remainingStock: stock,
-        status, // ✅ frontend-ready
+        status, 
       }
     })
 
-    // 🔥 Top 5 most sold
+    // Top 5 most sold
     const mostSold = [...stockTable]
       .sort((a, b) => b.totalSold - a.totalSold)
       .slice(0, 5)
@@ -70,7 +70,6 @@ export async function GET() {
     })
 
   } catch (error) {
-    console.error("STOCK OVERVIEW ERROR:", error)
     return catchError(error)
   }
 }

@@ -68,7 +68,6 @@ useEffect(() => {
         setStatusCounts(data)
       }
     } catch (error) {
-      console.warn('Status API unreachable, showing defaults')
       if (mounted) {
         setStatusCounts({
           PaymentRefund: 0,

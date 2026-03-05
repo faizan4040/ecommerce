@@ -117,7 +117,6 @@ export async function GET(request) {
       meta: { totalRowCount },
     });
   } catch (error) {
-    console.error("USER API ERROR:", error);
     return catchError(error);
   }
 }

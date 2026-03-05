@@ -128,7 +128,7 @@ export async function GET(request) {
     // 🔢 Total count
     const totalRowCount = await ReviewModel.countDocuments(matchQuery);
 
-    // ✅ Response
+    // Response
     return NextResponse.json({
       success: true,
       data: getReview,

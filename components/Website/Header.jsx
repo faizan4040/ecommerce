@@ -335,7 +335,7 @@ export default function Header() {
                 <button
                   key={item.name} 
                   onClick={() => {
-                    setActiveItem(item); // ✅ store full object
+                    setActiveItem(item); // store full object
                     setActiveCategory(item.name);
                   }}
                   className="w-full flex justify-between items-center py-2 px-2 hover:bg-gray-100 rounded-lg"
@@ -382,7 +382,7 @@ export default function Header() {
            {categories.map((item) => (
            <li
             key={item.name}
-            onClick={() => handleCategoryClick(item)} // ✅ pass full object
+            onClick={() => handleCategoryClick(item)} // pass full object
             className={`cursor-pointer whitespace-nowrap relative ${
               activeCategory === item.name ? "font-semibold" : ""
             }`}
