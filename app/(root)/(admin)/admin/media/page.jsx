@@ -172,7 +172,7 @@ const fetchMedia = async (page, deleteType) => {
     )}
 
 
-    {status === 'pending'
+     {status === 'pending'
       ?
       <div>Loading...</div>
       :
@@ -185,7 +185,7 @@ const fetchMedia = async (page, deleteType) => {
           {data.pages.flatMap(page => page.mediaData.map(media => media._id)).length === 0 && 
           <div>Data not fount</div>}
           
-          <div className='grid lg:grid-cols-5 sm:grid-cols-3 grid-cols-2 gap-2 mb-5'>
+          <div className='grid lg:grid-cols-5 sm:grid-cols-3 grid-cols-2 gap-2 mb-6'>
               {
                 data?.pages?.map((page, index) => (
                   <React.Fragment key={index}>
@@ -206,9 +206,16 @@ const fetchMedia = async (page, deleteType) => {
       </>
     }
 
-    {hasNextPage && 
-    <Button type="button" className='cursor-pointer' loading={isFetching} onClick={() => fetchNextPage()} text="Load More"/>
-    }
+    {hasNextPage && (
+      <Button
+        type="button"
+        className="cursor-pointer mb-4 hover:bg-orange-500"
+        disabled={isFetchingNextPage}
+        onClick={fetchNextPage}
+      >
+        {isFetchingNextPage ? "Loading..." : "Load More"}
+      </Button>
+    )}
 
   </CardContent>
      </Card>

@@ -90,8 +90,8 @@ const StockOverview = () => {
                   <div className="flex items-center gap-3">
                    <Image
                       src={row.image || IMAGES.product_placeholder}
-                      width={40}
-                      height={40}
+                      width={56}
+                      height={56}
                       className="rounded-lg border object-cover"
                       alt={row.productName}
                     />

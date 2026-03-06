@@ -16,6 +16,7 @@ const useFetch = (url, method = "GET", options = {}) => {
         }
         return opts
     }, [method, optionsString])
+    
 
     useEffect(() => {
         const apiCall = async ()=>{

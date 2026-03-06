@@ -205,8 +205,8 @@ const ProductDetails = ({ product, variant, colors = [], sizes = [], reviewCount
         }}
       />
 
-      {/* Colors */}
-      <div className="mb-6">
+   
+      {/* <div className="mb-6">
         <p className="font-semibold mb-2">Color</p>
         <div className="flex gap-2 flex-wrap">
           {colors.map((color) => {
@@ -224,10 +224,9 @@ const ProductDetails = ({ product, variant, colors = [], sizes = [], reviewCount
             )
           })}
         </div>
-      </div>
+      </div> */}
 
-      {/* Sizes */}
-      <div className="mb-6">
+      {/* <div className="mb-6">
         <p className="font-semibold mb-2">Size: {variant?.size}</p>
 
         <div className="flex gap-2 flex-wrap">
@@ -244,7 +243,50 @@ const ProductDetails = ({ product, variant, colors = [], sizes = [], reviewCount
             </Link>
           ))}
         </div>
-      </div>
+      </div> */}
+
+
+      {/* Colors */}
+      {colors.length > 0 && (
+        <div className="mb-6">
+          <p className="font-semibold mb-2">Color</p>
+          <div className="flex gap-2 flex-wrap">
+            {colors.map((color) => (
+              <Link
+                key={color}
+                onClick={() => setIsProductLoading(true)}
+                href={`${WEBSITE_PRODUCT_DETAILS(product.slug)}?color=${color}`}  // removed size
+                className={`border py-1 px-3 rounded-lg cursor-pointer transition
+                  hover:bg-primary hover:text-white
+                  ${color === variant.color ? "bg-primary text-white" : ""}`}
+              >
+                {color}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Sizes */}
+      {sizes.length > 0 && (
+        <div className="mb-6">
+          <p className="font-semibold mb-2">Size: {variant?.size}</p>
+          <div className="flex gap-2 flex-wrap">
+            {sizes.map((size) => (
+              <Link
+                key={size}
+                onClick={() => setIsProductLoading(true)}
+                href={`${WEBSITE_PRODUCT_DETAILS(product.slug)}?color=${variant.color}&size=${size}`}  // keeps current color
+                className={`border py-1 px-3 rounded-lg cursor-pointer transition
+                  hover:bg-primary hover:text-white
+                  ${size === variant.size ? "bg-primary text-white" : ""}`}
+              >
+                {size}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Quantity */}
       <div className="mb-8">
