@@ -5,7 +5,6 @@ import ChatWidget from '@/components/Chat/ChatWidget'
 import { ChatProvider } from '@/components/Chat/ChatProvider'
 import Footer from '@/components/Website/Footer'
 import Header from '@/components/Website/Header'
-// import TawkWidget from '@/components/Chat/TawkWidget'
 
 const Layout = ({ children }) => {
   return (
@@ -21,7 +20,6 @@ const Layout = ({ children }) => {
 
       <ChatButton />
       <ChatWidget />
-      {/* <TawkWidget/> */}
     </ChatProvider>
   )
 }
