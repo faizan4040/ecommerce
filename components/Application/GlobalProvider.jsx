@@ -7,8 +7,8 @@ import { PersistGate } from 'redux-persist/integration/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { usePathname } from 'next/navigation'
 import Loading from './Loading'
-import { ChatProvider } from '@/components/chat/ChatProvider'
-import ChatWidget from '@/components/chat/ChatWidget'
+import { ChatProvider } from '../Chat/ChatProvider'
+import ChatWidget from '../Chat/ChatWidget'
 
 const queryClient = new QueryClient()
 
