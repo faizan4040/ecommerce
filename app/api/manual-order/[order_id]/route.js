@@ -1,5 +1,15 @@
 import connectDB from '@/lib/databaseConnection'
 import { catchError, response } from '@/lib/helperfunction'
+
+// ── CRITICAL FIX ──────────────────────────────────────────────────
+// Import Category model BEFORE ManualOrderModel so Mongoose registers
+// its schema. Without this, .populate('products.category') throws:
+// "Schema hasn't been registered for model Category"
+// Option A — most common in your project (matches ManualOrder.model.js pattern)
+import '@/models/Category.model'
+
+// ─────────────────────────────────────────────────────────────────
+
 import ManualOrderModel from '@/models/ManualOrder.model'
 
 /* =====================================================================

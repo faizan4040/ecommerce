@@ -2,28 +2,40 @@
 
 import React, { useEffect, useState } from "react"
 import axios from "axios"
-import { Card, CardHeader, CardContent } from "@/components/ui/card"
+import Image from "next/image"
+import { motion } from "framer-motion"
 import {
   FiAlertTriangle,
   FiTrendingUp,
   FiCheckCircle,
-  FiShoppingCart,
+  FiPackage
 } from "react-icons/fi"
 
 const DashboardNotifications = () => {
+
   const [lowStock, setLowStock] = useState([])
   const [mostSold, setMostSold] = useState([])
   const [loading, setLoading] = useState(true)
 
+  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || ""
+
   useEffect(() => {
+
     const fetchDashboardData = async () => {
       try {
+
         const res = await axios.get("/api/dashboard/admin/stock-report")
 
         if (res.data?.success) {
-          setLowStock(res.data.data.lowStock || [])
-          setMostSold(res.data.data.mostSold || [])
+
+          const lowStockData = res.data.data.lowStock || []
+          const mostSoldData = res.data.data.mostSold || []
+
+          setLowStock(lowStockData)
+          setMostSold(mostSoldData)
+
         }
+
       } catch (error) {
         console.error("Dashboard API error:", error)
       } finally {
@@ -32,116 +44,226 @@ const DashboardNotifications = () => {
     }
 
     fetchDashboardData()
+
   }, [])
+
 
   if (loading) {
     return (
-      <p className="text-center text-gray-500">
-        Loading dashboard notifications...
-      </p>
+      <div className="flex justify-center items-center h-60">
+        <div className="animate-spin w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full"/>
+      </div>
     )
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-      {/* LOW STOCK ALERTS */}
-      <Card className="bg-red-50 border-red-300 rounded-2xl shadow-lg">
-        <CardHeader className="flex items-center gap-2">
-          <FiAlertTriangle className="text-red-600 w-6 h-6 animate-pulse" />
-          <h4 className="text-lg font-bold text-red-700">
-            Low Stock Alerts
-          </h4>
-        </CardHeader>
+    <div className="grid lg:grid-cols-2 gap-8">
 
-        <CardContent className="space-y-4 max-h-96 overflow-y-auto">
-          {lowStock.length ? (
-            <>
-              {lowStock.map(item => (
-                <div
-                  key={item.variantId}
-                  className="flex justify-between items-center p-3 bg-red-100 rounded-xl border border-red-300"
-                >
-                  <div>
-                    <p className="font-semibold text-red-800">
-                      {item.productName}
-                    </p>
-                    <p className="text-xs text-red-600">
-                      SKU: {item.sku}
-                    </p>
+      {/* LOW STOCK */}
+
+      <div className="bg-white rounded-3xl shadow-lg border border-red-100 overflow-hidden">
+
+        <div className="flex items-center justify-between px-6 py-4 bg-linear-to-r from-red-500 to-orange-500 text-white">
+
+          <div className="flex items-center gap-2">
+            <FiAlertTriangle size={20}/>
+            <h2 className="font-semibold">Low Stock Alerts</h2>
+          </div>
+
+          <span className="bg-white/20 px-3 py-1 rounded-full text-xs">
+            {lowStock.length}
+          </span>
+
+        </div>
+
+        <div className="p-5 space-y-4 max-h-105 overflow-y-auto">
+
+          {lowStock.length > 0 ? (
+
+            lowStock.map((item) => (
+
+              <motion.div
+                key={item.variantId}
+                whileHover={{ scale: 1.03 }}
+                transition={{ duration: 0.2 }}
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border hover:shadow-md transition"
+              >
+
+                <div className="flex items-center gap-4">
+
+                  {/* IMAGE */}
+
+                  <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-100">
+
+                    {item.image ? (
+                      <Image
+                        src={
+                          item.image.startsWith("http")
+                            ? item.image
+                            : `${BASE_URL}${item.image}`
+                        }
+                        alt={item.productName}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center w-full h-full">
+                        <FiPackage className="text-gray-400"/>
+                      </div>
+                    )}
+
                   </div>
 
-                  <span className="px-3 py-1 text-xs font-bold bg-red-600 text-white rounded-full animate-pulse">
-                    {item.remainingStock} left
-                  </span>
-                </div>
-              ))}
+                  {/* INFO */}
 
-              {/* SUGGESTION */}
-              <div className="flex items-start gap-2 text-sm text-red-700 bg-red-100 p-3 rounded-xl">
-                <FiShoppingCart className="mt-0.5" />
-                <p>
-                  Reorder stock soon to avoid <b>missed sales</b> and customer
-                  drop-off.
-                </p>
-              </div>
-            </>
+                  <div>
+
+                    <p className="font-semibold text-gray-800 text-sm">
+                      {item.productName}
+                    </p>
+
+                    <p className="text-xs text-gray-500">
+                      SKU : {item.sku}
+                    </p>
+
+                    {/* STOCK BAR */}
+
+                    <div className="w-40 h-2 bg-gray-200 rounded-full mt-1">
+
+                      <div
+                        className="h-2 rounded-full bg-red-500"
+                        style={{
+                          width: `${Math.min(item.remainingStock * 20, 100)}%`
+                        }}
+                      />
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <span className="text-xs font-semibold bg-red-100 text-red-600 px-3 py-1 rounded-full animate-pulse">
+                  {item.remainingStock} left
+                </span>
+
+              </motion.div>
+
+            ))
+
           ) : (
-            <p className="text-green-700 flex items-center gap-2">
-              <FiCheckCircle /> All stock levels are healthy
+
+            <div className="flex items-center gap-2 text-green-600 text-sm">
+              <FiCheckCircle/>
+              All stock levels are healthy
+            </div>
+
+          )}
+
+        </div>
+
+        <div className="px-6 py-3 text-xs text-red-700 bg-red-50 border-t">
+          Reorder soon to avoid missed sales
+        </div>
+
+      </div>
+
+
+
+      {/* TRENDING PRODUCTS */}
+
+      <div className="bg-white rounded-3xl shadow-lg border border-green-100 overflow-hidden">
+
+        <div className="flex items-center justify-between px-6 py-4 bg-linear-to-r from-emerald-500 to-green-600 text-white">
+
+          <div className="flex items-center gap-2">
+            <FiTrendingUp size={20}/>
+            <h2 className="font-semibold">Trending Products</h2>
+          </div>
+
+          <span className="bg-white/20 px-3 py-1 rounded-full text-xs">
+            {mostSold.length}
+          </span>
+
+        </div>
+
+        <div className="p-5 space-y-4 max-h-105 overflow-y-auto">
+
+          {mostSold.length > 0 ? (
+
+            mostSold.map((item) => (
+
+              <motion.div
+                key={item.variantId}
+                whileHover={{ scale: 1.03 }}
+                transition={{ duration: 0.2 }}
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border hover:shadow-md transition"
+              >
+
+                <div className="flex items-center gap-4">
+
+                  <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-100">
+
+                    {item.image ? (
+                      <Image
+                        src={
+                          item.image.startsWith("http")
+                            ? item.image
+                            : `${BASE_URL}${item.image}`
+                        }
+                        alt={item.productName}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center w-full h-full">
+                        <FiPackage className="text-gray-400"/>
+                      </div>
+                    )}
+
+                  </div>
+
+                  <div>
+
+                    <p className="font-semibold text-gray-800 text-sm">
+                      {item.productName}
+                    </p>
+
+                    <p className="text-xs text-gray-500">
+                      SKU : {item.sku}
+                    </p>
+
+                  </div>
+
+                </div>
+
+                <span className="text-xs font-semibold bg-green-100 text-green-600 px-3 py-1 rounded-full">
+                  {item.totalSold} sold
+                </span>
+
+              </motion.div>
+
+            ))
+
+          ) : (
+
+            <p className="text-gray-500 text-sm">
+              No sales data available
             </p>
+
           )}
-        </CardContent>
-      </Card>
 
-      {/* MOST SOLD PRODUCTS */}
-      <Card className="bg-green-50 border-green-300 rounded-2xl shadow-lg">
-        <CardHeader className="flex items-center gap-2">
-          <FiTrendingUp className="text-green-600 w-6 h-6 animate-bounce" />
-          <h4 className="text-lg font-bold text-green-700">
-            Most Sold Products
-          </h4>
-        </CardHeader>
+        </div>
 
-        <CardContent className="space-y-4 max-h-96 overflow-y-auto">
-          {mostSold.length ? (
-            <>
-              {mostSold.map(item => (
-                <div
-                  key={item.variantId}
-                  className="flex justify-between items-center p-3 bg-green-100 rounded-xl border border-green-300"
-                >
-                  <div>
-                    <p className="font-semibold text-green-800">
-                      {item.productName}
-                    </p>
-                    <p className="text-xs text-green-600">
-                      SKU: {item.sku}
-                    </p>
-                  </div>
+        <div className="px-6 py-3 text-xs text-green-700 bg-green-50 border-t">
+          These products are performing well
+        </div>
 
-                  <span className="px-3 py-1 text-xs font-bold bg-green-600 text-white rounded-full">
-                    {item.totalSold} sold
-                  </span>
-                </div>
-              ))}
-
-              {/* SUGGESTION */}
-              <div className="flex items-start gap-2 text-sm text-green-700 bg-green-100 p-3 rounded-xl">
-                <FiTrendingUp className="mt-0.5" />
-                <p>
-                  These products are trending. Consider <b>increasing stock </b>
-                  or running promotions.
-                </p>
-              </div>
-            </>
-          ) : (
-            <p className="text-gray-500">No sales data available yet</p>
-          )}
-        </CardContent>
-      </Card>
+      </div>
 
     </div>
+
   )
 }
 
