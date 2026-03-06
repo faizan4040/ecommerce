@@ -62,8 +62,8 @@ export function ChatProvider({ children, userId }) {
         userId,
         unread,
         setUnread,
-        showButton,      // 👈 expose
-        setShowButton    // 👈 expose
+        showButton,      // expose
+        setShowButton    // expose
       }}
     >
       {children}
