@@ -88,23 +88,19 @@ const LatestReview = () => {
                     }`}
                   >
                     {/* PRODUCT */}
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10">
+                    <TableCell className="max-w-55">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Avatar className="h-10 w-10 shrink-0">
                           <AvatarImage src={image} />
                           <AvatarFallback>
                             {product?.name?.[0] || "P"}
                           </AvatarFallback>
                         </Avatar>
 
-                        <div className="flex flex-col">
+                        <div className="flex flex-col min-w-0">
                           <span className="text-sm font-medium truncate">
                             {product?.name || "Unknown Product"}
                           </span>
-
-                          {/* <span className="text-xs text-muted-foreground truncate">
-                            {review.comment || "No comment"}
-                          </span> */}
                         </div>
                       </div>
                     </TableCell>

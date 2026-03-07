@@ -2,10 +2,10 @@
 import { useEffect, useRef, useState } from "react"
 import {
   Menu,
-  Search,
-  Heart,
   ChevronDown,
-  Globe,
+  X,
+  ChevronRight,
+  User,
 } from "lucide-react"
 import { USER_DASHBOARD, WEBSITE_HOME, WEBSITE_LOGIN, WEBSITE_REGISTER, WEBSITE_SHOP } from "@/routes/WebsiteRoute"
 import Card from '@/components/Website/Cart'
@@ -13,15 +13,9 @@ import Link from "next/link"
 import { useSelector } from "react-redux"
 import { Avatar, AvatarImage } from "../ui/avatar"
 import { IMAGES } from "@/routes/AllImages"
-import {
-  X,
-  ChevronRight,
-  User,
-} from "lucide-react"
 import { useRouter } from "next/navigation"
 import { IoSearchOutline } from "react-icons/io5"
 import { categories } from "@/routes/MenuCategories"
-
 
 const ads = [
   "SHOP NOW, PAY WITH KLARNA",
@@ -29,30 +23,30 @@ const ads = [
   "JOIN ULTRA & GET EXCLUSIVE BENEFITS",
 ]
 
-
 export default function Header() {
-  const [showSearch, setShowSearch] = useState(false);
-  const [query, setQuery] = useState("");
-  const router = useRouter();
+  const [showSearch, setShowSearch] = useState(false)
+  const [query, setQuery] = useState("")
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [adIndex, setAdIndex] = useState(0)
-  const [langOpen, setLangOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState(categories[0])
   const auth = useSelector(store => store.authStore.auth)
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [activeItem, setActiveItem] = useState(null)
 
+  // Mobile search state
+  const [showMobileSearch, setShowMobileSearch] = useState(false)
+  const [mobileQuery, setMobileQuery] = useState("")
+
   const handleCategoryClick = (category) => {
-  setActiveCategory(category)   
-  setActiveItem(category)       
-  setSidebarOpen(true)       
-}
+    setActiveCategory(category)
+    setActiveItem(category)
+    setSidebarOpen(true)
+  }
 
   const miniBarRef = useRef(null)
-  const langRef = useRef(null)
   const profileRef = useRef(null)
 
   /* Auto ads slider */
@@ -68,33 +62,36 @@ export default function Header() {
     const handler = (e) => {
       if (!(e.target instanceof Node)) return
       if (miniBarRef.current && !miniBarRef.current.contains(e.target)) setOpen(false)
-      if (langRef.current && !langRef.current.contains(e.target)) setLangOpen(false)
       if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false)
-      if (mobileMenuOpen && !e.target.closest("#mobile-menu")) setMobileMenuOpen(false)
     }
     document.addEventListener("pointerdown", handler)
     return () => document.removeEventListener("pointerdown", handler)
-  }, [mobileMenuOpen])
+  }, [])
 
-
-
-
-    const handleSearch = () => {
+  const handleSearch = () => {
     if (query.trim() !== "") {
-      router.push(`${WEBSITE_SHOP}?q=${encodeURIComponent(query.trim())}`);
+      router.push(`${WEBSITE_SHOP}?q=${encodeURIComponent(query.trim())}`)
     }
-  };
+  }
+
+  const handleMobileSearch = () => {
+    if (mobileQuery.trim() !== "") {
+      router.push(`${WEBSITE_SHOP}?q=${encodeURIComponent(mobileQuery.trim())}`)
+      setShowMobileSearch(false)
+    }
+  }
 
   return (
     <div className="sticky top-0 z-50">
       <header className="relative z-50">
-        {/* MINI TOP BAR */}
+
+        {/* ─── MINI TOP BAR ─── */}
         <div ref={miniBarRef} className="bg-white text-black text-xs border-b">
           <button
             onClick={() => setOpen(!open)}
             className="group w-full py-2 flex justify-center items-center gap-2"
           >
-            <span className="relative font-medium">
+            <span className="relative font-medium text-[11px] md:text-xs">
               {ads[adIndex]}
               <span className="absolute left-0 -bottom-1 h-px w-0 bg-black transition-all group-hover:w-full" />
             </span>
@@ -103,7 +100,7 @@ export default function Header() {
 
           <div className={`overflow-hidden transition-all duration-500 ${open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}>
             <div className="bg-white border-t shadow-xl">
-              <div className="grid md:grid-cols-3 gap-6 p-6 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 p-4 md:p-6 text-sm">
                 <div>
                   <h3 className="font-semibold">SHOP NOW, PAY WITH</h3>
                   <p className="text-gray-600">Choose Klarna at checkout.</p>
@@ -121,31 +118,62 @@ export default function Header() {
           </div>
         </div>
 
-        {/* MAIN NAV */}
-        <div className="bg-gray-900 text-white px-4 md:px-6 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-14">
-            {/* MOBILE MENU TOGGLE */}
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="hidden lg:flex items-center gap-2 text-white cursor-pointer"
-          >
-            <Menu size={24} />
-          </button>
+        {/* ─── MAIN NAV ─── */}
+        <div className="bg-gray-900 text-white px-3 md:px-6 py-3 md:py-4 flex justify-between items-center">
 
-             <Link href={WEBSITE_HOME} className="font-bold tracking-wide">
+          {/* LEFT: Hamburger + Logo */}
+          <div className="flex items-center gap-3 md:gap-6">
+            {/* Hamburger — always visible on mobile, visible on lg+ for desktop */}
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="flex items-center text-white cursor-pointer"
+              aria-label="Open menu"
+            >
+              <Menu size={22} />
+            </button>
+
+            {/* Logo */}
+            <Link href={WEBSITE_HOME} className="font-bold tracking-wide shrink-0">
               <img
-               src={IMAGES.logo}
-               className="h-9 w-38"
+                src={IMAGES.logo}
+                className="h-9 w-auto md:h-9"
+                alt="Logo"
               />
             </Link>
           </div>
 
-          {/* DESKTOP NAV */}
+          {/* CENTER: Desktop Search */}
+          {/* <div className="hidden md:flex items-center gap-8">
+            <div className="relative flex items-center">
+              <button
+                type="button"
+                onClick={() => setShowSearch(!showSearch)}
+                className="px-4 py-2 bg-black text-white rounded-l-full flex items-center gap-2 z-10 cursor-pointer"
+              >
+                <IoSearchOutline size={16} />
+                Search
+              </button>
+              <div
+                className={`overflow-hidden transition-all duration-500 ease-in-out ${showSearch ? 'w-60 sm:w-[320px] md:w-80 lg:w-96 ml-2' : 'w-0'}`}
+              >
+                <div className="relative">
+                  <IoSearchOutline size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    className="w-full pl-10 pr-4 py-2 rounded-r-full text-black text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black"
+                    placeholder="Search products, categories, pages..."
+                  />
+                </div>
+              </div>
+            </div>
+          </div> */}
           <div className="hidden md:flex items-center gap-8 relative">
-            {/* SEARCH */}
-          <div className="relative flex items-center">
-                {/* Toggle Button */}
-                <button
+           <div className="relative flex items-center">
+                 {/* Toggle Button */}
+                 <button
                   type="button"
                   onClick={() => setShowSearch(!showSearch)}
                   className="px-4 py-2 bg-black text-white rounded-l-full flex items-center gap-2 z-10 cursor-pointer"
@@ -178,223 +206,587 @@ export default function Header() {
                   </div>
                 </div>
               </div>
-
-
-
-            {/* LANGUAGE */}
-            {/* <button
-              onClick={() => { setLangOpen(!langOpen); setProfileOpen(false) }}
-              className="flex items-center gap-1.5 text-sm hover:underline"
-            >
-              <Globe size={16} />
-              <span>EN £</span>
-            </button>
-
-            {langOpen && (
-              <div ref={langRef} className="absolute right-0 top-14 z-50 w-80 bg-white text-black rounded-2xl shadow-xl border p-6">
-                <h4 className="text-xs font-semibold mb-4">Please choose your language or currency</h4>
-                <select className="w-full border rounded-lg px-3 py-2 text-sm mb-4">
-                  <option>English</option>
-                  <option>French</option>
-                  <option>German</option>
-                </select>
-                <button className="w-full bg-black text-white py-2.5 rounded-xl text-sm">Update</button>
               </div>
-            )} */}
 
-           {/* PROFILE / AUTH */}
-          <div className="relative">
+          {/* RIGHT: Icons */}
+          <div className="flex items-center gap-2 md:gap-4">
+
+            {/* Mobile Search Icon */}
             <button
-              onClick={() => {
-                setProfileOpen(!profileOpen);
-                setLangOpen(false);
-              }}
-              className="flex items-center cursor-pointer"
+              className="flex md:hidden items-center text-white cursor-pointer"
+              onClick={() => setShowMobileSearch(!showMobileSearch)}
+              aria-label="Search"
             >
-              {auth ? (
-                // Logged-in: show profile avatar
-                <Avatar>
-                  <AvatarImage src={auth?.avatar?.url || IMAGES.profile} />
-                </Avatar>
-              ) : (
-                // Not logged-in: show user icon
-                <span className="bg-gray-700 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer">
-                  <User size={20} />
-                </span>
-              )}
+              <IoSearchOutline size={22} />
             </button>
 
-            {profileOpen && (
-              <div
-                ref={profileRef}
-                className="absolute right-0 mt-5 -mr-16 w-72 cursor-pointer bg-white text-black rounded-2xl shadow-xl border p-6"
+            {/* Profile / Auth */}
+            <div className="relative" ref={profileRef}>
+              <button
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="flex items-center cursor-pointer"
+                aria-label="Profile"
               >
-                {!auth ? (
-                  // User not logged in → show "Create Free Account" button
-                  <>
-                  <Link href={WEBSITE_REGISTER}>
-                    <button className="w-full bg-black hover:bg-orange-500 hover:text-white text-white py-2 rounded-xl cursor-pointer">
-                      Create Free Account
-                    </button>
-                  </Link>
-
-                  <Link href={WEBSITE_LOGIN}>
-                    <button className="w-full bg-black text-white py-2 hover:bg-orange-500 hover:text-white rounded-xl cursor-pointer mt-2">
-                      Sign In
-                    </button>
-                  </Link>
-                </>
+                {auth ? (
+                  <Avatar className="w-8 h-8 md:w-8 md:h-8">
+                    <AvatarImage src={auth?.avatar?.url || IMAGES.profile} />
+                  </Avatar>
                 ) : (
-                  // User logged in → show profile dropdown
-                  <div className="flex flex-col items-center gap-3 cursor-pointer">
-                    <Link href={`/profile/${auth.id}`}>
-                      <Avatar>
-                        <AvatarImage src={auth?.avatar?.url || IMAGES.profile} />
-                      </Avatar>
-                    </Link>
-                    <span className="font-medium">{auth.name}</span>
-                    <Link href={USER_DASHBOARD}>
-                      <button className="w-full border py-2 px-4 rounded-xl cursor-pointer border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white transition-all duration-300">Dashboard</button>
-                    </Link>
-                  </div>
+                  <span className="bg-gray-700 rounded-full w-7 h-7 md:w-8 md:h-8 flex items-center justify-center cursor-pointer">
+                    <User size={18} />
+                  </span>
                 )}
-              </div>
-            )}
-          </div>
+              </button>
 
+              {profileOpen && (
+                <div className="absolute right-0 mt-5 w-64 md:w-72 cursor-pointer bg-white text-black rounded-2xl shadow-xl border p-5 md:p-6">
+                  {!auth ? (
+                    <>
+                      <Link href={WEBSITE_REGISTER}>
+                        <button className="w-full bg-black hover:bg-orange-500 text-white py-2 rounded-xl cursor-pointer mb-2">
+                          Create Free Account
+                        </button>
+                      </Link>
+                      <Link href={WEBSITE_LOGIN}>
+                        <button className="w-full bg-black text-white py-2 hover:bg-orange-500 rounded-xl cursor-pointer">
+                          Sign In
+                        </button>
+                      </Link>
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center gap-3 cursor-pointer">
+                      <Link href={`/profile/${auth.id}`}>
+                        <Avatar>
+                          <AvatarImage src={auth?.avatar?.url || IMAGES.profile} />
+                        </Avatar>
+                      </Link>
+                      <span className="font-medium">{auth.name}</span>
+                      <Link href={USER_DASHBOARD} className="w-full">
+                        <button className="w-full border py-2 px-4 rounded-xl cursor-pointer border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white transition-all duration-300">
+                          Dashboard
+                        </button>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Cart — always visible */}
             <Card className="cursor-pointer" />
           </div>
         </div>
 
-        {/* MOBILE MENU */}
-        {mobileMenuOpen && (
-          <div id="mobile-menu" className="md:hidden bg-black text-white p-4 space-y-4">
-            <input
-              className="w-full pl-3 pr-4 py-2 rounded-xl text-black text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black"
-              placeholder="Search products"
-            />
-            {!auth ? (
-              <>
-                <Link href={WEBSITE_LOGIN}>
-                  <button className="w-full border py-2 rounded-xl mb-2">Sign In</button>
-                </Link>
-                <Link href={WEBSITE_REGISTER}>
-                  <button className="w-full bg-white text-black py-2 rounded-xl">Create Free Account</button>
-                </Link>
-              </>
-            ) : (
-              <Link href={`/profile/${auth.id}`}>
-                <Avatar>
-                  <AvatarImage src={auth?.avatar?.url || IMAGES.profile} />
-                </Avatar>
-              </Link>
-            )}
-
-            <div className="flex flex-col gap-2">
-              {categories.map((item) => (
-                <button
-                  key={item}
-                  onClick={() => setActiveCategory(item)}
-                  className={`text-left px-2 py-1 font-medium ${activeCategory === item ? "border-b-2 border-white" : ""}`}
-                >
-                  {item}
-                </button>
-              ))}
-             <div>Shop</div>
-            </div>
-          </div>
-        )}
-      </header>
-
-      {/* OVERLAY */}
+        {/* ─── MOBILE SEARCH BAR (dropdown) ─── */}
         <div
-          className={`fixed inset-0 z-50 transition-all duration-300 ${
-            sidebarOpen ? "bg-black/40 visible" : "invisible"
+          className={`md:hidden bg-gray-800 px-3 overflow-hidden transition-all duration-300 ${
+            showMobileSearch ? "max-h-16 py-2 opacity-100" : "max-h-0 opacity-0"
           }`}
-          onClick={() => setSidebarOpen(false)}
-        />
-
-        {/* SIDEBAR */}
-        <div
-          className={`fixed top-0 left-0 z-50 h-full w-full md:w-325 bg-white shadow-2xl
-          transform transition-transform duration-500
-          ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
         >
-          {/* HEADER */}
-          <div className="flex justify-between items-center p-5 border-b">
-            <h3 className="font-semibold text-lg">Menu</h3>
-            <button onClick={() => setSidebarOpen(false)} className="cursor-pointer">
-              <X size={22} />
-            </button>
-          </div>
-
-          <div className="flex h-full">
-            {/* LEFT MENU */}
-            <div className="w-1/6 border-r p-4 space-y-3">
-              {categories.map((item) => (
-                <button
-                  key={item.name} 
-                  onClick={() => {
-                    setActiveItem(item); // store full object
-                    setActiveCategory(item.name);
-                  }}
-                  className="w-full flex justify-between items-center py-2 px-2 hover:bg-gray-100 rounded-lg"
-                >
-                  <span className="font-medium">{item.name}</span>
-                  <ChevronRight size={18} />
-                </button>
-              ))}
-            </div>
-
-            {/* RIGHT CONTENT */}
-            <div className="w-2/3 p-4 overflow-y-auto">
-              {!activeItem ? (
-                <p className="text-gray-400 text-sm">
-                  Select a category
-                </p>
-              ) : (
-                activeItem.sections?.map((section) => (
-                  <div key={section.title} className="mb-6">
-                    {/* Section Title */}
-                    <h4 className="font-semibold mb-2">{section.title}</h4>
-
-                    {/* Section Items */}
-                    <div className="flex flex-wrap gap-2">
-                      {section.items.map((sub) => (
-                        <Link key={sub.name} href={sub.link}>
-                          <span className="text-sm text-gray-700 hover:underline cursor-pointer">
-                            {sub.name}
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+          <div className="relative flex items-center">
+            <IoSearchOutline size={16} className="absolute left-3 text-gray-400" />
+            <input
+              type="text"
+              value={mobileQuery}
+              onChange={(e) => setMobileQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleMobileSearch()}
+              className="w-full pl-9 pr-10 py-2 rounded-full text-black text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
+              placeholder="Search products, categories..."
+            />
+            {mobileQuery && (
+              <button
+                onClick={() => setMobileQuery("")}
+                className="absolute right-3 text-gray-400"
+              >
+                <X size={14} />
+              </button>
+            )}
           </div>
         </div>
 
+      </header>
 
-      {/* CATEGORY BAR DESKTOP */}
-      <nav className="hidden md:block border-t bg-white">
-        <ul className="flex gap-6 px-6 py-3 text-sm font-medium overflow-x-auto">
-           {categories.map((item) => (
-           <li
-            key={item.name}
-            onClick={() => handleCategoryClick(item)} // pass full object
-            className={`cursor-pointer whitespace-nowrap relative ${
-              activeCategory === item.name ? "font-semibold" : ""
-            }`}
-          >
-            {item.name}
-            {activeCategory === item.name && (
-              <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-black" />
+      {/* ─── OVERLAY ─── */}
+      <div
+        className={`fixed inset-0 z-50 transition-all duration-300 ${
+          sidebarOpen ? "bg-black/40 visible" : "invisible"
+        }`}
+        onClick={() => setSidebarOpen(false)}
+      />
+
+      {/* ─── SIDEBAR ─── */}
+      <div
+        className={`fixed top-0 left-0 z-50 h-full w-full sm:w-105 md:w-100 bg-white shadow-2xl
+        transform transition-transform duration-500
+        ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+      >
+        {/* Sidebar Header */}
+        <div className="flex justify-between items-center p-4 md:p-5 border-b">
+          <h3 className="font-semibold text-base md:text-lg">Menu</h3>
+          <button onClick={() => setSidebarOpen(false)} className="cursor-pointer">
+            <X size={22} />
+          </button>
+        </div>
+
+        <div className="flex h-[calc(100%-65px)]">
+          {/* LEFT CATEGORY LIST */}
+          <div className="w-1/3 border-r overflow-y-auto p-2 md:p-4 space-y-1">
+            {categories.map((item) => (
+              <button
+                key={item.name}
+                onClick={() => {
+                  setActiveItem(item)
+                  setActiveCategory(item.name)
+                }}
+                className={`w-full flex justify-between items-center py-2 px-2 rounded-lg text-left transition-colors ${
+                  activeItem?.name === item.name ? "bg-gray-100 font-semibold" : "hover:bg-gray-50"
+                }`}
+              >
+                <span className="text-sm md:text-base font-medium truncate pr-1">{item.name}</span>
+                <ChevronRight size={16} className="shrink-0" />
+              </button>
+            ))}
+          </div>
+
+          {/* RIGHT CONTENT */}
+          <div className="w-2/3 p-3 md:p-4 overflow-y-auto">
+            {!activeItem ? (
+              <p className="text-gray-400 text-sm mt-4">Select a category</p>
+            ) : (
+              activeItem.sections?.map((section) => (
+                <div key={section.title} className="mb-5">
+                  <h4 className="font-semibold text-sm md:text-base mb-2 text-gray-800">{section.title}</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {section.items.map((sub) => (
+                      <Link
+                        key={sub.name}
+                        href={sub.link}
+                        onClick={() => setSidebarOpen(false)}
+                      >
+                        <span className="text-xs md:text-sm text-gray-600 hover:text-black hover:underline cursor-pointer">
+                          {sub.name}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))
             )}
-          </li>
+          </div>
+        </div>
+      </div>
+
+      {/* ─── CATEGORY BAR (Desktop only) ─── */}
+      <nav className="hidden md:block border-t bg-white">
+        <ul className="flex gap-6 px-6 py-3 text-sm font-medium overflow-x-auto scrollbar-hide">
+          {categories.map((item) => (
+            <li
+              key={item.name}
+              onClick={() => handleCategoryClick(item)}
+              className={`cursor-pointer whitespace-nowrap relative pb-0.5 ${
+                activeCategory === item.name ? "font-semibold" : ""
+              }`}
+            >
+              {item.name}
+              {activeCategory === item.name && (
+                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-black" />
+              )}
+            </li>
           ))}
         </ul>
       </nav>
     </div>
   )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 'use client'
+// import { useEffect, useRef, useState } from "react"
+// import {
+//   Menu,
+//   Heart,
+//   ChevronDown,
+// } from "lucide-react"
+// import { USER_DASHBOARD, WEBSITE_HOME, WEBSITE_LOGIN, WEBSITE_REGISTER, WEBSITE_SHOP } from "@/routes/WebsiteRoute"
+// import Card from '@/components/Website/Cart'
+// import Link from "next/link"
+// import { useSelector } from "react-redux"
+// import { Avatar, AvatarImage } from "../ui/avatar"
+// import { IMAGES } from "@/routes/AllImages"
+// import {
+//   X,
+//   ChevronRight,
+//   User,
+// } from "lucide-react"
+// import { useRouter } from "next/navigation"
+// import { IoSearchOutline } from "react-icons/io5"
+// import { categories } from "@/routes/MenuCategories"
+
+
+// const ads = [
+//   "SHOP NOW, PAY WITH KLARNA",
+//   "FREE DELIVERY ON ORDERS OVER £100",
+//   "JOIN ULTRA & GET EXCLUSIVE BENEFITS",
+// ]
+
+
+// export default function Header() {
+//   const [showSearch, setShowSearch] = useState(false);
+//   const [query, setQuery] = useState("");
+//   const router = useRouter();
+//   const [open, setOpen] = useState(false)
+//   const [adIndex, setAdIndex] = useState(0)
+//   const [langOpen, setLangOpen] = useState(false)
+//   const [profileOpen, setProfileOpen] = useState(false)
+//   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+//   const [activeCategory, setActiveCategory] = useState(categories[0])
+//   const auth = useSelector(store => store.authStore.auth)
+
+//   const [sidebarOpen, setSidebarOpen] = useState(false)
+//   const [activeItem, setActiveItem] = useState(null)
+
+//   const handleCategoryClick = (category) => {
+//   setActiveCategory(category)   
+//   setActiveItem(category)       
+//   setSidebarOpen(true)       
+// }
+
+//   const miniBarRef = useRef(null)
+//   const langRef = useRef(null)
+//   const profileRef = useRef(null)
+
+//   /* Auto ads slider */
+//   useEffect(() => {
+//     const interval = setInterval(() => {
+//       setAdIndex((prev) => (prev + 1) % ads.length)
+//     }, 3000)
+//     return () => clearInterval(interval)
+//   }, [])
+
+//   /* Click outside handler */
+//   useEffect(() => {
+//     const handler = (e) => {
+//       if (!(e.target instanceof Node)) return
+//       if (miniBarRef.current && !miniBarRef.current.contains(e.target)) setOpen(false)
+//       if (langRef.current && !langRef.current.contains(e.target)) setLangOpen(false)
+//       if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false)
+//       if (mobileMenuOpen && !e.target.closest("#mobile-menu")) setMobileMenuOpen(false)
+//     }
+//     document.addEventListener("pointerdown", handler)
+//     return () => document.removeEventListener("pointerdown", handler)
+//   }, [mobileMenuOpen])
+
+
+
+
+//     const handleSearch = () => {
+//     if (query.trim() !== "") {
+//       router.push(`${WEBSITE_SHOP}?q=${encodeURIComponent(query.trim())}`);
+//     }
+//   };
+
+//   return (
+//     <div className="sticky top-0 z-50">
+//       <header className="relative z-50">
+//         {/* MINI TOP BAR */}
+//         <div ref={miniBarRef} className="bg-white text-black text-xs border-b">
+//           <button
+//             onClick={() => setOpen(!open)}
+//             className="group w-full py-2 flex justify-center items-center gap-2"
+//           >
+//             <span className="relative font-medium">
+//               {ads[adIndex]}
+//               <span className="absolute left-0 -bottom-1 h-px w-0 bg-black transition-all group-hover:w-full" />
+//             </span>
+//             <ChevronDown size={14} className={`transition-transform cursor-pointer ${open ? "rotate-180" : ""}`} />
+//           </button>
+
+//           <div className={`overflow-hidden transition-all duration-500 ${open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}>
+//             <div className="bg-white border-t shadow-xl">
+//               <div className="grid md:grid-cols-3 gap-6 p-6 text-sm">
+//                 <div>
+//                   <h3 className="font-semibold">SHOP NOW, PAY WITH</h3>
+//                   <p className="text-gray-600">Choose Klarna at checkout.</p>
+//                 </div>
+//                 <div>
+//                   <h3 className="font-semibold">STUDENT DISCOUNT</h3>
+//                   <p className="text-gray-600">12% off SS26.</p>
+//                 </div>
+//                 <div>
+//                   <h3 className="font-semibold">ULTRA</h3>
+//                   <p className="text-gray-600">10% off first app order.</p>
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* MAIN NAV */}
+//         <div className="bg-gray-900 text-white px-4 md:px-6 py-4 flex justify-between items-center">
+//           <div className="flex items-center gap-14">
+//             {/* MOBILE MENU TOGGLE */}
+//           <button
+//             onClick={() => setSidebarOpen(true)}
+//             className="hidden lg:flex items-center gap-2 text-white cursor-pointer"
+//           >
+//             <Menu size={24} />
+//           </button>
+
+//              <Link href={WEBSITE_HOME} className="font-bold tracking-wide">
+//               <img
+//                src={IMAGES.logo}
+//                className="h-9 w-38"
+//               />
+//             </Link>
+//           </div>
+
+//           {/* DESKTOP NAV */}
+//           <div className="hidden md:flex items-center gap-8 relative">
+//             {/* SEARCH */}
+//           <div className="relative flex items-center">
+//                 {/* Toggle Button */}
+//                 <button
+//                   type="button"
+//                   onClick={() => setShowSearch(!showSearch)}
+//                   className="px-4 py-2 bg-black text-white rounded-l-full flex items-center gap-2 z-10 cursor-pointer"
+//                 >
+//                   <IoSearchOutline size={16} />
+//                   Search
+//                 </button>
+
+//                 {/* Animated search input */}
+//                 <div
+//                   className={`
+//                     overflow-hidden transition-all duration-500 ease-in-out
+//                     ${showSearch ? 'w-60 sm:w-[320px] md:w-100 lg:w-125 ml-2' : 'w-0'}
+//                   `}
+//                 >
+//                   <div className="relative">
+//                     {/* Search icon inside input */}
+//                     <IoSearchOutline
+//                       size={16} 
+//                       className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" 
+//                     />
+//                     <input
+//                       type="text"
+//                       value={query}
+//                       onChange={(e) => setQuery(e.target.value)}
+//                       onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+//                       className="w-full pl-10 pr-4 py-2 rounded-r-full text-black text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black"
+//                       placeholder="Search products, categories, pages..."
+//                     />
+//                   </div>
+//                 </div>
+//               </div>
+
+//            {/* PROFILE / AUTH */}
+//           <div className="relative">
+//             <button
+//               onClick={() => {
+//                 setProfileOpen(!profileOpen);
+//                 setLangOpen(false);
+//               }}
+//               className="flex items-center cursor-pointer"
+//             >
+//               {auth ? (
+//                 // Logged-in: show profile avatar
+//                 <Avatar>
+//                   <AvatarImage src={auth?.avatar?.url || IMAGES.profile} />
+//                 </Avatar>
+//               ) : (
+//                 // Not logged-in: show user icon
+//                 <span className="bg-gray-700 rounded-full w-8 h-8 flex items-center justify-center cursor-pointer">
+//                   <User size={20} />
+//                 </span>
+//               )}
+//             </button>
+
+//             {profileOpen && (
+//               <div
+//                 ref={profileRef}
+//                 className="absolute right-0 mt-5 -mr-16 w-72 cursor-pointer bg-white text-black rounded-2xl shadow-xl border p-6"
+//               >
+//                 {!auth ? (
+//                   // User not logged in → show "Create Free Account" button
+//                   <>
+//                   <Link href={WEBSITE_REGISTER}>
+//                     <button className="w-full bg-black hover:bg-orange-500 hover:text-white text-white py-2 rounded-xl cursor-pointer">
+//                       Create Free Account
+//                     </button>
+//                   </Link>
+
+//                   <Link href={WEBSITE_LOGIN}>
+//                     <button className="w-full bg-black text-white py-2 hover:bg-orange-500 hover:text-white rounded-xl cursor-pointer mt-2">
+//                       Sign In
+//                     </button>
+//                   </Link>
+//                 </>
+//                 ) : (
+//                   // User logged in → show profile dropdown
+//                   <div className="flex flex-col items-center gap-3 cursor-pointer">
+//                     <Link href={`/profile/${auth.id}`}>
+//                       <Avatar>
+//                         <AvatarImage src={auth?.avatar?.url || IMAGES.profile} />
+//                       </Avatar>
+//                     </Link>
+//                     <span className="font-medium">{auth.name}</span>
+//                     <Link href={USER_DASHBOARD}>
+//                       <button className="w-full border py-2 px-4 rounded-xl cursor-pointer border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white transition-all duration-300">Dashboard</button>
+//                     </Link>
+//                   </div>
+//                 )}
+//               </div>
+//             )}
+//           </div>
+
+//             <Card className="cursor-pointer" />
+//           </div>
+//         </div>
+
+//         {/* MOBILE MENU */}
+//         {mobileMenuOpen && (
+//           <div id="mobile-menu" className="md:hidden bg-black text-white p-4 space-y-4">
+//             <input
+//               className="w-full pl-3 pr-4 py-2 rounded-xl text-black text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black"
+//               placeholder="Search products"
+//             />
+//             {!auth ? (
+//               <>
+//                 <Link href={WEBSITE_LOGIN}>
+//                   <button className="w-full border py-2 rounded-xl mb-2">Sign In</button>
+//                 </Link>
+//                 <Link href={WEBSITE_REGISTER}>
+//                   <button className="w-full bg-white text-black py-2 rounded-xl">Create Free Account</button>
+//                 </Link>
+//               </>
+//             ) : (
+//               <Link href={`/profile/${auth.id}`}>
+//                 <Avatar>
+//                   <AvatarImage src={auth?.avatar?.url || IMAGES.profile} />
+//                 </Avatar>
+//               </Link>
+//             )}
+
+//             <div className="flex flex-col gap-2">
+//               {categories.map((item) => (
+//                 <button
+//                   key={item}
+//                   onClick={() => setActiveCategory(item)}
+//                   className={`text-left px-2 py-1 font-medium ${activeCategory === item ? "border-b-2 border-white" : ""}`}
+//                 >
+//                   {item}
+//                 </button>
+//               ))}
+//              <div>Shop</div>
+//             </div>
+//           </div>
+//         )}
+//       </header>
+
+//       {/* OVERLAY */}
+//         <div
+//           className={`fixed inset-0 z-50 transition-all duration-300 ${
+//             sidebarOpen ? "bg-black/40 visible" : "invisible"
+//           }`}
+//           onClick={() => setSidebarOpen(false)}
+//         />
+
+//         {/* SIDEBAR */}
+//         <div
+//           className={`fixed top-0 left-0 z-50 h-full w-full md:w-325 bg-white shadow-2xl
+//           transform transition-transform duration-500
+//           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+//         >
+//           {/* HEADER */}
+//           <div className="flex justify-between items-center p-5 border-b">
+//             <h3 className="font-semibold text-lg">Menu</h3>
+//             <button onClick={() => setSidebarOpen(false)} className="cursor-pointer">
+//               <X size={22} />
+//             </button>
+//           </div>
+
+//           <div className="flex h-full">
+//             {/* LEFT MENU */}
+//             <div className="w-1/6 border-r p-4 space-y-3">
+//               {categories.map((item) => (
+//                 <button
+//                   key={item.name} 
+//                   onClick={() => {
+//                     setActiveItem(item); // store full object
+//                     setActiveCategory(item.name);
+//                   }}
+//                   className="w-full flex justify-between items-center py-2 px-2 hover:bg-gray-100 rounded-lg"
+//                 >
+//                   <span className="font-medium">{item.name}</span>
+//                   <ChevronRight size={18} />
+//                 </button>
+//               ))}
+//             </div>
+
+//             {/* RIGHT CONTENT */}
+//             <div className="w-2/3 p-4 overflow-y-auto">
+//               {!activeItem ? (
+//                 <p className="text-gray-400 text-sm">
+//                   Select a category
+//                 </p>
+//               ) : (
+//                 activeItem.sections?.map((section) => (
+//                   <div key={section.title} className="mb-6">
+//                     {/* Section Title */}
+//                     <h4 className="font-semibold mb-2">{section.title}</h4>
+
+//                     {/* Section Items */}
+//                     <div className="flex flex-wrap gap-2">
+//                       {section.items.map((sub) => (
+//                         <Link key={sub.name} href={sub.link}>
+//                           <span className="text-sm text-gray-700 hover:underline cursor-pointer">
+//                             {sub.name}
+//                           </span>
+//                         </Link>
+//                       ))}
+//                     </div>
+//                   </div>
+//                 ))
+//               )}
+//             </div>
+//           </div>
+//         </div>
+
+
+//       {/* CATEGORY BAR DESKTOP */}
+//       <nav className="hidden md:block border-t bg-white">
+//         <ul className="flex gap-6 px-6 py-3 text-sm font-medium overflow-x-auto">
+//            {categories.map((item) => (
+//            <li
+//             key={item.name}
+//             onClick={() => handleCategoryClick(item)}
+//             className={`cursor-pointer whitespace-nowrap relative ${
+//               activeCategory === item.name ? "font-semibold" : ""
+//             }`}
+//           >
+//             {item.name}
+//             {activeCategory === item.name && (
+//               <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-black" />
+//             )}
+//           </li>
+//           ))}
+//         </ul>
+//       </nav>
+//     </div>
+//   )
+// }

@@ -6,16 +6,16 @@ import { NextResponse } from "next/server";
 
 export async function GET(request) {
   try {
-    // 🔐 Authenticate admin
+    // Authenticate admin
     const auth = await isAuthenticated("admin");
     if (!auth.isAuth) {
       return response(false, 403, "Unauthorized.");
     }
 
-    // 🔌 Connect DB
+    // Connect DB
     await connectDB();
 
-    // 🔎 Parse query params
+    // Parse query params
     const { searchParams } = new URL(request.url);
 
     const start = parseInt(searchParams.get("start") || "0", 10);
@@ -35,7 +35,7 @@ export async function GET(request) {
 
     const deleteType = searchParams.get("deleteType");
 
-    // 🧠 Build base match query
+    // Build base match query
     let matchQuery = {};
     if (deleteType === "SD") {
       matchQuery.deletedAt = null;
@@ -45,7 +45,7 @@ export async function GET(request) {
       matchQuery.deletedAt = null;
     }
 
-    // 🌍 Global search
+    // Global search
     if (globalFilter) {
       matchQuery.$or = [
         { "productData.title": { $regex: globalFilter, $options: "i" } },
@@ -61,7 +61,7 @@ export async function GET(request) {
       }
     }
 
-    // 📊 Column filters
+    // Column filters
     filters.forEach(filter => {
       if (filter.id === 'product') {
          matchQuery['productData.title'] = {$regex: filter.value, $options: "i"}
@@ -73,7 +73,7 @@ export async function GET(request) {
     });
 
 
-    // ↕️ Sorting
+    // Sorting
     let sortQuery = { createdAt: -1 };
     if (sorting.length) {
       sortQuery = {};
@@ -82,7 +82,7 @@ export async function GET(request) {
       });
     }
 
-    // 📦 Aggregation
+    // Aggregation
     const getReview = await ReviewModel.aggregate([
       {
         $lookup:{
@@ -125,7 +125,7 @@ export async function GET(request) {
       },
     ]);
 
-    // 🔢 Total count
+    // Total count
     const totalRowCount = await ReviewModel.countDocuments(matchQuery);
 
     // Response

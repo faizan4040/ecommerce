@@ -53,6 +53,12 @@ export const ADMIN_MANUAL_ORDER_DETAILS = (id) => `/admin/manual-order/details/$
 // Chat show
 export const ADMIN_CHAT_SHOW = '/admin/chat'
 
+// Todo show
+export const ADMIN_TODO_SHOW = '/admin/todo'
+
+// Calendar show
+export const ADMIN_CALENDAR_SHOW = '/admin/calendar'
+
 
 // Customers route
 export const ADMIN_CUSTOMERS_SHOW = '/admin/customers'

@@ -6,6 +6,7 @@ import OrderModel from "@/models/Order.model";
 export async function GET() {
   try {
     const auth = await isAuthenticated("admin");
+
     if (!auth.isAuth) {
       return response(false, 401, "Unauthorized");
     }
@@ -16,7 +17,7 @@ export async function GET() {
       {
         $match: {
           deleteAt: null,
-          "shippingAddress.stateCode": { $exists: true },
+          "shippingAddress.stateCode": { $exists: true, $ne: null },
         },
       },
       {
@@ -26,7 +27,14 @@ export async function GET() {
         },
       },
       {
-        $sort: { count: -1 },
+        $project: {
+          _id: 0,
+          id: { $concat: ["IN-", "$_id"] }, // convert RJ -> IN-RJ
+          value: "$count",
+        },
+      },
+      {
+        $sort: { value: -1 },
       },
     ]);
 

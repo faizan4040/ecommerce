@@ -214,7 +214,7 @@ export default function AdminChat() {
 
   return (
     <div className="w-full h-[79vh] bg-gray-100 flex items-stretch ">
-      <div className="bg-white rounded-none shadow-xl flex w-full overflow-hidden border-0">
+      <div className="bg-white shadow-xl flex w-full overflow-hidden border-0 rounded-2xl">
 
         {/* Mobile Overlay */}
         <AnimatePresence>

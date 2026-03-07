@@ -12,7 +12,7 @@ import { Checkbox } from '../ui/checkbox'
 import { Slider } from '../ui/slider'
 import ButtonLoading from '../Application/ButtonLoading'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { WEBSITE_HOME, WEBSITE_SHOP } from '@/routes/WebsiteRoute'
+import { WEBSITE_SHOP } from '@/routes/WebsiteRoute'
 import { Button } from '../ui/button'
 import Link from 'next/link'
 import { sizes } from '@/lib/utils'
@@ -133,7 +133,7 @@ const Filter = () => {
     <div>
       {searchParams.size > 0 && 
         <Button type="button" variant='destructive' className="w-full" asChild>
-            <Link href={WEBSITE_HOME}>
+            <Link href={WEBSITE_SHOP}>
               Clear Filter
             </Link>
         </Button>
