@@ -30,7 +30,7 @@ const ProductInfo = () => {
             Lace up for your next adventure
             <p className="text-gray-700 leading-relaxed mb-5">
               Lace up for your next adventure with{" "}
-              <span className="font-semibold">SportsShoes.com</span> – India's #1
+              <span className="font-semibold">All Spikes.com</span> – India's #1
               performance destination.
             </p>
           </h2>

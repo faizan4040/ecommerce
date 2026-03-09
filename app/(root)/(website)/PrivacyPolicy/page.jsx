@@ -138,10 +138,10 @@ const PrivacyPolicy = () => {
             <>
               <h2 className="text-3xl font-bold mb-6">Contact Us</h2>
               <p className="text-gray-700 mb-3">
-                Email: <strong>dataprotection@sportsshoes.com</strong>
+                Email: <strong>dataprotection@allspikes.com</strong>
               </p>
               <p className="text-gray-700">
-                Address: Data Protection, Sportsshoes.com,  
+                Address: Data Protection, allspikes.com,  
                 1 The Park, Jubilee Way, Shipley, BD18 1QG
               </p>
             </>

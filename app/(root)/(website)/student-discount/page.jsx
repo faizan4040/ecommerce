@@ -21,7 +21,7 @@ const faqs = [
       'Graduate discounts are subject to the terms of Student Beans and UNiDAYS. Please check directly with the platform.'
   },
   {
-    title: 'What student discount does SportsShoes.com offer?',
+    title: 'What student discount does AllSpikes.com offer?',
     content:
       'We currently offer 12% off to verified students on selected products.'
   },
@@ -79,14 +79,14 @@ const StudentDiscount = () => {
           {/* Left */}
           <div>
             <h2 className="text-7xl mb-4 font-sans">
-              Welcome to the SportsShoes Students Discount Page
+              Welcome to the All Spikes Students Discount Page
             </h2>
           </div>
 
           {/* Right */}
           <div className="text-gray-700 space-y-4">
             <p>
-              <strong>SportsShoes.com</strong> are offering <strong>12% off</strong> our
+              <strong>AllSpikes.com</strong> are offering <strong>12% off</strong> our
               newest season to verified students – simply sign in with either
               Student Beans or UNiDAYS and start saving!
             </p>

@@ -83,7 +83,7 @@ const PriceBeatPromise = () => {
             </h3>
             <ul className="list-disc list-inside space-y-2">
               <li>
-                Go to the product page on the sportsshoes.com website
+                Go to the product page on the allspikes.com website
               </li>
               <li>
                 <strong>Desktop:</strong> Right-hand side below the “Add to Bag” button

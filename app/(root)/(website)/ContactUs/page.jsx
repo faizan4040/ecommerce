@@ -93,7 +93,7 @@ const ContactUs = () => {
 
               <p>
                 If you are contacting us outside of business hours please email us at{" "}
-                <strong>customerservice@sportsshoes.com</strong> and mark your email
+                <strong>customerservice@AllSpikes.com</strong> and mark your email
                 subject as:
                 <br />
                 <strong>URGENT - CHANGE TO ORDER</strong>

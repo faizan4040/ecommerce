@@ -128,7 +128,7 @@ const CookiePolicy = () => {
             <p className="text-gray-700 leading-relaxed">
               If you have any questions about cookies, privacy or your data,
               please contact us at{" "}
-              <strong>dataprotection@sportsshoes.com</strong>.  
+              <strong>dataprotection@allspikes.com</strong>.  
               You can also find further details in our Privacy Notice.
             </p>
           </section>
