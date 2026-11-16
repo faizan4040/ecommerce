@@ -139,3 +139,181 @@
 
 
 
+
+/* ===== Product description (rich text from admin editor / markdown) ===== */
+.rich-text { color: #404040; font-size: 15px; line-height: 1.75; }
+.rich-text > * + * { margin-top: 1em; }
+.rich-text h1, .rich-text h2, .rich-text h3, .rich-text h4 {
+  color: #0a0a0a; font-weight: 800; line-height: 1.25; letter-spacing: -0.01em; margin-top: 1.6em;
+}
+.rich-text > :first-child { margin-top: 0; }
+.rich-text h1 { font-size: 1.75rem; }
+.rich-text h2 { font-size: 1.4rem; display: flex; align-items: center; gap: .6rem; }
+.rich-text h2::before { content: ""; width: 6px; height: 1.1em; border-radius: 9999px; background: #f97316; }
+.rich-text h3 { font-size: 1.15rem; }
+.rich-text h4 { font-size: 1rem; }
+.rich-text strong { color: #0a0a0a; font-weight: 700; }
+.rich-text a { color: #ea580c; text-decoration: underline; text-underline-offset: 3px; }
+.rich-text ul, .rich-text ol { padding-left: 1.4em; }
+.rich-text ul { list-style: none; padding-left: 0; }
+.rich-text ul li { position: relative; padding-left: 1.6em; }
+.rich-text ul li + li, .rich-text ol li + li { margin-top: .45em; }
+.rich-text ul li::before {
+  content: ""; position: absolute; left: .2em; top: .62em; width: .5em; height: .5em;
+  border-radius: 9999px; background: #f97316;
+}
+.rich-text ol { list-style: decimal; }
+.rich-text ol li::marker { color: #f97316; font-weight: 700; }
+.rich-text blockquote {
+  border-left: 4px solid #f97316; background: #fff7ed; padding: .9em 1.1em; border-radius: 0 14px 14px 0;
+  color: #7c2d12; font-style: italic;
+}
+.rich-text hr { border: 0; height: 1px; background: #e5e5e5; margin: 2em 0; }
+.rich-text img { border-radius: 18px; max-width: 100%; height: auto; }
+.rich-text .table-wrap, .rich-text figure.table { overflow-x: auto; border: 1px solid #e5e5e5; border-radius: 16px; }
+.rich-text table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.rich-text figure.table table { margin: 0; }
+.rich-text th { background: #0a0a0a; color: #fff; text-align: left; font-weight: 600; padding: .75em 1em; }
+.rich-text td { padding: .7em 1em; border-top: 1px solid #f0f0f0; }
+.rich-text tbody tr:nth-child(even) { background: #fafafa; }
+.rich-text code { background: #f5f5f5; padding: .15em .4em; border-radius: 6px; font-size: .9em; }
+
+/* Slim scrollbar for the product info column */
+.thin-scroll { scrollbar-width: thin; scrollbar-color: #e5e5e5 transparent; }
+.thin-scroll::-webkit-scrollbar { width: 6px; }
+.thin-scroll::-webkit-scrollbar-thumb { background: #e5e5e5; border-radius: 9999px; }
+
+/* Product page (phone): lift the chat button above the sticky Buy bar */
+@media (max-width: 639px) {
+  body:has(.pd-mobile-bar) .chat-fab { bottom: 6.25rem; }
+}
+
+/* ===================== Toast notifications ===================== */
+:root {
+  --toastify-toast-width: 400px;
+  --toastify-color-progress-success: #22c55e;
+  --toastify-color-progress-error: #f43f5e;
+  --toastify-color-progress-warning: #f59e0b;
+  --toastify-color-progress-info: #3b82f6;
+}
+
+/* card – dark glass with a colour glow */
+.Toastify__toast.app-toast {
+  --c1: #3b82f6; --c2: #6366f1;
+  position: relative;
+  min-height: 0;
+  margin-bottom: 12px;
+  padding: 16px 44px 18px 16px;
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--c1) 28%, transparent) 0%, transparent 55%),
+    linear-gradient(135deg, rgba(24, 24, 27, 0.97), rgba(10, 10, 10, 0.97));
+  color: #fafafa;
+  font-family: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 24px 60px -20px color-mix(in srgb, var(--c1) 55%, transparent),
+    0 12px 30px -12px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+}
+.app-toast--success { --c1: #22c55e !important; --c2: #10b981 !important; }
+.app-toast--error   { --c1: #f43f5e !important; --c2: #ef4444 !important; }
+.app-toast--warning { --c1: #f59e0b !important; --c2: #f97316 !important; }
+.app-toast--info    { --c1: #3b82f6 !important; --c2: #6366f1 !important; }
+
+.app-toast-body { display: flex; align-items: center; gap: 14px; width: 100%; }
+
+/* icon – gradient badge with a soft pulse ring */
+.app-toast-icon {
+  position: relative;
+  display: flex; flex-shrink: 0; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border-radius: 14px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  box-shadow: 0 8px 22px -6px color-mix(in srgb, var(--c1) 70%, transparent), inset 0 1px 0 rgba(255,255,255,0.35);
+  animation: app-toast-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+.app-toast-icon::after {
+  content: ""; position: absolute; inset: -4px; border-radius: 17px;
+  border: 2px solid color-mix(in srgb, var(--c1) 60%, transparent);
+  animation: app-toast-ring 1.6s ease-out 0.4s 2;
+  opacity: 0;
+}
+.app-toast-icon svg { filter: drop-shadow(0 1px 1px rgba(0,0,0,0.25)); }
+
+.app-toast-text { min-width: 0; }
+.app-toast-title {
+  font-size: 15px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; color: #fff;
+}
+.app-toast-message {
+  margin-top: 3px; font-size: 13.5px; line-height: 1.5; color: #a1a1aa; word-break: break-word;
+}
+
+/* close button */
+.app-toast-close {
+  position: absolute; top: 12px; right: 12px;
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 9999px;
+  color: #71717a; background: rgba(255,255,255,0.04);
+  cursor: pointer; transition: all .25s ease;
+}
+.app-toast-close:hover { color: #fff; background: rgba(255,255,255,0.12); transform: rotate(90deg); }
+
+/* progress bar – gradient line along the bottom */
+.app-toast .Toastify__progress-bar {
+  height: 3px; opacity: 1 !important;
+  background: linear-gradient(90deg, var(--c1), var(--c2)) !important;
+  box-shadow: 0 0 12px var(--c1);
+}
+.app-toast .Toastify__progress-bar--bg { background: rgba(255,255,255,0.06) !important; opacity: 1 !important; }
+
+/* animations */
+@keyframes app-toast-pop {
+  0% { transform: scale(0.3) rotate(-25deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+@keyframes app-toast-ring {
+  0% { transform: scale(0.85); opacity: 0.9; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+@keyframes app-toast-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); } 40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); } 80% { transform: translateX(2px); }
+}
+@keyframes app-toast-in-kf {
+  0% { transform: translate3d(115%, 0, 0) scale(0.9); opacity: 0; filter: blur(4px); }
+  60% { transform: translate3d(-8px, 0, 0) scale(1); opacity: 1; filter: blur(0); }
+  100% { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+}
+@keyframes app-toast-out-kf {
+  to { transform: translate3d(115%, 0, 0) scale(0.92); opacity: 0; filter: blur(4px); }
+}
+.app-toast-in { animation: app-toast-in-kf 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.app-toast-out { animation: app-toast-out-kf 0.35s cubic-bezier(0.55, 0, 1, 0.45) both; }
+/* errors get a small shake once they land */
+.app-toast--error.app-toast-in { animation: app-toast-in-kf 0.6s cubic-bezier(0.22, 1, 0.36, 1) both, app-toast-shake 0.45s ease-in-out 0.6s; }
+
+@media (min-width: 481px) {
+  .Toastify__toast-container--top-right { top: 96px; right: 20px; }
+}
+
+/* Phones: full width, drop down from the top */
+@media (max-width: 480px) {
+  .Toastify__toast-container { padding: 8px 10px; }
+  .Toastify__toast.app-toast { border-radius: 18px; padding: 14px 42px 16px 14px; }
+  .app-toast-icon { width: 40px; height: 40px; border-radius: 12px; }
+  @keyframes app-toast-in-kf {
+    0% { transform: translate3d(0, -130%, 0) scale(0.95); opacity: 0; }
+    60% { transform: translate3d(0, 6px, 0) scale(1); opacity: 1; }
+    100% { transform: translate3d(0, 0, 0); opacity: 1; }
+  }
+  @keyframes app-toast-out-kf { to { transform: translate3d(0, -130%, 0) scale(0.95); opacity: 0; } }
+}
+
+/* Chat scroll areas */
+.chat-scroll { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.15) transparent; }
+.chat-scroll::-webkit-scrollbar { width: 6px; }
+.chat-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 9999px; }

@@ -179,24 +179,41 @@ filters.forEach((filter) => {
     },
   },
 
-  // MEDIA FROM VARIANT
+  // Thumbnail: the product's own first image, falling back to its first variant's image
+  {
+    $lookup: {
+      from: "media",
+      localField: "media",
+      foreignField: "_id",
+      as: "productMedia",
+    },
+  },
   {
     $lookup: {
       from: "media",
       localField: "variant.media",
       foreignField: "_id",
-      as: "media",
+      as: "variantMedia",
     },
   },
 
-  // PICK FIRST IMAGE
   {
     $addFields: {
       image: {
         $ifNull: [
-          { $arrayElemAt: ["$media.secure_url", 0] },
-          { $arrayElemAt: ["$media.url", 0] },
+          { $arrayElemAt: ["$productMedia.secure_url", 0] },
+          { $arrayElemAt: ["$variantMedia.secure_url", 0] },
         ],
+      },
+      variantCount: { $size: { $filter: { input: "$variants", as: "v", cond: { $eq: ["$$v.deletedAt", null] } } } },
+      totalStock: {
+        $sum: {
+          $map: {
+            input: { $filter: { input: "$variants", as: "v", cond: { $eq: ["$$v.deletedAt", null] } } },
+            as: "v",
+            in: { $ifNull: ["$$v.stock", 0] },
+          },
+        },
       },
     },
   },
@@ -215,7 +232,10 @@ filters.forEach((filter) => {
       sellingPrice: 1,
       discountPercentage: 1,
       category: "$categoryData.name",
+      brand: 1,
       image: 1,
+      variantCount: 1,
+      totalStock: 1,
       createdAt: 1,
     },
   },

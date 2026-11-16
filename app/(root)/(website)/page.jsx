@@ -1,4 +1,4 @@
-import CuponBanner from '@/components/Website/CuponBanner'
+import HeroSection from '@/components/Website/HeroSection'
 import FeatureProduct from '@/components/Website/FeatureProduct'
 import JustDropped from '@/components/Website/JustDropped'
 import ProductInfo from '@/components/Website/ProductInfo'
@@ -14,8 +14,8 @@ import React from 'react'
 const Home = () => {
   return (
    <>
-     <section>
-       <CuponBanner/>
+     <section className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+       <HeroSection/>
      </section>
 
      <section className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] py-10">

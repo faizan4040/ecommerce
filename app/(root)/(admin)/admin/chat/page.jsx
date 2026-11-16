@@ -1,574 +1,421 @@
-"use client";
+"use client"
 
-import { useEffect, useRef, useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { AnimatePresence, motion } from "framer-motion"
 import {
-  Search, Send, Menu, X,
-  Paperclip, CheckCheck, Check,
-  MessageSquare, Loader2,
-  MoreVertical, Phone, Video, User,
-} from "lucide-react";
-import { connectSocket, getSocket } from "@/lib/socket-client";
+  ArrowLeft,
+  CalendarDays,
+  Inbox,
+  Info,
+  Loader2,
+  Mail,
+  MessageSquareText,
+  Phone,
+  Search,
+  Trash2,
+  Volume2,
+  VolumeX,
+  WifiOff,
+  X,
+} from "lucide-react"
+import { connectSocket, emitAck, getSocket } from "@/lib/socket-client"
+import { isMuted, playSound, setMuted } from "@/lib/chatSound"
+import { showToast } from "@/lib/showToast"
+import useConversation from "@/components/Chat/useConversation"
+import { Avatar, Composer, MessageList, shortTime } from "@/components/Chat/ChatUI"
 
-const ADMIN_ID = process.env.NEXT_PUBLIC_ADMIN_ID || "000000000000000000000001";
-const TYPING_TIMEOUT = 1500;
+const TABS = [
+  { key: "all", label: "All" },
+  { key: "unread", label: "Unread" },
+  { key: "online", label: "Online" },
+]
 
 export default function AdminChat() {
-  const [rooms,        setRooms]        = useState([]);
-  const [activeRoom,   setActiveRoom]   = useState(null);
-  const [messages,     setMessages]     = useState([]);
-  const [message,      setMessage]      = useState("");
-  const [sidebarOpen,  setSidebarOpen]  = useState(false);
-  const [search,       setSearch]       = useState("");
-  const [loadingRooms, setLoadingRooms] = useState(true);
-  const [loadingMsgs,  setLoadingMsgs]  = useState(false);
-  const [userTyping,   setUserTyping]   = useState(false);
-  const [onlineUsers,  setOnlineUsers]  = useState(new Set());
-  const [unreadMap,    setUnreadMap]    = useState({});
+  const [rooms, setRooms] = useState([])
+  const [loadingRooms, setLoadingRooms] = useState(true)
+  const [activeId, setActiveId] = useState(null)
+  const [search, setSearch] = useState("")
+  const [tab, setTab] = useState("all")
+  const [online, setOnline] = useState(new Set())
+  const [typingRooms, setTypingRooms] = useState({})
+  const [connected, setConnected] = useState(false)
+  const [me, setMe] = useState(null)
+  const [muted, setMutedState] = useState(false)
+  const [showInfo, setShowInfo] = useState(true)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const activeRef = useRef(null)
+  activeRef.current = activeId
 
-  const messagesEndRef = useRef(null);
-  const typingTimer    = useRef(null);
-  const inputRef       = useRef(null);
-  const activeRoomRef  = useRef(null);
+  const active = rooms.find((r) => r._id === activeId) || null
+  const conv = useConversation(activeId, { me, active: !!activeId })
 
-  useEffect(() => { activeRoomRef.current = activeRoom; }, [activeRoom]);
+  const loadRooms = useCallback(async () => {
+    try {
+      const r = await fetch("/api/chat/rooms", { cache: "no-store" })
+      const d = await r.json()
+      if (d.success) setRooms(d.data.map((x) => ({ ...x, _id: String(x._id) })))
+      else showToast("error", d.message)
+    } catch (e) {
+      showToast("error", e)
+    } finally {
+      setLoadingRooms(false)
+    }
+  }, [])
 
-  // Auto-scroll
+  /* ---------- socket ---------- */
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, userTyping]);
+    setMutedState(isMuted())
+    loadRooms()
+    const s = connectSocket()
 
-  // ── Connect socket + global listeners ──────────────────────────────────────
-  useEffect(() => {
-    connectSocket({ userId: ADMIN_ID, role: "admin" });
-    const socket = getSocket();
-
-    const onMessage = (msg) => {
-      const currentRoom = activeRoomRef.current;
-
-      // Always update sidebar last message preview
-      setRooms((prev) =>
-        prev
-          .map((r) =>
-            r._id.toString() === msg.roomId.toString()
-              ? { ...r, lastMessage: msg.message, lastMessageAt: msg.createdAt }
-              : r
-          )
-          .sort((a, b) => new Date(b.lastMessageAt) - new Date(a.lastMessageAt))
-      );
-
-      if (currentRoom && msg.roomId.toString() === currentRoom._id.toString()) {
-        // Active room — append message
-        setMessages((prev) => {
-          const exists = prev.some((m) => m._id && m._id === msg._id);
-          if (exists) return prev;
-          const optIdx = prev.findIndex(
-            (m) => !m._id && m.message === msg.message && m.senderType === msg.senderType
-          );
-          if (optIdx !== -1) {
-            const copy = [...prev];
-            copy[optIdx] = msg;
-            return copy;
-          }
-          return [...prev, msg];
-        });
-        setUserTyping(false);
-        if (msg.senderType === "user") {
-          socket.emit("mark-read", { roomId: msg.roomId, readerType: "admin" });
-        }
-      } else {
-        // Background room — unread badge
-        if (msg.senderType === "user") {
-          setUnreadMap((prev) => ({
-            ...prev,
-            [msg.roomId]: (prev[msg.roomId] || 0) + 1,
-          }));
-        }
-      }
-    };
-
-    const onTyping = ({ roomId, senderType }) => {
-      if (activeRoomRef.current?._id?.toString() === roomId?.toString() && senderType === "user")
-        setUserTyping(true);
-    };
-    const onStopTyping = ({ roomId, senderType }) => {
-      if (activeRoomRef.current?._id?.toString() === roomId?.toString() && senderType === "user")
-        setUserTyping(false);
-    };
-    const onPresence = ({ userId, status }) => {
-      setOnlineUsers((prev) => {
-        const next = new Set(prev);
-        status === "online" ? next.add(userId) : next.delete(userId);
-        return next;
-      });
-    };
-
-    socket.on("receive-message",  onMessage);
-    socket.on("user-typing",      onTyping);
-    socket.on("user-stop-typing", onStopTyping);
-    socket.on("presence-update",  onPresence);
-
-    return () => {
-      socket.off("receive-message",  onMessage);
-      socket.off("user-typing",      onTyping);
-      socket.off("user-stop-typing", onStopTyping);
-      socket.off("presence-update",  onPresence);
-    };
-  }, []);
-
-  // ── Fetch rooms + join all room sockets ────────────────────────────────────
-  useEffect(() => {
-    setLoadingRooms(true);
-    fetch("/api/chat/rooms")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.success) {
-          setRooms(d.data);
-          const socket = getSocket();
-          const joinAll = () => {
-            d.data.forEach((room) => socket.emit("join-room", room._id.toString()));
-          };
-          socket.connected ? joinAll() : socket.once("connect", joinAll);
-        }
+    const onConnect = () => {
+      setConnected(true)
+      setMe(s.me || null)
+    }
+    const onDisconnect = () => setConnected(false)
+    const onConnectError = () => setConnected(false)
+    const onPresenceList = (ids) => setOnline(new Set(ids))
+    const onPresence = ({ userId, online: on }) =>
+      setOnline((prev) => {
+        const next = new Set(prev)
+        on ? next.add(userId) : next.delete(userId)
+        return next
       })
-      .finally(() => setLoadingRooms(false));
-  }, []);
+    const onNew = (msg) => {
+      if (msg.senderType === "user") playSound("incoming")
+      setTypingRooms((t) => ({ ...t, [msg.roomId]: false }))
+    }
+    const onRoomUpdate = (summary) => {
+      setRooms((prev) => {
+        const i = prev.findIndex((r) => r._id === summary._id)
+        if (i === -1) {
+          loadRooms() // brand-new conversation – fetch it with the customer's details
+          return prev
+        }
+        const next = [...prev]
+        next[i] = {
+          ...next[i],
+          ...summary,
+          unreadForAdmin: activeRef.current === summary._id ? 0 : summary.unreadForAdmin,
+        }
+        return next.sort((a, b) => new Date(b.lastMessageAt) - new Date(a.lastMessageAt))
+      })
+    }
+    const onRoomDeleted = ({ roomId }) => {
+      setRooms((prev) => prev.filter((r) => r._id !== roomId))
+      if (activeRef.current === roomId) setActiveId(null)
+    }
+    const onTyping = ({ roomId, isTyping, role }) => role === "user" && setTypingRooms((t) => ({ ...t, [roomId]: isTyping }))
 
-  // ── Select room ────────────────────────────────────────────────────────────
-  const selectRoom = useCallback((room) => {
-    setActiveRoom(room);
-    setSidebarOpen(false);
-    setMessages([]);
-    setUserTyping(false);
-    setUnreadMap((prev) => ({ ...prev, [room._id]: 0 }));
+    if (s.connected) onConnect()
+    s.on("connect", onConnect)
+    s.on("disconnect", onDisconnect)
+    s.on("connect_error", onConnectError)
+    s.on("presence:list", onPresenceList)
+    s.on("presence", onPresence)
+    s.on("message:new", onNew)
+    s.on("room:update", onRoomUpdate)
+    s.on("room:deleted", onRoomDeleted)
+    s.on("typing", onTyping)
+    return () => {
+      s.off("connect", onConnect)
+      s.off("disconnect", onDisconnect)
+      s.off("connect_error", onConnectError)
+      s.off("presence:list", onPresenceList)
+      s.off("presence", onPresence)
+      s.off("message:new", onNew)
+      s.off("room:update", onRoomUpdate)
+      s.off("room:deleted", onRoomDeleted)
+      s.off("typing", onTyping)
+    }
+  }, [loadRooms])
 
-    setLoadingMsgs(true);
-    fetch(`/api/chat/messages?roomId=${room._id}`)
-      .then((r) => r.json())
-      .then((d) => { if (d.success) setMessages(d.data); })
-      .finally(() => setLoadingMsgs(false));
+  const openRoom = (id) => {
+    setActiveId(id)
+    setConfirmDelete(false)
+    setRooms((prev) => prev.map((r) => (r._id === id ? { ...r, unreadForAdmin: 0 } : r)))
+  }
 
-    const socket = getSocket();
-    socket.emit("join-room", room._id.toString());
-    socket.emit("mark-read", { roomId: room._id, readerType: "admin" });
-    setTimeout(() => inputRef.current?.focus(), 200);
-  }, []);
+  const deleteConversation = async () => {
+    const res = await emitAck("room:delete", { roomId: activeId })
+    setConfirmDelete(false)
+    if (res.ok) showToast("success", "Conversation deleted.")
+    else showToast("error", res.error)
+  }
 
-  // ── Typing ─────────────────────────────────────────────────────────────────
-  const handleTyping = (e) => {
-    setMessage(e.target.value);
-    if (!activeRoom) return;
-    const socket = getSocket();
-    socket.emit("typing", { roomId: activeRoom._id, senderType: "admin" });
-    clearTimeout(typingTimer.current);
-    typingTimer.current = setTimeout(() => {
-      socket.emit("stop-typing", { roomId: activeRoom._id, senderType: "admin" });
-    }, TYPING_TIMEOUT);
-  };
+  /* ---------- filtering ---------- */
+  const totalUnread = rooms.reduce((n, r) => n + (r.unreadForAdmin || 0), 0)
+  const onlineCustomers = rooms.filter((r) => online.has(String(r.userId))).length
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    return rooms.filter((r) => {
+      if (tab === "unread" && !r.unreadForAdmin) return false
+      if (tab === "online" && !online.has(String(r.userId))) return false
+      if (!q) return true
+      return [r.user?.name, r.user?.email, r.lastMessage].some((v) => v?.toLowerCase().includes(q))
+    })
+  }, [rooms, search, tab, online])
 
-  // ── Send message ───────────────────────────────────────────────────────────
-  const sendMessage = useCallback(() => {
-    if (!message.trim() || !activeRoom) return;
-    const socket = getSocket();
-    if (!socket?.connected) return;
-
-    clearTimeout(typingTimer.current);
-    socket.emit("stop-typing", { roomId: activeRoom._id, senderType: "admin" });
-
-    // No optimistic — server echo handles display (prevents duplicates)
-    socket.emit("send-message", {
-      roomId:     activeRoom._id.toString(),
-      senderType: "admin",
-      senderId:   ADMIN_ID,
-      message:    message.trim(),
-    });
-    setMessage("");
-  }, [message, activeRoom]);
-
-  // ── Helpers ────────────────────────────────────────────────────────────────
-  const formatTime = (date) => {
-    if (!date) return "";
-    const d   = new Date(date);
-    const now = new Date();
-    return d.toDateString() === now.toDateString()
-      ? d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-      : d.toLocaleDateString([], { month: "short", day: "numeric" });
-  };
-
-  const userIdShort = (id) =>
-    id ? `#${id.toString().slice(-5).toUpperCase()}` : "??";
-
-  const avatarColor = (id) =>
-    `hsl(${parseInt((id || "0").toString().slice(-3), 16) % 360}, 60%, 50%)`;
-
-  const filteredRooms = rooms.filter((r) => {
-    const q = search.toLowerCase();
-    return (
-      r._id?.toString().includes(q) ||
-      (r.lastMessage || "").toLowerCase().includes(q) ||
-      r.userId?.toString().toLowerCase().includes(q)
-    );
-  });
-
-  const totalUnread = Object.values(unreadMap).reduce((a, b) => a + b, 0);
+  const customer = active?.user
+  const customerOnline = active ? online.has(String(active.userId)) : false
+  const peer = { name: customer?.name || "Customer", avatar: customer?.avatar?.url || "" }
 
   return (
-    <div className="w-full h-[79vh] bg-gray-100 flex items-stretch ">
-      <div className="bg-white shadow-xl flex w-full overflow-hidden border-0 rounded-2xl">
+    <div className="py-4">
+      <div className="relative flex h-[calc(100vh-7.5rem)] min-h-[560px] overflow-hidden rounded-3xl border bg-card shadow-sm">
+        {/* ================= CONVERSATIONS ================= */}
+        <aside className={`flex w-full flex-col border-r md:w-[340px] md:shrink-0 ${activeId ? "hidden md:flex" : "flex"}`}>
+          <div className="border-b p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-xl font-extrabold tracking-tight">Messages</h1>
+                <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <span className={`h-2 w-2 rounded-full ${connected ? "bg-emerald-500" : "bg-red-500"}`} />
+                  {connected ? `${onlineCustomers} customer${onlineCustomers === 1 ? "" : "s"} online` : "Offline – reconnecting"}
+                </p>
+              </div>
+              <div className="flex items-center gap-1">
+                {totalUnread > 0 && (
+                  <span className="rounded-full bg-orange-500 px-2.5 py-1 text-xs font-bold text-white">{totalUnread} new</span>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMuted(!muted)
+                    setMutedState(!muted)
+                  }}
+                  title={muted ? "Unmute sounds" : "Mute sounds"}
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted hover:text-foreground cursor-pointer"
+                >
+                  {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
 
-        {/* Mobile Overlay */}
-        <AnimatePresence>
-          {sidebarOpen && (
-            <motion.div
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/40 z-40 lg:hidden"
-              onClick={() => setSidebarOpen(false)}
-            />
+            <div className="mt-3 flex h-10 items-center gap-2 rounded-xl bg-muted px-3 focus-within:ring-2 focus-within:ring-orange-500/40">
+              <Search className="h-4 w-4 text-muted-foreground" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search name, email or message"
+                className="h-full flex-1 bg-transparent text-sm outline-none"
+              />
+              {search && (
+                <button type="button" onClick={() => setSearch("")} className="text-muted-foreground hover:text-foreground cursor-pointer" aria-label="Clear">
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            <div className="mt-3 grid grid-cols-3 gap-1 rounded-xl bg-muted p-1">
+              {TABS.map((t) => (
+                <button
+                  key={t.key}
+                  type="button"
+                  onClick={() => setTab(t.key)}
+                  className={`relative rounded-lg py-1.5 text-xs font-semibold transition cursor-pointer ${tab === t.key ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  {tab === t.key && <motion.span layoutId="chat-tab" className="absolute inset-0 rounded-lg bg-background shadow-sm" />}
+                  <span className="relative">{t.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-2 chat-scroll">
+            {loadingRooms ? (
+              Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-3 p-3">
+                  <div className="h-11 w-11 animate-pulse rounded-full bg-muted" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3 w-1/2 animate-pulse rounded bg-muted" />
+                    <div className="h-3 w-3/4 animate-pulse rounded bg-muted" />
+                  </div>
+                </div>
+              ))
+            ) : filtered.length === 0 ? (
+              <div className="flex flex-col items-center justify-center px-6 py-16 text-center text-muted-foreground">
+                <Inbox className="h-10 w-10 opacity-40" />
+                <p className="mt-3 text-sm font-semibold">{rooms.length ? "No conversations match" : "No conversations yet"}</p>
+                <p className="mt-1 text-xs">Customer messages will appear here in real time.</p>
+              </div>
+            ) : (
+              <AnimatePresence initial={false}>
+                {filtered.map((r) => {
+                  const isActive = r._id === activeId
+                  const isOnline = online.has(String(r.userId))
+                  const typing = typingRooms[r._id]
+                  return (
+                    <motion.button
+                      layout
+                      key={r._id}
+                      type="button"
+                      onClick={() => openRoom(r._id)}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      className={`flex w-full items-center gap-3 rounded-2xl p-3 text-left transition cursor-pointer ${isActive ? "bg-orange-50 ring-1 ring-orange-200 dark:bg-orange-500/10 dark:ring-orange-500/30" : "hover:bg-muted"}`}
+                    >
+                      <Avatar src={r.user?.avatar?.url} name={r.user?.name || "Customer"} size={44} online={isOnline} />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className={`truncate text-sm ${r.unreadForAdmin ? "font-extrabold" : "font-semibold"}`}>{r.user?.name || "Deleted user"}</p>
+                          <span className={`shrink-0 text-[11px] ${r.unreadForAdmin ? "font-bold text-orange-600" : "text-muted-foreground"}`}>{shortTime(r.lastMessageAt)}</span>
+                        </div>
+                        <div className="mt-0.5 flex items-center justify-between gap-2">
+                          <p className={`truncate text-xs ${typing ? "font-semibold text-orange-500" : r.unreadForAdmin ? "font-semibold text-foreground" : "text-muted-foreground"}`}>
+                            {typing ? "typing…" : r.lastMessage ? `${r.lastSenderType === "admin" ? "You: " : ""}${r.lastMessage}` : "No messages yet"}
+                          </p>
+                          {r.unreadForAdmin > 0 && (
+                            <span className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-orange-500 px-1.5 text-[10px] font-bold text-white">
+                              {r.unreadForAdmin > 99 ? "99+" : r.unreadForAdmin}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </motion.button>
+                  )
+                })}
+              </AnimatePresence>
+            )}
+          </div>
+        </aside>
+
+        {/* ================= CONVERSATION ================= */}
+        <section className={`min-w-0 flex-1 flex-col bg-[#f6f6f4] dark:bg-background ${activeId ? "flex" : "hidden md:flex"}`}>
+          {!active ? (
+            <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
+              <span className="flex h-20 w-20 items-center justify-center rounded-3xl bg-orange-100 text-orange-500 dark:bg-orange-500/15">
+                <MessageSquareText className="h-9 w-9" />
+              </span>
+              <p className="mt-5 text-xl font-extrabold">Select a conversation</p>
+              <p className="mt-1 max-w-xs text-sm text-muted-foreground">Pick a customer on the left to read and reply. New messages arrive instantly with a sound.</p>
+            </div>
+          ) : (
+            <>
+              {/* header */}
+              <header className="relative flex items-center gap-3 border-b bg-card px-3 py-3 sm:px-4">
+                <button type="button" onClick={() => setActiveId(null)} className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-muted md:hidden cursor-pointer" aria-label="Back">
+                  <ArrowLeft className="h-5 w-5" />
+                </button>
+                <Avatar src={peer.avatar} name={peer.name} size={42} online={customerOnline} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-bold">{peer.name}</p>
+                  <p className={`text-xs ${conv.otherTyping ? "font-semibold text-orange-500" : "text-muted-foreground"}`}>
+                    {!connected ? (
+                      <span className="inline-flex items-center gap-1"><WifiOff className="h-3 w-3" /> Reconnecting…</span>
+                    ) : conv.otherTyping ? "typing…" : customerOnline ? "Online now" : "Offline"}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowInfo((v) => !v)}
+                  className={`hidden h-9 w-9 items-center justify-center rounded-full transition xl:flex cursor-pointer ${showInfo ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted"}`}
+                  title="Customer info"
+                >
+                  <Info className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(true)}
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition hover:bg-red-50 hover:text-red-600 cursor-pointer"
+                  title="Delete conversation"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+
+                <AnimatePresence>
+                  {confirmDelete && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                      className="absolute right-3 top-full z-30 mt-2 w-72 rounded-2xl bg-card p-4 shadow-2xl ring-1 ring-black/10"
+                    >
+                      <p className="font-bold">Delete this conversation?</p>
+                      <p className="mt-1 text-sm text-muted-foreground">All messages with {peer.name} will be permanently removed for both of you.</p>
+                      <div className="mt-4 flex justify-end gap-2">
+                        <button type="button" onClick={() => setConfirmDelete(false)} className="rounded-xl px-4 py-2 text-sm font-semibold hover:bg-muted cursor-pointer">Cancel</button>
+                        <button type="button" onClick={deleteConversation} className="rounded-xl bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 cursor-pointer">Delete</button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </header>
+
+              <MessageList
+                conv={conv}
+                me={me}
+                peer={peer}
+                canModerate
+                emptyState={
+                  <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
+                    <Avatar src={peer.avatar} name={peer.name} size={56} />
+                    <p className="mt-3 text-sm font-semibold text-foreground">Start the conversation with {peer.name}</p>
+                    <p className="text-xs">Say hello 👋</p>
+                  </div>
+                }
+              />
+              <Composer conv={conv} disabled={!connected} placeholder={`Reply to ${peer.name.split(" ")[0]}…`} />
+            </>
+          )}
+        </section>
+
+        {/* ================= CUSTOMER INFO ================= */}
+        <AnimatePresence initial={false}>
+          {active && showInfo && (
+            <motion.aside
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 300, opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="hidden shrink-0 overflow-hidden border-l bg-card xl:block"
+            >
+              <div className="w-[300px] p-5">
+                <div className="flex flex-col items-center text-center">
+                  <Avatar src={peer.avatar} name={peer.name} size={84} online={customerOnline} />
+                  <p className="mt-3 text-lg font-extrabold">{peer.name}</p>
+                  <span className={`mt-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${customerOnline ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15" : "bg-muted text-muted-foreground"}`}>
+                    {customerOnline ? "● Online" : "Offline"}
+                  </span>
+                </div>
+                <dl className="mt-6 space-y-3 text-sm">
+                  {[
+                    [Mail, "Email", customer?.email],
+                    [Phone, "Phone", customer?.phone],
+                    [CalendarDays, "Customer since", customer?.createdAt && new Date(customer.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })],
+                    [MessageSquareText, "Chat started", active?.createdAt && new Date(active.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })],
+                  ]
+                    .filter(([, , v]) => v)
+                    .map(([Icon, label, value]) => (
+                      <div key={label} className="flex items-start gap-3 rounded-2xl bg-muted/60 p-3">
+                        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-orange-500" />
+                        <div className="min-w-0">
+                          <dt className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</dt>
+                          <dd className="break-words font-medium">{value}</dd>
+                        </div>
+                      </div>
+                    ))}
+                </dl>
+                {customer?.email && (
+                  <a
+                    href={`mailto:${customer.email}`}
+                    className="mt-4 flex items-center justify-center gap-2 rounded-xl border py-2.5 text-sm font-semibold transition hover:border-orange-500 hover:text-orange-600"
+                  >
+                    <Mail className="h-4 w-4" /> Send email
+                  </a>
+                )}
+              </div>
+            </motion.aside>
           )}
         </AnimatePresence>
 
-        {/* ═══════════════════ SIDEBAR ═══════════════════════════════════════ */}
-        <div
-          className={`
-            bg-white border-r w-80 shrink-0 flex flex-col
-            transition-transform duration-300
-            fixed lg:relative z-50 lg:z-auto h-full
-            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0
-          `}
-        >
-          {/* Sidebar header */}
-          <div className="p-5 border-b bg-gray-50">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-semibold text-gray-800">Messages</h2>
-                {totalUnread > 0 && (
-                  <span className="bg-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                    {totalUnread}
-                  </span>
-                )}
-              </div>
-              <X
-                size={18}
-                className="cursor-pointer lg:hidden text-gray-500 hover:text-gray-800"
-                onClick={() => setSidebarOpen(false)}
-              />
-            </div>
-
-            {/* Search */}
-            <div className="mt-4 relative">
-              <Search size={15} className="absolute top-3 left-3 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search conversations..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl border bg-white focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm"
-              />
-            </div>
+        {!connected && !loadingRooms && (
+          <div className="pointer-events-none absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 items-center gap-2 rounded-full bg-neutral-900 px-4 py-2 text-xs font-semibold text-white shadow-lg">
+            <Loader2 className="h-3.5 w-3.5 animate-spin" /> Connecting to chat server…
           </div>
-
-          {/* Room list */}
-          <div className="flex-1 overflow-y-auto">
-            {loadingRooms && (
-              <div className="flex justify-center py-12">
-                <Loader2 size={22} className="animate-spin text-orange-400" />
-              </div>
-            )}
-
-            {!loadingRooms && filteredRooms.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-16 text-center px-4">
-                <MessageSquare size={32} className="text-gray-300 mb-3" />
-                <p className="text-gray-400 text-sm">No conversations yet</p>
-              </div>
-            )}
-
-            {filteredRooms.map((room) => {
-              const isActive  = activeRoom?._id?.toString() === room._id?.toString();
-              const isOnline  = onlineUsers.has(room.userId?.toString());
-              const unreadCnt = unreadMap[room._id] || 0;
-
-              return (
-                <div
-                  key={room._id}
-                  onClick={() => selectRoom(room)}
-                  className={`flex items-center justify-between px-5 py-4 cursor-pointer transition-all ${
-                    isActive
-                      ? "bg-orange-50 border-l-4 border-orange-500"
-                      : "hover:bg-gray-50 border-l-4 border-transparent"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    {/* Avatar */}
-                    <div className="relative shrink-0">
-                      <div
-                        className="w-11 h-11 rounded-full flex items-center justify-center text-white font-bold text-sm"
-                        style={{ background: avatarColor(room.userId) }}
-                      >
-                        {userIdShort(room.userId).replace("#", "").slice(0, 2)}
-                      </div>
-                      <span
-                        className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white"
-                        style={{ background: isOnline ? "#22c55e" : "#d1d5db" }}
-                      />
-                    </div>
-
-                    <div className="min-w-0">
-                      <h4 className="font-medium text-sm text-gray-800 truncate">
-                        User {userIdShort(room.userId)}
-                      </h4>
-                      <p className="text-xs text-gray-500 truncate w-36">
-                        {userTyping && isActive
-                          ? <span className="text-orange-500 animate-pulse">typing...</span>
-                          : room.lastMessage || "No messages yet"
-                        }
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col items-end gap-1 shrink-0 ml-2">
-                    <span className="text-xs text-gray-400">
-                      {formatTime(room.lastMessageAt)}
-                    </span>
-                    {unreadCnt > 0 && (
-                      <span className="bg-orange-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-5 text-center">
-                        {unreadCnt > 9 ? "9+" : unreadCnt}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Admin footer */}
-          <div className="p-4 border-t bg-gray-50 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-orange-500 flex items-center justify-center text-white text-sm font-bold">
-              A
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-800">Admin</p>
-              <p className="text-xs text-green-500">● Online</p>
-            </div>
-          </div>
-        </div>
-
-        {/* ═══════════════════ MAIN CHAT ════════════════════════════════════ */}
-        <div className="flex-1 flex flex-col bg-gray-50 min-w-0">
-
-          {/* Chat Header */}
-          <div className="p-5 border-b flex justify-between items-center bg-white shadow-sm shrink-0">
-            <div className="flex items-center gap-4">
-              <button
-                className="text-gray-500 hover:text-gray-800 lg:hidden"
-                onClick={() => setSidebarOpen(true)}
-              >
-                <Menu size={20} />
-              </button>
-
-              {activeRoom ? (
-                <>
-                  <div className="relative shrink-0">
-                    <div
-                      className="w-11 h-11 rounded-full flex items-center justify-center text-white font-bold text-sm"
-                      style={{ background: avatarColor(activeRoom.userId) }}
-                    >
-                      {userIdShort(activeRoom.userId).replace("#", "").slice(0, 2)}
-                    </div>
-                    <span
-                      className="absolute bottom-0.5 right-0.5 w-3 h-3 rounded-full border-2 border-white"
-                      style={{
-                        background: onlineUsers.has(activeRoom.userId?.toString())
-                          ? "#22c55e" : "#d1d5db",
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-base text-gray-800">
-                      User {userIdShort(activeRoom.userId)}
-                    </h3>
-                    <p className="text-xs text-gray-500">
-                      {userTyping ? (
-                        <span className="text-orange-500 animate-pulse">typing...</span>
-                      ) : onlineUsers.has(activeRoom.userId?.toString()) ? (
-                        <span className="text-green-500">Online</span>
-                      ) : (
-                        "Offline"
-                      )}
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <p className="text-gray-400 text-sm">Select a conversation</p>
-              )}
-            </div>
-
-            {activeRoom && (
-              <div className="flex items-center gap-4 text-gray-500 text-lg">
-                <button className="hover:text-orange-500 transition">
-                  <Video size={20} />
-                </button>
-                <button className="hover:text-orange-500 transition">
-                  <Phone size={20} />
-                </button>
-                <button className="hover:text-orange-500 transition hidden sm:block">
-                  <User size={20} />
-                </button>
-                <button className="hover:text-orange-500 transition">
-                  <MoreVertical size={20} />
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-4" style={{ minHeight: 0 }}>
-
-            {/* Empty state — no room selected */}
-            {!activeRoom && (
-              <motion.div
-                initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-                className="flex flex-col items-center justify-center h-full text-center"
-              >
-                <div className="w-20 h-20 rounded-2xl bg-orange-50 flex items-center justify-center mb-4">
-                  <MessageSquare size={36} className="text-orange-300" />
-                </div>
-                <p className="text-gray-500 font-medium">No conversation selected</p>
-                <p className="text-gray-400 text-sm mt-1">
-                  Choose a chat from the sidebar to start responding
-                </p>
-              </motion.div>
-            )}
-
-            {/* Loading */}
-            {activeRoom && loadingMsgs && (
-              <div className="flex justify-center py-10">
-                <Loader2 size={22} className="animate-spin text-orange-400" />
-              </div>
-            )}
-
-            {/* No messages yet */}
-            {activeRoom && !loadingMsgs && messages.length === 0 && (
-              <div className="flex items-center justify-center h-40">
-                <p className="text-gray-400 text-sm">No messages yet — say hello! 👋</p>
-              </div>
-            )}
-
-            {/* Message bubbles */}
-            {!loadingMsgs && messages.map((msg, i) => {
-              const isAdmin = msg.senderType === "admin";
-              return (
-                <motion.div
-                  key={msg._id || `opt-${i}`}
-                  initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.15 }}
-                  className={`flex ${isAdmin ? "justify-end" : "justify-start"}`}
-                >
-                  <div className="flex flex-col gap-1 max-w-xs">
-                    <div
-                      className={`px-5 py-3 rounded-2xl text-sm shadow-sm ${
-                        isAdmin
-                          ? "bg-orange-500 text-white rounded-br-sm"
-                          : "bg-white text-gray-800 rounded-bl-sm"
-                      }`}
-                    >
-                      {msg.message}
-                    </div>
-                    <div className={`flex items-center gap-1 px-1 ${isAdmin ? "justify-end" : "justify-start"}`}>
-                      <span className="text-[10px] text-gray-400">
-                        {formatTime(msg.createdAt)}
-                      </span>
-                      {isAdmin && (
-                        msg._id
-                          ? <CheckCheck size={11} className="text-orange-400" />
-                          : <Check      size={11} className="text-gray-300" />
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-
-            {/* Typing indicator */}
-            <AnimatePresence>
-              {userTyping && (
-                <motion.div
-                  initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 6 }}
-                  className="flex justify-start"
-                >
-                  <div className="bg-white px-5 py-3 rounded-2xl rounded-bl-sm shadow-sm">
-                    <div className="flex gap-1 items-center">
-                      {[0, 1, 2].map((i) => (
-                        <span
-                          key={i}
-                          className="w-2 h-2 rounded-full bg-gray-400"
-                          style={{ animation: "typingBounce 1.2s infinite", animationDelay: `${i * 0.2}s` }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input */}
-          {activeRoom && (
-            <div className="p-5 border-t flex items-center gap-4 bg-white shrink-0">
-              <input
-                ref={inputRef}
-                type="text"
-                placeholder="Type a message..."
-                value={message}
-                onChange={handleTyping}
-                onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
-                className="flex-1 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-400 text-sm bg-gray-50 text-gray-800"
-              />
-
-              <label className="cursor-pointer text-gray-400 hover:text-orange-500 transition">
-                <Paperclip size={20} />
-                <input
-                  type="file"
-                  hidden
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (!file || !activeRoom) return;
-                    const socket = getSocket();
-                    socket.emit("send-message", {
-                      roomId:     activeRoom._id.toString(),
-                      senderType: "admin",
-                      senderId:   ADMIN_ID,
-                      message:    `📎 ${file.name}`,
-                    });
-                    e.target.value = "";
-                  }}
-                />
-              </label>
-
-              <button
-                onClick={sendMessage}
-                disabled={!message.trim()}
-                className={`p-3 rounded-xl text-white transition shadow-md ${
-                  message.trim()
-                    ? "bg-orange-500 hover:bg-orange-600"
-                    : "bg-gray-200 cursor-not-allowed"
-                }`}
-              >
-                <Send size={17} className={message.trim() ? "text-white" : "text-gray-400"} />
-              </button>
-            </div>
-          )}
-        </div>
+        )}
       </div>
-
-      <style jsx global>{`
-        @keyframes typingBounce {
-          0%, 80%, 100% { transform: translateY(0);    opacity: 0.4; }
-          40%            { transform: translateY(-5px); opacity: 1;   }
-        }
-      `}</style>
     </div>
-  );
+  )
 }
-

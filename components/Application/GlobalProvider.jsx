@@ -13,16 +13,16 @@ import ChatWidget from '../Chat/ChatWidget'
 const queryClient = new QueryClient()
 
 function ChatWrapper({ children }) {
-  const userId   = useSelector((state) => state.authStore?.auth?._id ?? null)
+  const auth = useSelector((state) => state.authStore?.auth ?? null)
   const pathname = usePathname()
 
-  // Hide ChatWidget on any /admin/* page
-  const isAdminPage = pathname?.startsWith("/admin")
+  // Website chat widget everywhere except the admin panel & auth screens
+  const showWidget = !pathname?.startsWith("/admin") && !pathname?.startsWith("/auth")
 
   return (
-    <ChatProvider userId={userId}>
+    <ChatProvider user={auth}>
       {children}
-      {userId && !isAdminPage && <ChatWidget />}
+      {showWidget && <ChatWidget />}
     </ChatProvider>
   )
 }

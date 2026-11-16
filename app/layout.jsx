@@ -1,6 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ToastContainer } from 'react-toastify';
+import AppToaster from "@/components/Application/AppToaster";
 import GlobalProvider from "@/components/Application/GlobalProvider";
 
 
@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <GlobalProvider>
-        <ToastContainer/>
+        <AppToaster />
           {children}
         </GlobalProvider>
       </body>

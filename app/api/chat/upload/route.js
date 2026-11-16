@@ -1,7 +1,7 @@
 
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
-import { isAuthenticated } from "@/lib/authentication";
+import { getChatSession } from "@/lib/chatAuth";
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -13,12 +13,11 @@ const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 
 export async function POST(request) {
   try {
-    // Allow both users and admins to upload
-    const auth = await isAuthenticated("user") || await isAuthenticated("admin");
-    // ── if your isAuthenticated throws on failure, wrap individually:
-    // const userAuth  = await isAuthenticated("user").catch(() => ({ isAuth: false }));
-    // const adminAuth = await isAuthenticated("admin").catch(() => ({ isAuth: false }));
-    // if (!userAuth.isAuth && !adminAuth.isAuth) { ... }
+    // Only logged-in customers and admins may upload chat files
+    const session = await getChatSession();
+    if (!session) {
+      return NextResponse.json({ success: false, message: "Please log in to send files." }, { status: 401 });
+    }
 
     const formData = await request.formData();
     const file     = formData.get("file");

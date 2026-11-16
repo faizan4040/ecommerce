@@ -183,8 +183,9 @@ export async function GET(request) {
     $project: {
       _id: 1,
       product: "$productData.name",
-      image: 1,                
+      image: 1,
       color: 1,
+      colorCode: 1,
       size: 1,
       gender: 1,
       sku: 1,

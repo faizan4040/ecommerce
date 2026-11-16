@@ -7,6 +7,7 @@ export async function GET() {
     await connectDB();
 
     const getSize = await ProductVariantModel.aggregate([
+      { $match: { deletedAt: null } },
       { $sort: { _id: 1 } },
       {
         $group: {

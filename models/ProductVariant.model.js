@@ -12,6 +12,13 @@ const ProductVariantSchema = new mongoose.Schema({
         trim: true,
     },
 
+    // Hex code used to draw the colour swatch on the website, e.g. "#1f2937"
+    colorCode: {
+        type: String,
+        trim: true,
+        default: "",
+    },
+
     size: {
         type: String,
         required: true,

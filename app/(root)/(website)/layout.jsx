@@ -1,30 +1,17 @@
 'use client'
 
-import ChatButton from '@/components/Chat/ChatButton'
-import ChatWidget from '@/components/Chat/ChatWidget'
-import { ChatProvider } from '@/components/Chat/ChatProvider'
 import Footer from '@/components/Website/Footer'
 import Header from '@/components/Website/Header'
 
+// Chat widget + provider live in GlobalProvider (they need the logged-in user)
 const Layout = ({ children }) => {
   return (
-    <ChatProvider>
-       <Header />
-
-          <main>
-           {children}
-          </main>
-
-       <Footer />
-
-
-      <ChatButton />
-      <ChatWidget />
-    </ChatProvider>
+    <>
+      <Header />
+      <main>{children}</main>
+      <Footer />
+    </>
   )
 }
 
 export default Layout
-
-
-

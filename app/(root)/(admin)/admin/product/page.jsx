@@ -1,71 +1,34 @@
 'use client'
 
-import BreadCrumb from '@/components/Application/Admin/BreadCrumb'
-import DatatableWrapper from '@/components/Application/Admin/DatatableWrapper'
-import DeleteAction from '@/components/Application/Admin/DeleteAction'
-import EditAction from '@/components/Application/Admin/EditAction'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import AdminListPage from '@/components/Application/Admin/product/AdminListPage'
 import { DT_PRODUCT_COLUMN } from '@/lib/column'
-import { columnConfig } from '@/lib/helperfunction'
-import { ADMIN_DASHBOARD, ADMIN_PRODUCT_ADD, ADMIN_PRODUCT_EDIT, ADMIN_PRODUCT_SHOW, ADMIN_TRASH } from '@/routes/AdminPanelRoute'
-import { FilePlus } from 'lucide-react'
-import Link from 'next/link'
-import { useCallback, useMemo } from 'react'
+import { ADMIN_DASHBOARD, ADMIN_PRODUCT_ADD, ADMIN_PRODUCT_EDIT, ADMIN_PRODUCT_SHOW, ADMIN_PRODUCT_VARIANT_SHOW, ADMIN_TRASH } from '@/routes/AdminPanelRoute'
+import { Layers, PackagePlus, ShoppingBag } from 'lucide-react'
 
 const breadcrumbData = [
-  {href: ADMIN_DASHBOARD, label: 'Home'},
-  {href: ADMIN_PRODUCT_SHOW, label: 'Product'},
+  { href: ADMIN_DASHBOARD, label: 'Home' },
+  { href: ADMIN_PRODUCT_SHOW, label: 'Products' },
 ]
 
-  const ShowProduct = () => {
-
-    const columns = useMemo(()=>{
-    return columnConfig(DT_PRODUCT_COLUMN)
-    },[])
-   
-    const action = useCallback((row, deleteType, handleDelete) => {
-        let actionMenu = []
-        actionMenu.push(<EditAction key="edit" href={ADMIN_PRODUCT_EDIT(row.original._id)}/>)
-        actionMenu.push(<DeleteAction key="delete" handleDelete={handleDelete} row={row} deleteType={deleteType}/>)
-        return actionMenu
-    }, [])
-
-
-
+export default function ShowProduct() {
   return (
-    <div>
-        <BreadCrumb breadcrumbData={breadcrumbData}/>
-        <div className='py-4'>
-        <Card className="py-0 max-w-300 rounded-3xl shadow-sm gap-0">
-        <CardHeader className="pt-3 px-3 border-b [.border-b]:pb-2">
-        <div className='flex justify-between items-center'>
-          <h4 className='text-xl font-semibold'>Show Product</h4>
-          
-        <Button className='bg-[#fff0ea] cursor-pointer text-orange-400 font-mono hover:bg-orange-500 hover:text-white'>
-          <FilePlus/>
-          <Link href={ADMIN_PRODUCT_ADD} >New Product</Link>
-        </Button>
-
-        </div>
-        </CardHeader>
-        <CardContent className='pb-5 px-0 pt-0'>
-           <DatatableWrapper
-            querykey="product-data"
-            fetchUrl="/api/product"
-            initialPageSize={10}
-            columnsConfig={columns}
-            exportEndpoint="/api/product/export"
-            deleteEndpoint="/api/product/delete"
-            deleteType="SD"
-            trashView={`${ADMIN_TRASH}?trashof=product`}
-            createAction={action}
-           />
-        </CardContent>
-        </Card>
-        </div>
-    </div>
+    <AdminListPage
+      breadcrumbData={breadcrumbData}
+      icon={ShoppingBag}
+      eyebrow="Catalog"
+      title="All products"
+      subtitle="Search, edit or remove products. Variant count and total stock are calculated live."
+      actions={[
+        { href: ADMIN_PRODUCT_VARIANT_SHOW, label: 'Variants', icon: Layers, variant: 'ghost' },
+        { href: ADMIN_PRODUCT_ADD, label: 'New product', icon: PackagePlus },
+      ]}
+      columns={DT_PRODUCT_COLUMN}
+      queryKey="product-data"
+      fetchUrl="/api/product"
+      exportEndpoint="/api/product/export"
+      deleteEndpoint="/api/product/delete"
+      trashView={`${ADMIN_TRASH}?trashof=product`}
+      editHref={ADMIN_PRODUCT_EDIT}
+    />
   )
 }
-
-export default ShowProduct

@@ -2,6 +2,8 @@ export const IMAGES = {
   coupon: "/assets/images/coupon.PNG",
   logos: "/assets/images/logo_1.webp",
   logo: "/assets/images/logo.png",
+  logo_kmf: "/assets/images/logo_kmf.png",             // dark text - for light backgrounds
+  logo_kmf_white: "/assets/images/logo_kmf_white.png", // white text - for dark backgrounds
   dashboardlogo:"/assets/images/logo.png", 
   image_placeholder: "/assets/images/image_placeholder.webp",
   profile: "/assets/images/profile.jpg",
@@ -21,6 +23,21 @@ export const IMAGES = {
   shoes_8: "/assets/images/shoes_8.avif",
   shoes_9: "/assets/images/shoes_9.avif",
   shoes_10: "/assets/images/shoes_10.avif",
+
+  // Background-removed shoes (hero section)
+  shoes_cut_1: "/assets/images/cutout/shoes_1.webp",
+  shoes_cut_2: "/assets/images/cutout/shoes_2.webp",
+  shoes_cut_3: "/assets/images/cutout/shoes_3.webp",
+  shoes_cut_4: "/assets/images/cutout/shoes_4.webp",
+  shoes_cut_5: "/assets/images/cutout/shoes_5.webp",
+  shoes_cut_6: "/assets/images/cutout/shoes_6.webp",
+  shoes_cut_7: "/assets/images/cutout/shoes_7.webp",
+  shoes_cut_8: "/assets/images/cutout/shoes_8.webp",
+  shoes_cut_9: "/assets/images/cutout/shoes_9.webp",
+  shoes_cut_10: "/assets/images/cutout/shoes_10.webp",
+  sneaker_cut_1: "/assets/images/cutout/sneaker_1.webp",
+  sneaker_cut_2: "/assets/images/cutout/sneaker_2.webp",
+  sneaker_cut_3: "/assets/images/cutout/sneaker_3.webp",
 
   
 

@@ -1,65 +1,59 @@
-// app/api/chat/rooms/route.js
-import { NextResponse } from "next/server";
-import mongoose from "mongoose";
-import connectDB from "@/lib/databaseConnection";
-import ChatRoom from "@/models/ChatRoom.model";
+import { NextResponse } from "next/server"
+import mongoose from "mongoose"
+import connectDB from "@/lib/databaseConnection"
+import { getChatSession } from "@/lib/chatAuth"
+import ChatRoom from "@/models/ChatRoom.model"
+import "@/models/User.model"
+
+const unauthorized = () => NextResponse.json({ success: false, message: "Please log in to use chat." }, { status: 401 })
 
 /**
  * GET /api/chat/rooms
- * Returns all rooms sorted by latest activity (admin sidebar).
- * Optional: ?userId=xxx  returns room for that specific user.
+ *  - admin    → every conversation with the customer's name, email & photo (newest first)
+ *  - customer → their own conversation (or null)
  */
-export async function GET(req) {
-  try {
-    await connectDB();
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("userId");
+export async function GET() {
+  const session = await getChatSession()
+  if (!session) return unauthorized()
+  await connectDB()
 
-    const query = userId ? { userId } : {};
-
-    // No .populate() — avoids MissingSchemaError for User/Admin models
-    const rooms = await ChatRoom.find(query).sort({ lastMessageAt: -1 });
-
-    return NextResponse.json({ success: true, data: rooms });
-  } catch (error) {
-    // console.error(" GET /api/chat/rooms:", error);
-    return NextResponse.json(
-      { success: false, message: "Failed to fetch rooms" },
-      { status: 500 }
-    );
+  if (session.role !== "admin") {
+    const room = await ChatRoom.findOne({ userId: session.id }).lean()
+    return NextResponse.json({ success: true, data: room })
   }
+
+  const rooms = await ChatRoom.aggregate([
+    { $sort: { lastMessageAt: -1 } },
+    { $lookup: { from: "users", localField: "userId", foreignField: "_id", as: "user" } },
+    { $addFields: { user: { $arrayElemAt: ["$user", 0] } } },
+    {
+      $project: {
+        userId: 1, lastMessage: 1, lastMessageAt: 1, lastSenderType: 1, unreadForAdmin: 1, unreadForUser: 1, createdAt: 1,
+        "user._id": 1, "user.name": 1, "user.email": 1, "user.phone": 1, "user.avatar": 1, "user.createdAt": 1,
+      },
+    },
+  ])
+  return NextResponse.json({ success: true, data: rooms })
 }
 
 /**
  * POST /api/chat/rooms
- * Body: { userId }
- * Creates a new room OR returns the existing one for this user.
+ * Customer: get or create their own conversation (the user id comes from the login cookie).
  */
-export async function POST(req) {
-  try {
-    await connectDB();
-    const { userId } = await req.json();
-
-    // Validate ObjectId before hitting MongoDB
-    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-      return NextResponse.json(
-        { success: false, message: "Valid userId is required" },
-        { status: 400 }
-      );
-    }
-
-    // Upsert — one room per user
-    let room = await ChatRoom.findOne({ userId });
-    if (!room) {
-      room = await ChatRoom.create({ userId });
-    }
-
-    return NextResponse.json({ success: true, data: room });
-  } catch (error) {
-    // console.error(" POST /api/chat/rooms:", error);
-    return NextResponse.json(
-      { success: false, message: "Failed to create room" },
-      { status: 500 }
-    );
+export async function POST() {
+  const session = await getChatSession()
+  if (!session) return unauthorized()
+  if (session.role === "admin") {
+    return NextResponse.json({ success: false, message: "Admins reply from the dashboard chat." }, { status: 400 })
   }
+  if (!mongoose.isValidObjectId(session.id)) return unauthorized()
+
+  await connectDB()
+  const room = await ChatRoom.findOneAndUpdate(
+    { userId: session.id },
+    { $setOnInsert: { userId: session.id, lastMessageAt: new Date() } },
+    { upsert: true, new: true }
+  ).lean()
+
+  return NextResponse.json({ success: true, data: room })
 }
